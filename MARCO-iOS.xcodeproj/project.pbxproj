@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FB5F879928FF705100A4E95C /* DeviceLocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB5F879828FF705100A4E95C /* DeviceLocationService.swift */; };
 		FC32475D28FF34170034F324 /* ARView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC32475C28FF34170034F324 /* ARView.swift */; };
 		FC32475F28FF348F0034F324 /* Art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = FC32475E28FF348F0034F324 /* Art.scnassets */; };
 		FC64E63228F7330C00FCB2AA /* MARCO_iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC64E63128F7330C00FCB2AA /* MARCO_iOSApp.swift */; };
@@ -16,6 +17,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		FB5F879528FF654600A4E95C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		FB5F879828FF705100A4E95C /* DeviceLocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLocationService.swift; sourceTree = "<group>"; };
 		FC32475C28FF34170034F324 /* ARView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARView.swift; sourceTree = "<group>"; };
 		FC32475E28FF348F0034F324 /* Art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = Art.scnassets; sourceTree = "<group>"; };
 		FC64E62E28F7330C00FCB2AA /* MARCO-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MARCO-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -41,6 +44,7 @@
 			children = (
 				FC64E63328F7330C00FCB2AA /* ContentView.swift */,
 				FC32475C28FF34170034F324 /* ARView.swift */,
+				FB5F879828FF705100A4E95C /* DeviceLocationService.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -64,6 +68,7 @@
 		FC64E63028F7330C00FCB2AA /* MARCO-iOS */ = {
 			isa = PBXGroup;
 			children = (
+				FB5F879528FF654600A4E95C /* Info.plist */,
 				FC64E63128F7330C00FCB2AA /* MARCO_iOSApp.swift */,
 				FC32475B28FF34090034F324 /* Views */,
 				FC64E63528F7330D00FCB2AA /* Assets.xcassets */,
@@ -152,6 +157,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FB5F879928FF705100A4E95C /* DeviceLocationService.swift in Sources */,
 				FC64E63428F7330C00FCB2AA /* ContentView.swift in Sources */,
 				FC64E63228F7330C00FCB2AA /* MARCO_iOSApp.swift in Sources */,
 				FC32475D28FF34170034F324 /* ARView.swift in Sources */,
@@ -283,21 +289,25 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MARCO-iOS/Preview Content\"";
-				DEVELOPMENT_TEAM = HR6PJYMVA9;
+				DEVELOPMENT_TEAM = 4HSKQW8W3C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "MARCO-iOS/Info.plist";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Camera needed for app usage.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "GPS Permission";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "GPS Permission";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.jcastillo.MARCO-iOS";
+				PRODUCT_BUNDLE_IDENTIFIER = appAR;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -313,21 +323,25 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MARCO-iOS/Preview Content\"";
-				DEVELOPMENT_TEAM = HR6PJYMVA9;
+				DEVELOPMENT_TEAM = 4HSKQW8W3C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "MARCO-iOS/Info.plist";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Camera needed for app usage.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "GPS Permission";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "GPS Permission";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.jcastillo.MARCO-iOS";
+				PRODUCT_BUNDLE_IDENTIFIER = appAR;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
