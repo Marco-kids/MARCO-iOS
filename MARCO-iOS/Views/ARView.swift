@@ -13,12 +13,13 @@ import ARKit
 struct ARView: UIViewRepresentable {
     
     @Binding var coordinates: (lat: Double, lon: Double)
-    
+
     var limitLat = [25.65008, 25.65009]
     var limitLon = [-100.29066, -100.29063]
-
-    func makeUIView(context: Context) -> some UIView {
+    
+    func makeUIView(context: Context) -> ARSCNView {
         let sceneView = ARSCNView()
+
         sceneView.showsStatistics = true
         sceneView.delegate = context.coordinator
 
@@ -54,10 +55,10 @@ struct ARView: UIViewRepresentable {
         return sceneView
     }
     
-    func updateUIView(_ uiView: UIViewType, context: Context) {
+    func updateUIView(_ uiView: ARSCNView, context: Context) {
         print(coordinates)
         if(coordinates.lat < limitLat[1] && coordinates.lat > limitLat[0]) {
-            
+            // uiView.session.remove(anchor: <#T##ARAnchor#>)
         }
     }
     
@@ -71,7 +72,6 @@ struct ARView: UIViewRepresentable {
         init(_ parent: ARView) {
             self.parent = parent
         }
-        
         // MARK: Funcion de plano
         /*
         func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
