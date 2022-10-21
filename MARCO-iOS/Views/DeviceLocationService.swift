@@ -9,7 +9,7 @@ import Combine
 import CoreLocation
 
 class DeviceLocationService: NSObject, CLLocationManagerDelegate, ObservableObject {
-
+    
     var coordinatesPublisher = PassthroughSubject<CLLocationCoordinate2D, Error>()
     var deniedLocationAccessPublisher = PassthroughSubject<Void, Never>()
 
@@ -17,7 +17,7 @@ class DeviceLocationService: NSObject, CLLocationManagerDelegate, ObservableObje
         super.init()
     }
     static let shared = DeviceLocationService()
-
+    
     private lazy var locationManager: CLLocationManager = {
         let manager = CLLocationManager()
         manager.desiredAccuracy = kCLLocationAccuracyBest
@@ -52,7 +52,7 @@ class DeviceLocationService: NSObject, CLLocationManagerDelegate, ObservableObje
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        print(locations)
+        // print(locations)
         guard let location = locations.last else { return }
         coordinatesPublisher.send(location.coordinate)
     }

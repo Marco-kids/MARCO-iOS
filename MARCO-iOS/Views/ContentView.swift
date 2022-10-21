@@ -14,26 +14,20 @@ struct ContentView: View {
     
     @State private var selection = 2
     
-    // new
+    // Coordinates variables
     @StateObject var deviceLocationService = DeviceLocationService.shared
 
     @State var tokens: Set<AnyCancellable> = []
-    @State var coordinates: (lat: Double, lon: Double) = (0, 0)
+    @State var coordinates: (lat: Double, lon: Double) = (1.0,0.0)
     //
-    
-    
+
     var body: some View {
         VStack {
             Text("Latitude: \(coordinates.lat)")
                 .font(.largeTitle)
             Text("Longitude: \(coordinates.lon)")
                 .font(.largeTitle)
-            }
-            .onAppear {
-                observeCoordinateUpdates()
-                observeDeniedLocationAccess()
-                deviceLocationService.requestLocationUpdates()
-            }
+        }
         
         TabView(selection:$selection) {
             
@@ -45,7 +39,7 @@ struct ContentView: View {
                 }
                 .tag(1)
 
-            ARView()
+            ARView(coordinates: .constant((lat: coordinates.lat, lon: coordinates.lon)))
                 .edgesIgnoringSafeArea(.top)
                 .font(.system(size: 30, weight: .bold, design: .rounded))
                 .tabItem {
@@ -53,6 +47,7 @@ struct ContentView: View {
                     Text("Camera")
                 }
                 .tag(2)
+            
 
             Text("Settings")
                 .font(.system(size: 30, weight: .bold, design: .rounded))
@@ -62,9 +57,14 @@ struct ContentView: View {
                 }
                 .tag(3)
         }
-        
+        .onAppear {
+                        observeCoordinateUpdates()
+                        observeDeniedLocationAccess()
+                        deviceLocationService.requestLocationUpdates()
+                    }
     }
-    
+
+    // Updates coordinates
     func observeCoordinateUpdates() {
             deviceLocationService.coordinatesPublisher
                 .receive(on: DispatchQueue.main)
@@ -76,14 +76,14 @@ struct ContentView: View {
                 .store(in: &tokens)
         }
 
-        func observeDeniedLocationAccess() {
-            deviceLocationService.deniedLocationAccessPublisher
-                .receive(on: DispatchQueue.main)
-                .sink {
-                    print("Handle access denied event, possibly with an alert.")
+    func observeDeniedLocationAccess() {
+        deviceLocationService.deniedLocationAccessPublisher
+            .receive(on: DispatchQueue.main)
+            .sink {
+                print("Handle access denied event, possibly with an alert.")
                 }
                 .store(in: &tokens)
-        }
+    }
 }
 
 struct ContentView_Previews: PreviewProvider {
