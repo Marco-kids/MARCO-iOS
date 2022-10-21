@@ -56,9 +56,9 @@ struct ARView: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: ARSCNView, context: Context) {
-        print(coordinates)
+        // print(coordinates)
         if(coordinates.lat < limitLat[1] && coordinates.lat > limitLat[0]) {
-            // uiView.session.remove(anchor: <#T##ARAnchor#>)
+            print("adentro del area")
         }
     }
     
