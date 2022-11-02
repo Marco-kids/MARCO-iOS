@@ -30,14 +30,9 @@ struct ARViewContainer: UIViewRepresentable {
         arView.addGestureRecognizer(UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTap)))
         
         context.coordinator.view = arView
-        // context.coordinator.buildEnvironment()
-        context.coordinator.initFunction()
+        context.coordinator.initCollisionDetection()
         arView.session.run(configuration)
         arView.session.delegate = context.coordinator
-        
-        
-        // activarlo una vez al inicio
-        // arView.initCollisionDetection()
         
         return arView
     }
