@@ -7,7 +7,7 @@
 
 import Combine
 import SwiftUI
-import SceneKit
+import RealityKit
 import ARKit
 
 struct ContentView: View {
@@ -18,15 +18,49 @@ struct ContentView: View {
     @StateObject var deviceLocationService = DeviceLocationService.shared
 
     @State var tokens: Set<AnyCancellable> = []
-    @State var coordinates: (lat: Double, lon: Double) = (1.0,0.0)
+    @State var coordinates: (lat: Double, lon: Double) = (1.0,1.0)
+    @State var textColor: Color = .red
     //
-
+    
+    // Simulador Primer Objeto
+    var objetoLimitLat = [37.33467638, 37.33501504]
+    var objetoLimitLon = [-122.03432425, -122.03254905]
+    
+    // Salon Swift coordenadas
+    var pirinolaLimitLat = [25.60008, 25.66009]
+    var pirinolaLimitLon = [-100.29069, -100.290600]
+    
+    // Simulador segundo objeto
+    // var objetoLimitLat = [37.332000, 37.333000]
+    // var objetoLimitLon = [-123.00000, -121.00000]
+    
+    
     var body: some View {
+        
         VStack {
-            Text("Latitude: \(coordinates.lat)")
-                .font(.largeTitle)
-            Text("Longitude: \(coordinates.lon)")
-                .font(.largeTitle)
+            if (coordinates.lat > pirinolaLimitLat[0] && coordinates.lat < pirinolaLimitLat[1] && coordinates.lon > pirinolaLimitLon[0] && coordinates.lon < pirinolaLimitLon[1]) {
+                Text("Latitude: \(coordinates.lat)")
+                    .font(.largeTitle)
+                    .foregroundColor(.green)
+                Text("Longitude: \(coordinates.lon)")
+                    .font(.largeTitle)
+                    .foregroundColor(.green)
+            } else if (coordinates.lat > objetoLimitLat[0] && coordinates.lat < objetoLimitLat[1] && coordinates.lon > objetoLimitLon[0] && coordinates.lon < objetoLimitLon[1]) {
+                Text("Latitude: \(coordinates.lat)")
+                    .font(.largeTitle)
+                    .foregroundColor(.blue)
+                Text("Longitude: \(coordinates.lon)")
+                    .font(.largeTitle)
+                    .foregroundColor(.blue)
+            } else {
+                Text("Latitude: \(coordinates.lat)")
+                    .font(.largeTitle)
+                    .foregroundColor(.red)
+                Text("Longitude: \(coordinates.lon)")
+                    .font(.largeTitle)
+                    .foregroundColor(.red)
+            }
+
         }
         
         TabView(selection:$selection) {
@@ -39,7 +73,7 @@ struct ContentView: View {
                 }
                 .tag(1)
 
-            ARView(coordinates: .constant((lat: coordinates.lat, lon: coordinates.lon)))
+            ARViewContainer(coordinates: .constant((lat: coordinates.lat, lon: coordinates.lon)))
                 .edgesIgnoringSafeArea(.top)
                 .font(.system(size: 30, weight: .bold, design: .rounded))
                 .tabItem {
@@ -91,3 +125,4 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
+
