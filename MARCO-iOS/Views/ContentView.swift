@@ -20,20 +20,18 @@ struct ContentView: View {
     @State var tokens: Set<AnyCancellable> = []
     @State var coordinates: (lat: Double, lon: Double) = (1.0,1.0)
     @State var textColor: Color = .red
-    //
+    
+    // Obra de arte completada
+    @StateObject var completed = Coordinator.completed
     
     // Simulador Primer Objeto
-    var objetoLimitLat = [37.33467638, 37.33501504]
-    var objetoLimitLon = [-122.03432425, -122.03254905]
+    var objetoLimitLat = [25.65000, 25.66000]
+    var objetoLimitLon =  [-100.26000, -100.25000]
     
     // Salon Swift coordenadas
     var pirinolaLimitLat = [25.60008, 25.66009]
-    var pirinolaLimitLon = [-100.29069, -100.290600]
-    
-    // Simulador segundo objeto
-    // var objetoLimitLat = [37.332000, 37.333000]
-    // var objetoLimitLon = [-123.00000, -121.00000]
-    
+    var pirinolaLimitLon = [-100.29069, -100.290400]
+
     
     var body: some View {
         
@@ -57,6 +55,16 @@ struct ContentView: View {
                     .font(.largeTitle)
                     .foregroundColor(.red)
                 Text("Longitude: \(coordinates.lon)")
+                    .font(.largeTitle)
+                    .foregroundColor(.red)
+            }
+            
+            if(completed.complete) {
+                Text("SI completado")
+                    .font(.largeTitle)
+                    .foregroundColor(.green)
+            } else {
+                Text("NO completado")
                     .font(.largeTitle)
                     .foregroundColor(.red)
             }

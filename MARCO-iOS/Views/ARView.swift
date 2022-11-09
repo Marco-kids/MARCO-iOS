@@ -13,20 +13,14 @@ import ARKit
 struct ARViewContainer: UIViewRepresentable {
     
     @Binding var coordinates: (lat: Double, lon: Double)
-    
-    var pirinolaLimitLat = [25.65008, 25.65009]
-    var pirinolaLimitLon = [-100.29066, -100.29063]
-    
-    // var pirinolaLimitLat = [37.33467638, 37.33521504]
-    // var pirinolaLimitLon = [-122.03432425, -122.03254905]
-    
+
     func makeUIView(context: Context) -> ARView {
         let arView = ARView(frame: .zero)
 
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = .horizontal
         
-        // Gesture to launch rocks
+        // Gesture to launch bullets
         arView.addGestureRecognizer(UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTap)))
         
         context.coordinator.view = arView
