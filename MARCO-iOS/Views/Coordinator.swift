@@ -17,7 +17,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     
     // Loading asynchronous models
     var newEntityPirinola: AnyCancellable?
-    
+
     // Variable para saber si ya se capturaron todos los cubitos
     static let completed = Coordinator()
     var complete = false
@@ -33,12 +33,12 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     var pirinolaLimitLon = [-100.29069, -100.290400]
     
     // Simulador casa objeto
-    // var objetoLimitLat = [25.65000, 25.66000]
-    // var objetoLimitLon =  [-100.26000, -100.25000]
+    var objetoLimitLat = [25.65000, 25.66000]
+    var objetoLimitLon =  [-100.26000, -100.25000]
     
     // Simulador cualquier lugar
-    var objetoLimitLat = [20.0000, 28.00000]
-    var objetoLimitLon =  [-101.00000, -100.0000]
+    // var objetoLimitLat = [20.0000, 28.00000]
+    // var objetoLimitLon =  [-101.00000, -100.0000]
     
     // Simulador Xcode
     // var objetoLimitLat = [0.0000, 100.0000]
@@ -48,18 +48,24 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     var arrayRunOnce = [false, false]
 
     // Entity global que tiene todo
-    let anchor = AnchorEntity(world: [0,0,0])
+    let anchor = AnchorEntity(plane: .horizontal)
+    let anchorBullet = AnchorEntity(world: [0,0,0])
     
     // Animacion cuando colisiona la caja y el bullet
     var animUpdateSubscriptions = [Cancellable]()
     func animate(entity: HasTransform, angle: Float, axis: SIMD3<Float>, duration: TimeInterval, loop: Bool, currentPosition: SIMD3<Float>){
         guard let view = self.view else { return }
         
+        entity.stopAllAnimations()
+        entity.transform.scale = [1, 1, 1]
+        entity.transform.rotation = simd_quatf(angle: 0, axis: axis)
+        
         var transform = entity.transform
         transform.rotation *= simd_quatf(angle: angle, axis: axis)
-        transform.translation = [0, 1, 0]
-        transform.scale = [0.1, 0.1, 0.1]
-        entity.move(to: transform, relativeTo: entity.parent, duration: duration)
+        // transform.translation = [0, 1, 0]
+        transform.scale = [0.2, 0.2, 0.2]
+        
+        entity.move(to: transform, relativeTo: entity, duration: duration)
         
         
         // Remove the cube after 4 seconds
@@ -99,7 +105,8 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             
             // Animacion cuando colisiona con la caja
             if (entityType == "box/") {
-                self.animate(entity: entity1, angle: .pi, axis: [0, 1, 0], duration: 4, loop: false, currentPosition: entity1.position)
+                entity1.stopAllAnimations()
+                self.animate(entity: entity1, angle: .pi, axis: [0, 1, 0], duration: 4.0, loop: false, currentPosition: entity1.position)
                 self.arrayObjetos[entityReal - 1] = true
                 
                 print(self.arrayObjetos)
@@ -108,6 +115,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                     Coordinator.completed.complete = true
                     print(Coordinator.completed.complete)
                 }
+    
             } else {
                 // Substrings of the object's name
                 entityName = entity2.name
@@ -117,7 +125,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 entityNumber = entityId[1]
                 entityReal = Int(String(entityNumber)) ?? 0 // Int of the Object -> "box/1/" -> 1
                 
-                self.animate(entity: entity2, angle: .pi, axis: [0, 1, 0], duration: 4, loop: false, currentPosition: entity2.position)
+                self.animate(entity: entity2, angle: .pi, axis: [0, 1, 0], duration: 4.0, loop: false, currentPosition: entity2.position)
                 self.arrayObjetos[entityReal - 1] = true
                 
                 print(self.arrayObjetos)
@@ -180,24 +188,32 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         // Throw ball location - direction
         let (origin, direction) = view.ray(through: tapPoint)!
         
+        
+        print("direction: ", direction)
+        // Throw ball location - direction
         let raycasts: [CollisionCastHit] = view.scene.raycast(origin: origin, direction: direction, length: 50, query: .any, mask: .default, relativeTo: nil)
         
+        // Bullet origin
         bullet.position = origin
         
+        // Collission component
         let size = bullet.visualBounds(relativeTo: bullet).extents
         let bulletShape = ShapeResource.generateBox(size: size)
         bullet.collision = CollisionComponent(shapes: [bulletShape], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         
+        // Add physics linear velocity
         let kinematics: PhysicsBodyComponent = .init(massProperties: .default,material: nil,mode: .kinematic)
         bullet.components.set(kinematics)
         
+        // Raycast
         if let raycastVal = raycasts.first {
-            let motion: PhysicsMotionComponent = .init(linearVelocity: [-raycastVal.normal[0]*1, -raycastVal.normal[1]*1, -raycastVal.normal[2]*1],angularVelocity: [0, 0, 0])
+            print("raycast normal: ", raycastVal.normal[0])
+            let motion: PhysicsMotionComponent = .init(linearVelocity: [-raycastVal.normal[0]*1.5, -raycastVal.normal[1]*1.5, -raycastVal.normal[2]*1.5],angularVelocity: [0, 0, 0])
             bullet.components.set(motion)
         }
 
         bullet.name = "bullet/1/"
-        anchor.addChild(bullet)
+        anchorBullet.addChild(bullet)
         
         view.installGestures(.all, for: bullet)
         
@@ -224,6 +240,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 guard let entityPirinolaSalon = try? ModelEntity.load(named: "Models/pirinola_black") else {
                     fatalError("Robot model was not!")
                 }
+                entityPirinolaSalon.setPosition(SIMD3(x: 0, y: 0, z: -2), relativeTo: nil)
                 entityPirinolaSalon.setScale(SIMD3(x: 0.05, y: 0.05, z: 0.05), relativeTo: entityPirinolaSalon)
                 entityPirinolaSalon.name = "entityPirinola/1/"
                 anchor.addChild(entityPirinolaSalon)
@@ -236,11 +253,11 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 let box1 = ModelEntity(mesh: MeshResource.generateBox(width: 0.1, height: 0.1, depth: 0.02), materials: [SimpleMaterial(color: .red, isMetallic: false)])
                 box1.generateCollisionShapes(recursive: true)
                 box1.collision = CollisionComponent(shapes: [.generateBox(size: [0.1, 0.1, 0.1])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-                box1.setPosition(SIMD3(x: 100, y: 150, z: 250), relativeTo: entityPirinolaSalon)
                 box1.name = "box/1/"
             
                 anchor.addChild(box1)
                 view.installGestures(.all, for: box1)
+                
                 
                 // Caja - 2 Collision
                 let box2 = ModelEntity(mesh: MeshResource.generateBox(width: 0.1, height: 0.1, depth: 0.02), materials: [SimpleMaterial(color: .red, isMetallic: false)])
@@ -272,7 +289,9 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 anchor.addChild(boxSalon4)
                 view.installGestures(.all, for: boxSalon4)
                 
+                // TODO: Cambiar de posicion
                 view.scene.addAnchor(anchor)
+                view.scene.addAnchor(anchorBullet)
                 
                 // Caja - 5 Collision
                 let box5 = ModelEntity(mesh: MeshResource.generateBox(width: 0.1, height: 0.1, depth: 0.02), materials: [SimpleMaterial(color: .red, isMetallic: false)])
@@ -305,81 +324,103 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                     }
             }
             
-        // Simulacion Swift
+        // Simulacion Casa
         } else if (lat > objetoLimitLat[0] && lat < objetoLimitLat[1] && lon > objetoLimitLon[0] && lon < objetoLimitLon[1]) {
     
             if(view.scene.anchors.isEmpty) {
-                print("adentro")
+                
                 // Pirinola
                 guard let entityPirinolaSalon = try? ModelEntity.load(named: "Models/pirinola_black") else {
                     fatalError("Robot model was not!")
                 }
+                entityPirinolaSalon.setPosition(SIMD3(x: 0, y: 0, z: 0), relativeTo: nil)
                 entityPirinolaSalon.setScale(SIMD3(x: 0.05, y: 0.05, z: 0.05), relativeTo: entityPirinolaSalon)
                 anchor.addChild(entityPirinolaSalon)
-                
+
                 // Text for Pirinola
                 let textEntity = textGen(textString: "Pirinola")
                 anchor.addChild(textEntity)
                 
                 // Caja - 1 Collision
-                let box1 = ModelEntity(mesh: MeshResource.generateBox(size: 0.1), materials: [SimpleMaterial(color: .red, isMetallic: false)])
+                let box1 = ModelEntity(mesh: MeshResource.generateBox(width: 0.2, height: 0.2, depth: 0.02), materials: [SimpleMaterial(color: .red, isMetallic: false)])
                 box1.generateCollisionShapes(recursive: true)
                 box1.collision = CollisionComponent(shapes: [.generateBox(size: [0.1, 0.1, 0.1])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-                box1.setPosition(SIMD3(x: 100, y: 150, z: 250), relativeTo: entityPirinolaSalon)
                 box1.name = "box/1/"
 
                 anchor.addChild(box1)
                 view.installGestures(.all, for: box1)
                 
+                
+                
+                
                 // Caja - 2 Collision
-                let box2 = ModelEntity(mesh: MeshResource.generateBox(size: 0.1), materials: [SimpleMaterial(color: .red, isMetallic: false)])
+                let box2 = ModelEntity(mesh: MeshResource.generateBox(width: 0.1, height: 0.1, depth: 0.02), materials: [SimpleMaterial(color: .red, isMetallic: false)])
                 box2.generateCollisionShapes(recursive: true)
                 box2.collision = CollisionComponent(shapes: [.generateBox(size: [0.1, 0.1, 0.1])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
                 box2.setPosition(SIMD3(x: -200, y: -200, z: -150), relativeTo: entityPirinolaSalon)
                 box2.name = "box/2/"
                 
                 
-                anchor.addChild(box2)
+                // anchor.addChild(box2)
                 view.installGestures(.all, for: box2)
                 
                 // Caja - 3 Collision
-                let box3 = ModelEntity(mesh: MeshResource.generateBox(size: 0.1), materials: [SimpleMaterial(color: .red, isMetallic: false)])
+                let box3 = ModelEntity(mesh: MeshResource.generateBox(width: 0.1, height: 0.1, depth: 0.02), materials: [SimpleMaterial(color: .red, isMetallic: false)])
                 box3.generateCollisionShapes(recursive: true)
                 box3.collision = CollisionComponent(shapes: [.generateBox(size: [0.1, 0.1, 0.1])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
                 box3.setPosition(SIMD3(x: 130, y: 130, z: -130), relativeTo: entityPirinolaSalon)
                 box3.name = "box/3/"
 
-                anchor.addChild(box3)
+                // anchor.addChild(box3)
                 view.installGestures(.all, for: box3)
                 
                 // Caja - 4 Collision
-                let boxSalon4 = ModelEntity(mesh: MeshResource.generateBox(size: 0.1), materials: [SimpleMaterial(color: .red, isMetallic: false)])
+                let boxSalon4 = ModelEntity(mesh: MeshResource.generateBox(width: 0.1, height: 0.1, depth: 0.02), materials: [SimpleMaterial(color: .red, isMetallic: false)])
                 boxSalon4.generateCollisionShapes(recursive: true)
                 boxSalon4.collision = CollisionComponent(shapes: [.generateBox(size: [0.1, 0.1, 0.1])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
                 boxSalon4.setPosition(SIMD3(x: 500, y: 500, z: 500), relativeTo: entityPirinolaSalon)
                 boxSalon4.name = "box/4/"
 
-                anchor.addChild(boxSalon4)
+                // anchor.addChild(boxSalon4)
                 view.installGestures(.all, for: boxSalon4)
                 
+                // TODO: Cambiar de posicion
                 view.scene.addAnchor(anchor)
+                view.scene.addAnchor(anchorBullet)
                 
                 // Caja - 5 Collision
-                let box5 = ModelEntity(mesh: MeshResource.generateBox(size: 0.1), materials: [SimpleMaterial(color: .red, isMetallic: false)])
+                let box5 = ModelEntity(mesh: MeshResource.generateBox(width: 0.1, height: 0.1, depth: 0.02), materials: [SimpleMaterial(color: .red, isMetallic: false)])
                 box5.generateCollisionShapes(recursive: true)
                 box5.collision = CollisionComponent(shapes: [.generateBox(size: [0.1, 0.1, 0.1])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
                 box5.setPosition(SIMD3(x: -500, y: -500, z: -500), relativeTo: entityPirinolaSalon)
                 box5.name = "box/5/"
 
-                anchor.addChild(box5)
+                // anchor.addChild(box5)
                 view.installGestures(.all, for: box5)
+                
+                
+                let animationDefinition = OrbitAnimation(
+                    duration: 10,
+                    axis: SIMD3<Float>(x: 0, y: 1, z: 0),
+                    startTransform: Transform(
+                        translation: simd_float3(0,0,1)),
+                        spinClockwise: false,
+                        orientToPath: true,
+                        rotationCount: 100.0,
+                    bindTarget: .transform,
+                    repeatMode: .repeat
+                    )
+                
+                
+                let animationResource = try! AnimationResource.generate(with: animationDefinition)
+                box1.playAnimation(animationResource)
                 
                 // Todo hacer una animacion propia para la pirinola
             }
             
             if(!self.arrayObjetos.contains(false) && self.arrayRunOnce[1] == false) {
+                
                 // Anadir color a la pirinola
-                print("Entra aqui")
                 newEntityPirinola = ModelEntity.loadAsync(named: "Models/pirinola")
                     .sink { loadCompletion in
                         if case let .failure(error) = loadCompletion {

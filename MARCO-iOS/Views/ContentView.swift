@@ -24,9 +24,13 @@ struct ContentView: View {
     // Obra de arte completada
     @StateObject var completed = Coordinator.completed
     
-    // Simulador Primer Objeto
+    // Casa
     var objetoLimitLat = [25.65000, 25.66000]
     var objetoLimitLon =  [-100.26000, -100.25000]
+    
+    // Simulador
+    // var objetoLimitLat = [0.0000, 100.0000]
+    //  var objetoLimitLon =  [-123.00000, -122.00000]
     
     // Salon Swift coordenadas
     var pirinolaLimitLat = [25.60008, 25.66009]
