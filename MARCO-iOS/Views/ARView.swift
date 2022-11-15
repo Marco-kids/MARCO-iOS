@@ -25,6 +25,7 @@ struct ARViewContainer: UIViewRepresentable {
         
         context.coordinator.view = arView
         context.coordinator.initCollisionDetection()
+        context.coordinator.initBullets()
         arView.session.run(configuration)
         arView.session.delegate = context.coordinator
         
