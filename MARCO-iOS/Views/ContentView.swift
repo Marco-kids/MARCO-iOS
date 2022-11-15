@@ -35,6 +35,10 @@ struct ContentView: View {
     // Salon Swift coordenadas
     var pirinolaLimitLat = [25.60008, 25.66009]
     var pirinolaLimitLon = [-100.29069, -100.290400]
+    
+    // Simulador cualquier lugar
+    // var objetoLimitLat = [20.0000, 28.00000]
+    // var objetoLimitLon =  [-101.00000, -100.0000]
 
     
     var body: some View {

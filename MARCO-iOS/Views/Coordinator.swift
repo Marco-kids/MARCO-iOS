@@ -33,12 +33,12 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     var pirinolaLimitLon = [-100.29069, -100.290400]
     
     // Simulador casa objeto
-    var objetoLimitLat = [25.65000, 25.66000]
-    var objetoLimitLon =  [-100.26000, -100.25000]
+    // var objetoLimitLat = [25.65000, 25.66000]
+    // var objetoLimitLon =  [-100.26000, -100.25000]
     
     // Simulador cualquier lugar
-    // var objetoLimitLat = [20.0000, 28.00000]
-    // var objetoLimitLon =  [-101.00000, -100.0000]
+    var objetoLimitLat = [20.0000, 30.00000]
+    var objetoLimitLon =  [-102.00000, -199.0000]
     
     // Simulador Xcode
     // var objetoLimitLat = [0.0000, 100.0000]
@@ -263,7 +263,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 anchor.addChild(textEntity)
                 
                 // Caja - 1 Collision
-                let box1 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .red, isMetallic: false)])
+                let box1 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 0.2), materials: [SimpleMaterial(color: .red, isMetallic: false)])
                 box1.generateCollisionShapes(recursive: true)
                 box1.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
                 box1.name = "box/1/"
@@ -275,7 +275,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 
                 
                 // Caja - 2 Collision
-                let box2 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .blue, isMetallic: false)])
+                let box2 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 0.2), materials: [SimpleMaterial(color: .blue, isMetallic: false)])
                 box2.generateCollisionShapes(recursive: true)
                 box2.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
                 box2.name = "box/2/"
@@ -285,7 +285,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 view.installGestures(.all, for: box2)
                 
                 // Caja - 3 Collision
-                let box3 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .purple, isMetallic: false)])
+                let box3 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 0.2), materials: [SimpleMaterial(color: .purple, isMetallic: false)])
                 box3.generateCollisionShapes(recursive: true)
                 box3.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
                 box3.name = "box/3/"
@@ -294,7 +294,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 view.installGestures(.all, for: box3)
                 
                 // Caja - 4 Collision
-                let boxSalon4 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .yellow, isMetallic: false)])
+                let boxSalon4 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 0.2), materials: [SimpleMaterial(color: .yellow, isMetallic: false)])
                 boxSalon4.generateCollisionShapes(recursive: true)
                 boxSalon4.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
                 boxSalon4.name = "box/4/"
@@ -303,7 +303,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 view.installGestures(.all, for: boxSalon4)
                 
                 // Caja - 5 Collision
-                let box5 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .orange, isMetallic: false)])
+                let box5 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 0.2), materials: [SimpleMaterial(color: .orange, isMetallic: false)])
                 box5.generateCollisionShapes(recursive: true)
                 box5.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
                 box5.name = "box/5/"
@@ -313,7 +313,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 
                 
                 // Caja - 6 Collision
-                let box6 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .yellow, isMetallic: false)])
+                let box6 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 0.2), materials: [SimpleMaterial(color: .yellow, isMetallic: false)])
                 box6.generateCollisionShapes(recursive: true)
                 box6.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
                 box6.name = "box/6/"
@@ -322,7 +322,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 view.installGestures(.all, for: box6)
                 
                 // Caja - 7 Collision
-                let box7 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .cyan, isMetallic: false)])
+                let box7 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 0.2), materials: [SimpleMaterial(color: .cyan, isMetallic: false)])
                 box7.generateCollisionShapes(recursive: true)
                 box7.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
                 box7.name = "box/7/"
@@ -332,7 +332,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 
                 
                 // Caja - 8 Collision
-                let box8 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .brown, isMetallic: false)])
+                let box8 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 0.2), materials: [SimpleMaterial(color: .brown, isMetallic: false)])
                 box8.generateCollisionShapes(recursive: true)
                 box8.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
                 box8.name = "box/8/"
@@ -342,7 +342,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 
                 
                 // Caja - 9 Collision
-                let box9 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .cyan, isMetallic: false)])
+                let box9 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 0.2), materials: [SimpleMaterial(color: .cyan, isMetallic: false)])
                 box9.generateCollisionShapes(recursive: true)
                 box9.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
                 box9.name = "box/9/"
@@ -352,7 +352,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 
                 
                 // Caja - 10 Collision
-                let box10 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .red, isMetallic: false)])
+                let box10 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 0.2), materials: [SimpleMaterial(color: .red, isMetallic: false)])
                 box10.generateCollisionShapes(recursive: true)
                 box10.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
                 box10.name = "box/10/"
@@ -361,7 +361,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 view.installGestures(.all, for: box10)
                 
                 // Caja - 11 Collision
-                let box11 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .blue, isMetallic: false)])
+                let box11 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 0.2), materials: [SimpleMaterial(color: .blue, isMetallic: false)])
                 box11.generateCollisionShapes(recursive: true)
                 box11.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
                 box11.name = "box/11/"
@@ -370,7 +370,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 view.installGestures(.all, for: box11)
                 
                 // Caja - 12 Collision
-                let box12 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .orange, isMetallic: false)])
+                let box12 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 0.2), materials: [SimpleMaterial(color: .orange, isMetallic: false)])
                 box12.generateCollisionShapes(recursive: true)
                 box12.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
                 box12.name = "box/12/"
