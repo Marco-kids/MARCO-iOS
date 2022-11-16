@@ -12,6 +12,9 @@ import ARKit
 
 struct ContentView: View {
     
+    // Network shared instance
+    @StateObject var network = Network.sharedInstance
+    
     @State private var selection = 2
     
     // Coordinates variables
@@ -107,6 +110,7 @@ struct ContentView: View {
                         observeCoordinateUpdates()
                         observeDeniedLocationAccess()
                         deviceLocationService.requestLocationUpdates()
+                        network.getModels()
                     }
     }
 
