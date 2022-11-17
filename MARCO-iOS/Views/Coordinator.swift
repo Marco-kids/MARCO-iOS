@@ -30,7 +30,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     
     // Salon Aplicacion
     var pirinolaLimitLat = [25.60008, 25.66009]
-    var pirinolaLimitLon = [-100.29069, -100.290400]
+    var pirinolaLimitLon = [-100.29169, -100.28800]
     
     // Simulador casa objeto
     var objetoLimitLat = [25.65000, 25.66000]
@@ -58,23 +58,23 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     
     // Multiple Bullets
     var bulletMaterial = SimpleMaterial(color: .green, isMetallic: false)
-    let emptyBullet: (Entity & HasPhysicsBody) = ModelEntity() as (Entity & HasCollision & HasPhysicsBody)
-    var currBullet: (Entity & HasPhysicsBody) = ModelEntity() as (Entity & HasCollision & HasPhysicsBody)
-    var bullet1: (Entity & HasPhysicsBody) = ModelEntity() as (Entity & HasCollision & HasPhysicsBody)
-    var bullet2: (Entity & HasPhysicsBody) = ModelEntity() as (Entity & HasCollision & HasPhysicsBody)
-    var bullet3: (Entity & HasPhysicsBody) = ModelEntity() as (Entity & HasCollision & HasPhysicsBody)
-    var bullet4: (Entity & HasPhysicsBody) = ModelEntity() as (Entity & HasCollision & HasPhysicsBody)
-    var bullet5: (Entity & HasPhysicsBody) = ModelEntity() as (Entity & HasCollision & HasPhysicsBody)
-    var bullet6: (Entity & HasPhysicsBody) = ModelEntity() as (Entity & HasCollision & HasPhysicsBody)
-    var bullet7: (Entity & HasPhysicsBody) = ModelEntity() as (Entity & HasCollision & HasPhysicsBody)
-    var bullet8: (Entity & HasPhysicsBody) = ModelEntity() as (Entity & HasCollision & HasPhysicsBody)
-    var bullet9: (Entity & HasPhysicsBody) = ModelEntity() as (Entity & HasCollision & HasPhysicsBody)
-    var bullet10: (Entity & HasPhysicsBody) = ModelEntity() as (Entity & HasCollision & HasPhysicsBody)
-    var bullet11: (Entity & HasPhysicsBody) = ModelEntity() as (Entity & HasCollision & HasPhysicsBody)
-    var bullet12: (Entity & HasPhysicsBody) = ModelEntity() as (Entity & HasCollision & HasPhysicsBody)
-    var bullet13: (Entity & HasPhysicsBody) = ModelEntity() as (Entity & HasCollision & HasPhysicsBody)
-    var bullet14: (Entity & HasPhysicsBody) = ModelEntity() as (Entity & HasCollision & HasPhysicsBody)
-    var bullet15: (Entity & HasPhysicsBody) = ModelEntity() as (Entity & HasCollision & HasPhysicsBody)
+    let emptyBullet: (ModelEntity & HasPhysicsBody) = ModelEntity() as (ModelEntity & HasCollision & HasPhysicsBody)
+    var currBullet: (ModelEntity & HasPhysicsBody) = ModelEntity() as (ModelEntity & HasCollision & HasPhysicsBody)
+    var bullet1: (ModelEntity & HasPhysicsBody) = ModelEntity() as (ModelEntity & HasCollision & HasPhysicsBody)
+    var bullet2: (ModelEntity & HasPhysicsBody) = ModelEntity() as (ModelEntity & HasCollision & HasPhysicsBody)
+    var bullet3: (ModelEntity & HasPhysicsBody) = ModelEntity() as (ModelEntity & HasCollision & HasPhysicsBody)
+    var bullet4: (ModelEntity & HasPhysicsBody) = ModelEntity() as (ModelEntity & HasCollision & HasPhysicsBody)
+    var bullet5: (ModelEntity & HasPhysicsBody) = ModelEntity() as (ModelEntity & HasCollision & HasPhysicsBody)
+    var bullet6: (ModelEntity & HasPhysicsBody) = ModelEntity() as (ModelEntity & HasCollision & HasPhysicsBody)
+    var bullet7: (ModelEntity & HasPhysicsBody) = ModelEntity() as (ModelEntity & HasCollision & HasPhysicsBody)
+    var bullet8: (ModelEntity & HasPhysicsBody) = ModelEntity() as (ModelEntity & HasCollision & HasPhysicsBody)
+    var bullet9: (ModelEntity & HasPhysicsBody) = ModelEntity() as (ModelEntity & HasCollision & HasPhysicsBody)
+    var bullet10: (ModelEntity & HasPhysicsBody) = ModelEntity() as (ModelEntity & HasCollision & HasPhysicsBody)
+    var bullet11: (ModelEntity & HasPhysicsBody) = ModelEntity() as (ModelEntity & HasCollision & HasPhysicsBody)
+    var bullet12: (ModelEntity & HasPhysicsBody) = ModelEntity() as (ModelEntity & HasCollision & HasPhysicsBody)
+    var bullet13: (ModelEntity & HasPhysicsBody) = ModelEntity() as (ModelEntity & HasCollision & HasPhysicsBody)
+    var bullet14: (ModelEntity & HasPhysicsBody) = ModelEntity() as (ModelEntity & HasCollision & HasPhysicsBody)
+    var bullet15: (ModelEntity & HasPhysicsBody) = ModelEntity() as (ModelEntity & HasCollision & HasPhysicsBody)
     var tapPoint = CGPoint.init()
     var origin =  SIMD3<Float>.init()
     var direction =  SIMD3<Float>.init()
@@ -84,89 +84,96 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     var raycasts = [CollisionCastHit].init()
     var raycastVal = [CollisionCastHit].init().first
     var motion = PhysicsMotionComponent.init()
+    
+    var materialTransparent = UnlitMaterial(color: .blue)
+    
     //
     
     func initBullets() {
         guard let view = self.view else { return }
         bulletMaterial.color =  .init(tint: .green.withAlphaComponent(1), texture: nil)
         
-        bullet1 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (Entity & HasCollision & HasPhysicsBody)
+        // Transparent
+        materialTransparent.color =  .init(tint: .red.withAlphaComponent(0))
+        
+        bullet1 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet1.generateCollisionShapes(recursive: true)
         bullet1.name = "bullet/1/"
         view.installGestures(.all, for: bullet1)
         
         
-        bullet2 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (Entity & HasCollision & HasPhysicsBody)
+        bullet2 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet2.generateCollisionShapes(recursive: true)
         bullet2.name = "bullet/2/"
         view.installGestures(.all, for: bullet2)
         
-        bullet3 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (Entity & HasCollision & HasPhysicsBody)
+        bullet3 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet3.generateCollisionShapes(recursive: true)
         bullet3.name = "bullet/3/"
         view.installGestures(.all, for: bullet3)
         
-        bullet4 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (Entity & HasCollision & HasPhysicsBody)
+        bullet4 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet4.generateCollisionShapes(recursive: true)
         bullet4.name = "bullet/4/"
         view.installGestures(.all, for: bullet4)
         
-        bullet5 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (Entity & HasCollision & HasPhysicsBody)
+        bullet5 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet5.generateCollisionShapes(recursive: true)
         bullet5.name = "bullet/5/"
         view.installGestures(.all, for: bullet5)
         
-        bullet6 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (Entity & HasCollision & HasPhysicsBody)
+        bullet6 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet6.generateCollisionShapes(recursive: true)
         bullet6.name = "bullet/6/"
         view.installGestures(.all, for: bullet6)
         
-        bullet7 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (Entity & HasCollision & HasPhysicsBody)
+        bullet7 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet7.generateCollisionShapes(recursive: true)
         bullet7.name = "bullet/7/"
         view.installGestures(.all, for: bullet7)
         
-        bullet8 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (Entity & HasCollision & HasPhysicsBody)
+        bullet8 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet8.generateCollisionShapes(recursive: true)
         bullet8.name = "bullet/8/"
         view.installGestures(.all, for: bullet8)
         
-        bullet9 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (Entity & HasCollision & HasPhysicsBody)
+        bullet9 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet9.generateCollisionShapes(recursive: true)
         bullet9.name = "bullet/9/"
         view.installGestures(.all, for: bullet9)
         
-        bullet10 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (Entity & HasCollision & HasPhysicsBody)
+        bullet10 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet10.generateCollisionShapes(recursive: true)
         bullet10.name = "bullet/10/"
         view.installGestures(.all, for: bullet10)
         
-        bullet11 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (Entity & HasCollision & HasPhysicsBody)
+        bullet11 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet11.generateCollisionShapes(recursive: true)
         bullet11.name = "bullet/11/"
         view.installGestures(.all, for: bullet11)
         
-        bullet12 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (Entity & HasCollision & HasPhysicsBody)
+        bullet12 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet12.generateCollisionShapes(recursive: true)
         bullet12.name = "bullet/12/"
         view.installGestures(.all, for: bullet12)
         
-        bullet13 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (Entity & HasCollision & HasPhysicsBody)
+        bullet13 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet13.generateCollisionShapes(recursive: true)
         bullet13.name = "bullet/13/"
         view.installGestures(.all, for: bullet13)
         
-        bullet14 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (Entity & HasCollision & HasPhysicsBody)
+        bullet14 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet14.generateCollisionShapes(recursive: true)
         bullet14.name = "bullet/14/"
         view.installGestures(.all, for: bullet14)
         
-        bullet15 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (Entity & HasCollision & HasPhysicsBody)
+        bullet15 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet15.generateCollisionShapes(recursive: true)
         bullet15.name = "bullet/15/"
         view.installGestures(.all, for: bullet15)
         
-        currBullet = bullet1
+        currBullet.name = bullet1.name
+        // anchorBullet.addChild(self.currBullet)
     }
     
     
@@ -310,8 +317,8 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         
         
         // Collission component
-        size = currBullet.visualBounds(relativeTo: currBullet).extents
-        bulletShape = ShapeResource.generateBox(size: size)
+        // size = currBullet.visualBounds(relativeTo: currBullet).extents
+        bulletShape = ShapeResource.generateSphere(radius: 0.02)
         // currBullet.collision = CollisionComponent(shapes: [bulletShape], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         
         // Add physics linear velocity
@@ -325,107 +332,156 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             
             if(raycastVal.normal[0] == 0.0 || raycastVal.normal[1] == 0.0 || raycastVal.normal[2] == 0.0) {
                 motion = .init(linearVelocity: [0,0,0],angularVelocity: [0, 0, 0])
+                currBullet.position = origin
                 
+                
+                // TODO: uncomment this with real size 0.01 and check if works
                 if(self.currBullet.name == "bullet/1/") {
-                    bullet1.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
-                } else if (self.currBullet.name == "bullet/2/") {
-                    bullet2.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
-                } else if (self.currBullet.name == "bullet/3/") {
-                    bullet3.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
+                    bullet1.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                    bullet1.model?.materials = [materialTransparent]
+                 } else if (self.currBullet.name == "bullet/2/") {
+                    bullet2.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                     bullet2.model?.materials = [materialTransparent]
+                 } else if (self.currBullet.name == "bullet/3/") {
+                    bullet3.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                     bullet3.model?.materials = [materialTransparent]
                 } else if (self.currBullet.name == "bullet/4/") {
-                    bullet4.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
+                     bullet4.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                    bullet4.model?.materials = [materialTransparent]
                 } else if (self.currBullet.name == "bullet/5/") {
-                    bullet5.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
-                } else if (self.currBullet.name == "bullet/6/") {
-                    bullet6.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
-                } else if (self.currBullet.name == "bullet/7/") {
-                    bullet7.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
-                } else if (self.currBullet.name == "bullet/8/") {
-                    bullet8.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
-                } else if (self.currBullet.name == "bullet/9/") {
-                    bullet9.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
-                } else if (self.currBullet.name == "bullet/10/") {
-                    bullet10.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
+                bullet5.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                    bullet5.model?.materials = [materialTransparent]
+                 } else if (self.currBullet.name == "bullet/6/") {
+                     bullet6.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                     bullet6.model?.materials = [materialTransparent]
+                  } else if (self.currBullet.name == "bullet/7/") {
+                     bullet7.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                      bullet7.model?.materials = [materialTransparent]
+                 } else if (self.currBullet.name == "bullet/8/") {
+                     bullet8.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                     bullet8.model?.materials = [materialTransparent]
+                 } else if (self.currBullet.name == "bullet/9/") {
+                     bullet9.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                     bullet9.model?.materials = [materialTransparent]
+                 } else if (self.currBullet.name == "bullet/10/") {
+                    bullet10.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                     bullet10.model?.materials = [materialTransparent]
                 } else if (self.currBullet.name == "bullet/11/") {
-                    bullet11.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
+                    bullet11.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                    bullet11.model?.materials = [materialTransparent]
                 } else if (self.currBullet.name == "bullet/12/") {
-                    bullet12.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
+                    bullet12.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                    bullet12.model?.materials = [materialTransparent]
                 } else if (self.currBullet.name == "bullet/13/") {
-                    bullet13.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
+                    bullet13.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                    bullet13.model?.materials = [materialTransparent]
                 } else if (self.currBullet.name == "bullet/14/") {
-                    bullet14.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
+                    bullet14.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                    bullet14.model?.materials = [materialTransparent]
                 } else if (self.currBullet.name == "bullet/15/") {
-                    bullet15.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
+                bullet15.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                    bullet15.model?.materials = [materialTransparent]
                 }
             } else {
                 motion = .init(linearVelocity: [-raycastVal.normal[0]*2, -raycastVal.normal[1]*2, -raycastVal.normal[2]*2],angularVelocity: [0, 0, 0])
                 
                 if(self.currBullet.name == "bullet/1/") {
                     bullet1.setScale(SIMD3<Float>([1,1,1]), relativeTo: nil)
+                    bullet1.model?.materials = [bulletMaterial]
                 } else if (self.currBullet.name == "bullet/2/") {
                     bullet2.setScale(SIMD3<Float>([1,1,1]), relativeTo: nil)
+                    bullet2.model?.materials = [bulletMaterial]
                 } else if (self.currBullet.name == "bullet/3/") {
                     bullet3.setScale(SIMD3<Float>([1,1,1]), relativeTo: nil)
+                    bullet3.model?.materials = [bulletMaterial]
                 } else if (self.currBullet.name == "bullet/4/") {
                     bullet4.setScale(SIMD3<Float>([1,1,1]), relativeTo: nil)
+                    bullet4.model?.materials = [bulletMaterial]
                 } else if (self.currBullet.name == "bullet/5/") {
                     bullet5.setScale(SIMD3<Float>([1,1,1]), relativeTo: nil)
+                    bullet5.model?.materials = [bulletMaterial]
                 } else if (self.currBullet.name == "bullet/6/") {
                     bullet6.setScale(SIMD3<Float>([1,1,1]), relativeTo: nil)
+                    bullet6.model?.materials = [bulletMaterial]
                 } else if (self.currBullet.name == "bullet/7/") {
                     bullet7.setScale(SIMD3<Float>([1,1,1]), relativeTo: nil)
+                    bullet7.model?.materials = [bulletMaterial]
                 } else if (self.currBullet.name == "bullet/8/") {
                     bullet8.setScale(SIMD3<Float>([1,1,1]), relativeTo: nil)
+                    bullet8.model?.materials = [bulletMaterial]
                 } else if (self.currBullet.name == "bullet/9/") {
                     bullet9.setScale(SIMD3<Float>([1,1,1]), relativeTo: nil)
+                    bullet9.model?.materials = [bulletMaterial]
                 } else if (self.currBullet.name == "bullet/10/") {
                     bullet10.setScale(SIMD3<Float>([1,1,1]), relativeTo: nil)
+                    bullet10.model?.materials = [bulletMaterial]
                 } else if (self.currBullet.name == "bullet/11/") {
                     bullet11.setScale(SIMD3<Float>([1,1,1]), relativeTo: nil)
+                    bullet11.model?.materials = [bulletMaterial]
                 } else if (self.currBullet.name == "bullet/12/") {
                     bullet12.setScale(SIMD3<Float>([1,1,1]), relativeTo: nil)
+                    bullet12.model?.materials = [bulletMaterial]
                 } else if (self.currBullet.name == "bullet/13/") {
                     bullet13.setScale(SIMD3<Float>([1,1,1]), relativeTo: nil)
+                    bullet13.model?.materials = [bulletMaterial]
                 } else if (self.currBullet.name == "bullet/14/") {
                     bullet14.setScale(SIMD3<Float>([1,1,1]), relativeTo: nil)
+                    bullet14.model?.materials = [bulletMaterial]
                 } else if (self.currBullet.name == "bullet/15/") {
                     bullet15.setScale(SIMD3<Float>([1,1,1]), relativeTo: nil)
+                    bullet15.model?.materials = [bulletMaterial]
                 }
             }
         } else {
             raycasts = []
             motion = .init(linearVelocity: [0,0,0] ,angularVelocity: [0, 0, 0])
+            currBullet.position = origin
             
             if(self.currBullet.name == "bullet/1/") {
-                bullet1.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
+                bullet1.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                bullet1.model?.materials = [materialTransparent]
             } else if (self.currBullet.name == "bullet/2/") {
-                bullet2.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
+                bullet2.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                bullet2.model?.materials = [materialTransparent]
             } else if (self.currBullet.name == "bullet/3/") {
-                bullet3.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
+                bullet3.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                bullet3.model?.materials = [materialTransparent]
             } else if (self.currBullet.name == "bullet/4/") {
-                bullet4.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
+                bullet4.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                bullet4.model?.materials = [materialTransparent]
             } else if (self.currBullet.name == "bullet/5/") {
-                bullet5.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
+                bullet5.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                bullet5.model?.materials = [materialTransparent]
             } else if (self.currBullet.name == "bullet/6/") {
-                bullet6.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
+                bullet6.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                bullet6.model?.materials = [materialTransparent]
             } else if (self.currBullet.name == "bullet/7/") {
-                bullet7.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
+                bullet7.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                bullet7.model?.materials = [materialTransparent]
             } else if (self.currBullet.name == "bullet/8/") {
-                bullet8.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
+                bullet8.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                bullet8.model?.materials = [materialTransparent]
             } else if (self.currBullet.name == "bullet/9/") {
-                bullet9.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
+                bullet9.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                bullet9.model?.materials = [materialTransparent]
             } else if (self.currBullet.name == "bullet/10/") {
-                bullet10.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
+                bullet10.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                bullet10.model?.materials = [materialTransparent]
             } else if (self.currBullet.name == "bullet/11/") {
-                bullet11.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
+                bullet11.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                bullet11.model?.materials = [materialTransparent]
             } else if (self.currBullet.name == "bullet/12/") {
-                bullet12.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
+                bullet12.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                bullet12.model?.materials = [materialTransparent]
             } else if (self.currBullet.name == "bullet/13/") {
-                bullet13.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
+                bullet13.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                bullet13.model?.materials = [materialTransparent]
             } else if (self.currBullet.name == "bullet/14/") {
-                bullet14.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
+                bullet14.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                bullet14.model?.materials = [materialTransparent]
             } else if (self.currBullet.name == "bullet/15/") {
-                bullet15.setScale(SIMD3<Float>([15,15,15]), relativeTo: nil)
+                bullet15.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                bullet15.model?.materials = [materialTransparent]
             }
         }
 
@@ -440,14 +496,14 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             self.currBullet.name = "bullet/2/"
             
             // TODO: Hacer timer una variable que se puede utilizar en otras partes
-            if(bullet1.scale == SIMD3<Float>([15,15,15])) {
-                let timer1 = CustomTimer { (seconds) in
-                    if(seconds == 2) {
-                        view.scene.anchors[1].removeChild(self.bullet1)
-                    }
-                }
-                timer1.start()
-            }
+            //if(bullet1.scale == SIMD3<Float>([0.01,0.01,0.01])) {
+            //    let timer1 = CustomTimer { (seconds) in
+            //        if(seconds == 2) {
+            //            view.scene.anchors[1].removeChild(self.bullet1)
+            //        }
+            //    }
+            //    timer1.start()
+            //}
         } else if (self.currBullet.name == "bullet/2/") {
             bullet2.position = origin
             bullet2.collision = CollisionComponent(shapes: [bulletShape], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
@@ -457,14 +513,14 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             self.anchorBullet.addChild(self.bullet2)
             self.currBullet.name = "bullet/3/"
             
-            if(bullet2.scale == SIMD3<Float>([15,15,15])) {
-                let timer1 = CustomTimer { (seconds) in
-                    if(seconds == 2) {
-                        view.scene.anchors[1].removeChild(self.bullet2)
-                    }
-                }
-                timer1.start()
-            }
+            //if(bullet2.scale == SIMD3<Float>([0.01,0.01,0.01])) {
+            //    let timer1 = CustomTimer { (seconds) in
+            //        if(seconds == 2) {
+            //            view.scene.anchors[1].removeChild(self.bullet2)
+            //        }
+            //    }
+            //    timer1.start()
+            // }
         } else if (self.currBullet.name == "bullet/3/") {
             bullet3.position = origin
             bullet3.collision = CollisionComponent(shapes: [bulletShape], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
@@ -474,14 +530,14 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             self.anchorBullet.addChild(self.bullet3)
             self.currBullet.name = "bullet/4/"
             
-            if(bullet3.scale == SIMD3<Float>([15,15,15])) {
-                let timer1 = CustomTimer { (seconds) in
-                    if(seconds == 2) {
-                        view.scene.anchors[1].removeChild(self.bullet3)
-                    }
-                }
-                timer1.start()
-            }
+            //if(bullet3.scale == SIMD3<Float>([0.01,0.01,0.01])) {
+            //    let timer1 = CustomTimer { (seconds) in
+            //        if(seconds == 2) {
+            //            view.scene.anchors[1].removeChild(self.bullet3)
+            //        }
+            //    }
+            //    timer1.start()
+            //}
         } else if (self.currBullet.name == "bullet/4/") {
             bullet4.position = origin
             bullet4.collision = CollisionComponent(shapes: [bulletShape], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
@@ -491,14 +547,14 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             self.anchorBullet.addChild(self.bullet4)
             self.currBullet.name = "bullet/5/"
             
-            if(bullet4.scale == SIMD3<Float>([15,15,15])) {
-                let timer1 = CustomTimer { (seconds) in
-                    if(seconds == 2) {
-                        view.scene.anchors[1].removeChild(self.bullet4)
-                    }
-                }
-                timer1.start()
-            }
+            //if(bullet4.scale == SIMD3<Float>([0.01,0.01,0.01])) {
+            //    let timer1 = CustomTimer { (seconds) in
+            //        if(seconds == 2) {
+            //            view.scene.anchors[1].removeChild(self.bullet4)
+            //        }
+            //    }
+            //    timer1.start()
+            //}
         } else if (self.currBullet.name == "bullet/5/") {
             bullet5.position = origin
             bullet5.collision = CollisionComponent(shapes: [bulletShape], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
@@ -508,14 +564,14 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             self.anchorBullet.addChild(self.bullet5)
             self.currBullet.name = "bullet/6/"
             
-            if(bullet5.scale == SIMD3<Float>([15,15,15])) {
-                let timer1 = CustomTimer { (seconds) in
-                    if(seconds == 2) {
-                        view.scene.anchors[1].removeChild(self.bullet5)
-                    }
-                }
-                timer1.start()
-            }
+            //if(bullet5.scale == SIMD3<Float>([0.01,0.01,0.01])) {
+            //    let timer1 = CustomTimer { (seconds) in
+            //        if(seconds == 2) {
+            //            view.scene.anchors[1].removeChild(self.bullet5)
+            //        }
+            //    }
+            //    timer1.start()
+            //}
         } else if (self.currBullet.name == "bullet/6/") {
             bullet6.position = origin
             bullet6.collision = CollisionComponent(shapes: [bulletShape], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
@@ -525,14 +581,14 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             self.anchorBullet.addChild(self.bullet6)
             self.currBullet.name = "bullet/7/"
             
-            if(bullet6.scale == SIMD3<Float>([15,15,15])) {
-                let timer1 = CustomTimer { (seconds) in
-                    if(seconds == 2) {
-                        view.scene.anchors[1].removeChild(self.bullet6)
-                    }
-                }
-                timer1.start()
-            }
+            //if(bullet6.scale == SIMD3<Float>([0.01,0.01,0.01])) {
+            //    let timer1 = CustomTimer { (seconds) in
+            //        if(seconds == 2) {
+            //            view.scene.anchors[1].removeChild(self.bullet6)
+            //        }
+            //    }
+            //    timer1.start()
+            //}
         } else if (self.currBullet.name == "bullet/7/") {
             bullet7.position = origin
             bullet7.collision = CollisionComponent(shapes: [bulletShape], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
@@ -542,14 +598,14 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             self.anchorBullet.addChild(self.bullet7)
             self.currBullet.name = "bullet/8/"
             
-            if(bullet7.scale == SIMD3<Float>([15,15,15])) {
-                let timer1 = CustomTimer { (seconds) in
-                    if(seconds == 2) {
-                        view.scene.anchors[1].removeChild(self.bullet7)
-                    }
-                }
-                timer1.start()
-            }
+            //if(bullet7.scale == SIMD3<Float>([0.01,0.01,0.01])) {
+            //    let timer1 = CustomTimer { (seconds) in
+            //        if(seconds == 2) {
+            //            view.scene.anchors[1].removeChild(self.bullet7)
+            //        }
+            //    }
+            //    timer1.start()
+            //}
         } else if (self.currBullet.name == "bullet/8/") {
             bullet8.position = origin
             bullet8.collision = CollisionComponent(shapes: [bulletShape], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
@@ -559,14 +615,14 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             self.anchorBullet.addChild(self.bullet8)
             self.currBullet.name = "bullet/9/"
             
-            if(bullet8.scale == SIMD3<Float>([15,15,15])) {
-                let timer1 = CustomTimer { (seconds) in
-                    if(seconds == 2) {
-                        view.scene.anchors[1].removeChild(self.bullet8)
-                    }
-                }
-                timer1.start()
-            }
+            //if(bullet8.scale == SIMD3<Float>([0.01,0.01,0.01])) {
+            //    let timer1 = CustomTimer { (seconds) in
+            //        if(seconds == 2) {
+            //            view.scene.anchors[1].removeChild(self.bullet8)
+            //        }
+            //    }
+            //    timer1.start()
+            //}
         } else if (self.currBullet.name == "bullet/9/") {
             bullet9.position = origin
             bullet9.collision = CollisionComponent(shapes: [bulletShape], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
@@ -576,14 +632,14 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             self.anchorBullet.addChild(self.bullet9)
             self.currBullet.name = "bullet/10/"
             
-            if(bullet9.scale == SIMD3<Float>([15,15,15])) {
-                let timer1 = CustomTimer { (seconds) in
-                    if(seconds == 2) {
-                        view.scene.anchors[1].removeChild(self.bullet9)
-                    }
-                }
-                timer1.start()
-            }
+            //if(bullet9.scale == SIMD3<Float>([0.01,0.01,0.01])) {
+            //    let timer1 = CustomTimer { (seconds) in
+            //        if(seconds == 2) {
+            //            view.scene.anchors[1].removeChild(self.bullet9)
+            //        }
+            //    }
+            //    timer1.start()
+            //}
         } else if (self.currBullet.name == "bullet/10/") {
             bullet10.position = origin
             bullet10.collision = CollisionComponent(shapes: [bulletShape], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
@@ -593,14 +649,14 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             self.anchorBullet.addChild(self.bullet10)
             self.currBullet.name = "bullet/11/"
             
-            if(bullet10.scale == SIMD3<Float>([15,15,15])) {
-                let timer1 = CustomTimer { (seconds) in
-                    if(seconds == 2) {
-                        view.scene.anchors[1].removeChild(self.bullet10)
-                    }
-                }
-                timer1.start()
-            }
+            //if(bullet10.scale == SIMD3<Float>([0.01,0.01,0.01])) {
+            //    let timer1 = CustomTimer { (seconds) in
+            //        if(seconds == 2) {
+            //            view.scene.anchors[1].removeChild(self.bullet10)
+            //        }
+            //    }
+            //    timer1.start()
+            //}
         } else if (self.currBullet.name == "bullet/11/") {
             bullet11.position = origin
             bullet11.collision = CollisionComponent(shapes: [bulletShape], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
@@ -610,14 +666,14 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             self.anchorBullet.addChild(self.bullet11)
             self.currBullet.name = "bullet/12/"
             
-            if(bullet11.scale == SIMD3<Float>([15,15,15])) {
-                let timer1 = CustomTimer { (seconds) in
-                    if(seconds == 2) {
-                        view.scene.anchors[1].removeChild(self.bullet11)
-                    }
-                }
-                timer1.start()
-            }
+            //if(bullet11.scale == SIMD3<Float>([0.01,0.01,0.01])) {
+            //    let timer1 = CustomTimer { (seconds) in
+            //        if(seconds == 2) {
+            //            view.scene.anchors[1].removeChild(self.bullet11)
+            //        }
+            //    }
+            //    timer1.start()
+            //}
         } else if (self.currBullet.name == "bullet/12/") {
             bullet12.position = origin
             bullet12.collision = CollisionComponent(shapes: [bulletShape], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
@@ -627,14 +683,14 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             self.anchorBullet.addChild(self.bullet12)
             self.currBullet.name = "bullet/13/"
             
-            if(bullet12.scale == SIMD3<Float>([15,15,15])) {
-                let timer1 = CustomTimer { (seconds) in
-                    if(seconds == 2) {
-                        view.scene.anchors[1].removeChild(self.bullet12)
-                    }
-                }
-                timer1.start()
-            }
+            //if(bullet12.scale == SIMD3<Float>([0.01,0.01,0.01])) {
+            //    let timer1 = CustomTimer { (seconds) in
+            //        if(seconds == 2) {
+            //            view.scene.anchors[1].removeChild(self.bullet12)
+            //        }
+            //    }
+            //    timer1.start()
+            //}
         } else if (self.currBullet.name == "bullet/13/") {
             bullet13.position = origin
             bullet13.collision = CollisionComponent(shapes: [bulletShape], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
@@ -644,14 +700,14 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             self.anchorBullet.addChild(self.bullet13)
             self.currBullet.name = "bullet/14/"
             
-            if(bullet13.scale == SIMD3<Float>([15,15,15])) {
-                let timer1 = CustomTimer { (seconds) in
-                    if(seconds == 2) {
-                        view.scene.anchors[1].removeChild(self.bullet13)
-                    }
-                }
-                timer1.start()
-            }
+            //if(bullet13.scale == SIMD3<Float>([0.01,0.01,0.01])) {
+            //    let timer1 = CustomTimer { (seconds) in
+            //        if(seconds == 2) {
+            //            view.scene.anchors[1].removeChild(self.bullet13)
+            //        }
+            //    }
+            //    timer1.start()
+            //}
         } else if (self.currBullet.name == "bullet/14/") {
             bullet14.position = origin
             bullet14.collision = CollisionComponent(shapes: [bulletShape], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
@@ -661,14 +717,14 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             self.anchorBullet.addChild(self.bullet14)
             self.currBullet.name = "bullet/15/"
             
-            if(bullet14.scale == SIMD3<Float>([15,15,15])) {
-                let timer1 = CustomTimer { (seconds) in
-                    if(seconds == 2) {
-                        view.scene.anchors[1].removeChild(self.bullet14)
-                    }
-                }
-                timer1.start()
-            }
+            //if(bullet14.scale == SIMD3<Float>([0.01,0.01,0.01])) {
+            //    let timer1 = CustomTimer { (seconds) in
+            //        if(seconds == 2) {
+            //            view.scene.anchors[1].removeChild(self.bullet14)
+            //        }
+            //    }
+            //    timer1.start()
+            //}
         } else if (self.currBullet.name == "bullet/15/") {
             bullet15.position = origin
             bullet15.collision = CollisionComponent(shapes: [bulletShape], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
@@ -678,14 +734,14 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             self.anchorBullet.addChild(self.bullet15)
             self.currBullet.name = "bullet/1/"
             
-            if(bullet1.scale == SIMD3<Float>([15,15,15])) {
-                let timer1 = CustomTimer { (seconds) in
-                    if(seconds == 2) {
-                        view.scene.anchors[1].removeChild(self.bullet15)
-                    }
-                }
-                timer1.start()
-            }
+            //if(bullet1.scale == SIMD3<Float>([0.01,0.01,0.01])) {
+            //   let timer1 = CustomTimer { (seconds) in
+            //        if(seconds == 2) {
+            //            view.scene.anchors[1].removeChild(self.bullet15)
+            //        }
+            //    }
+            //    timer1.start()
+            //}
         }
         
         
