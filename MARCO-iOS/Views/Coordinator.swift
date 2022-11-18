@@ -55,9 +55,9 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         [false, false, false, false, false, false, false, false, false, false, false, false],
         [false, false, false, false, false, false, false, false, false, false, false, false]
     ]
-    
     // Array para saber cuando se ha completado cada zona independientemente, cuando se comp-leta este array, se gana el juego
     var arrayRunOnce = [false, false, false]
+    var progresoActual = 0
     
     // Anchor para los modelos
     // let anchor = AnchorEntity(plane: .horizontal, classification: .floor) // Production
@@ -575,14 +575,15 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 self.arrayObjetos[self.currZona][entityReal - 1] = true
                 
                 // TODO: Delete on production: just to check array for the progress
-                print(self.arrayObjetos[self.currZona])
+                print("Boxes destroyes:")
+                print(self.arrayObjetos)
                 
                 // If the arrayObjects is all setted as true, then marks it up as completed
-                if (!self.arrayObjetos[self.currZona].contains(false)) {
-                    print("se ha completado coordinator")
-                    Coordinator.completed.complete = true
-                    print(Coordinator.completed.complete)
-                }
+//                if (!self.arrayObjetos[self.currZona].contains(false)) {
+//                    print("se ha completado una Zona")
+//                    self.progresoActual = self.progresoActual + 1
+//                    print("Progreso: ", self.progresoActual)
+//                }
 
             // Repeats the previous code in case the entity2 is the box
             } else {
@@ -603,11 +604,13 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                     self.animate(entity: entity2, angle: .pi, axis: [0, 1, 0], duration: 1, loop: false, currentPosition: entity2.position)
                     self.arrayObjetos[self.currZona][entityReal - 1] = true
                     
-                    print(self.arrayObjetos[self.currZona])
-                    if (!self.arrayObjetos[self.currZona].contains(false)) {
-                        print("se ha completado coordinator")
-                        Coordinator.completed.complete = true
-                    }
+                    print("Boxes destroyes:")
+                    print(self.arrayObjetos)
+//                    print(self.arrayObjetos[self.currZona])
+//                    if (!self.arrayObjetos[self.currZona].contains(false)) {
+//                        print("se ha completado coordinator")
+//                        Coordinator.completed.complete = true
+//                    }
                 }
             }
         })
@@ -971,7 +974,6 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         } else {
             // Si aun no se ha montado la escena, se monta con este if
             if(view.scene.anchors.count == 1 && !models.isEmpty) {
-                
                 // Se carga el modelo Principal en negro sin textura
                 do {
                     // TODO: Anadir modelo correcto con zona.url
@@ -1024,7 +1026,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 
             }
             
-            if(!self.arrayObjetos[self.currZona].contains(false) && self.arrayRunOnce[1] == false) {
+            if(!self.arrayObjetos[self.currZona].contains(false) && self.arrayRunOnce[self.currZona] == false) {
                 // Anadir color a la Obra
                 // TODO: Anadir el USDZ directamente del modelo actual
                 newEntityPirinola = ModelEntity.loadAsync(named: "Models/pirinola")
@@ -1040,8 +1042,18 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                         
                         // Change black entity for new model Entity
                         view.scene.anchors[1].children[0] = newEntity
-                        self.arrayRunOnce[1] = true
+                        self.arrayRunOnce[self.currZona] = true
+                    
+                        self.progresoActual = self.progresoActual + 1
+                        print("Progreso: ", self.progresoActual)
                     }
+                
+                // Checks when the game has been completed
+                if(!self.arrayRunOnce.contains(false)) {
+                    print("se ha completado el juego: ")
+                    Coordinator.completed.complete = true
+                    print(Coordinator.completed.complete)
+                }
             }
         }
     }
