@@ -22,13 +22,13 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     var modelsLoaded = false
     // Array of zonas in the MARCO
     var zonas: Array<(name: String, latMin: Double, latMax: Double, lonMin: Double, lonMax: Double)> = [
-        ("Zona B", 25.60008, 25.66009, -100.29169, -100.28800), // Salon Swift
         ("Zona C", 25.65700, 25.65880, -100.26000, -100.25000), // Piso abajo 1
         ("Zona D", 25.65881, 25.66600, -100.26000, -100.25000), // Piso abajo 2
         // ("Zona A", 25.65000, 25.66000, -100.26000, -100.25000), // Mi casita
-        ("Zona E", 25.69100, 25.70000, -100.26000, -100.25000),
-        ("Zona F", 25.70100, 25.71000, -100.26000, -100.25000),
-        ("Zona G", 25.71100, 25.72000, -100.26000, -100.25000)
+        // ("Zona E", 25.69100, 25.70000, -100.26000, -100.25000),
+        // ("Zona F", 25.70100, 25.71000, -100.26000, -100.25000),
+        ("Zona B", 25.60008, 25.66009, -100.29169, -100.28800), // Salon Swift
+        // ("Zona G", 25.71100, 25.72000, -100.26000, -100.25000)
     ]
     // index of the current zona in the array, it has to match the models[Obra] based on the index
     var currZona = 0
@@ -50,10 +50,14 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     
     // Array para definir cuando se ha completado una Zona
     // TODO: Replicar para las demas zonas
-    var arrayObjetos = [false, false, false, false, false, false, false, false, false, false, false, false]
+    var arrayObjetos = [
+        [false, false, false, false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false, false, false, false]
+    ]
     
     // Array para saber cuando se ha completado cada zona independientemente, cuando se comp-leta este array, se gana el juego
-    var arrayRunOnce = [false, false]
+    var arrayRunOnce = [false, false, false]
     
     // Anchor para los modelos
     // let anchor = AnchorEntity(plane: .horizontal, classification: .floor) // Production
@@ -100,6 +104,47 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     // Material for making the bullets transparent when needed
     var materialTransparent = UnlitMaterial(color: .blue)
     
+    // Variables for the Anchor Model
+    var entityPirinolaSalon: Entity? = ModelEntity()
+    var auxModel: Entity = ModelEntity()
+    var textEntity: ModelEntity = ModelEntity()
+    var box1: ModelEntity = ModelEntity()
+    var box2: ModelEntity = ModelEntity()
+    var box3: ModelEntity = ModelEntity()
+    var box4: ModelEntity = ModelEntity()
+    var box5: ModelEntity = ModelEntity()
+    var box6: ModelEntity = ModelEntity()
+    var box7: ModelEntity = ModelEntity()
+    var box8: ModelEntity = ModelEntity()
+    var box9: ModelEntity = ModelEntity()
+    var box10: ModelEntity = ModelEntity()
+    var box11: ModelEntity = ModelEntity()
+    var box12: ModelEntity = ModelEntity()
+    var animationDefinition1: OrbitAnimation? = nil
+    var animationResource1: AnimationResource? = nil
+    var animationDefinition2: OrbitAnimation? = nil
+    var animationResource2: AnimationResource? = nil
+    var animationDefinition3: OrbitAnimation? = nil
+    var animationResource3: AnimationResource? = nil
+    var animationDefinition4: OrbitAnimation? = nil
+    var animationResource4: AnimationResource? = nil
+    var animationDefinition5: OrbitAnimation? = nil
+    var animationResource5: AnimationResource? = nil
+    var animationDefinition6: OrbitAnimation? = nil
+    var animationResource6: AnimationResource? = nil
+    var animationDefinition7: OrbitAnimation? = nil
+    var animationResource7: AnimationResource? = nil
+    var animationDefinition8: OrbitAnimation? = nil
+    var animationResource8: AnimationResource? = nil
+    var animationDefinition9: OrbitAnimation? = nil
+    var animationResource9: AnimationResource? = nil
+    var animationDefinition10: OrbitAnimation? = nil
+    var animationResource10: AnimationResource? = nil
+    var animationDefinition11: OrbitAnimation? = nil
+    var animationResource11: AnimationResource? = nil
+    var animationDefinition12: OrbitAnimation? = nil
+    var animationResource12: AnimationResource? = nil
+
     // Inits the information from the API to the models variable with the Obras loaded
     func initModelsData(newObras: [Obra]) {
         if(!newObras.isEmpty && modelsLoaded == false) {
@@ -205,6 +250,274 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         boxMask = CollisionGroup.all.subtracting(sphereGroup)
     }
     
+    func initBoxes() {
+        guard let view = self.view else { return }
+        
+        // Box - 1 Collision
+        box1 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .red, isMetallic: false)])
+        box1.generateCollisionShapes(recursive: true)
+        box1.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box1.name = "box/1/"
+        view.installGestures(.all, for: box1)
+        
+        // Box - 2 Collision
+        box2 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .blue, isMetallic: false)])
+        box2.generateCollisionShapes(recursive: true)
+        box2.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box2.name = "box/2/"
+        view.installGestures(.all, for: box2)
+        
+        // Box - 3 Collision
+        box3 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .purple, isMetallic: false)])
+        box3.generateCollisionShapes(recursive: true)
+        box3.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box3.name = "box/3/"
+        view.installGestures(.all, for: box3)
+        
+        // Box - 4 Collision
+        box4 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .yellow, isMetallic: false)])
+        box4.generateCollisionShapes(recursive: true)
+        box4.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box4.name = "box/4/"
+        view.installGestures(.all, for: box4)
+
+        // Box - 5 Collision
+        box5 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .orange, isMetallic: false)])
+        box5.generateCollisionShapes(recursive: true)
+        box5.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box5.name = "box/5/"
+        view.installGestures(.all, for: box5)
+        
+        // Box - 6 Collision
+        box6 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .yellow, isMetallic: false)])
+        box6.generateCollisionShapes(recursive: true)
+        box6.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box6.name = "box/6/"
+        view.installGestures(.all, for: box6)
+        
+        // Box - 7 Collision
+        box7 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .cyan, isMetallic: false)])
+        box7.generateCollisionShapes(recursive: true)
+        box7.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box7.name = "box/7/"
+        view.installGestures(.all, for: box7)
+        
+        
+        // Box - 8 Collision
+        box8 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .brown, isMetallic: false)])
+        box8.generateCollisionShapes(recursive: true)
+        box8.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box8.name = "box/8/"
+        view.installGestures(.all, for: box8)
+        
+        
+        // Box - 9 Collision
+        box9 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .cyan, isMetallic: false)])
+        box9.generateCollisionShapes(recursive: true)
+        box9.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box9.name = "box/9/"
+        view.installGestures(.all, for: box9)
+        
+        
+        // Box - 10 Collision
+        box10 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .red, isMetallic: false)])
+        box10.generateCollisionShapes(recursive: true)
+        box10.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box10.name = "box/10/"
+        view.installGestures(.all, for: box10)
+        
+        
+        // Box - 11 Collision
+        box11 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .blue, isMetallic: false)])
+        box11.generateCollisionShapes(recursive: true)
+        box11.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box11.name = "box/11/"
+        view.installGestures(.all, for: box11)
+
+        
+        // Box - 12 Collision
+        box12 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .orange, isMetallic: false)])
+        box12.generateCollisionShapes(recursive: true)
+        box12.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box12.name = "box/12/"
+        view.installGestures(.all, for: box12)
+        
+        animationDefinition1 = OrbitAnimation(
+            duration: 9,
+            axis: SIMD3<Float>(x: 0, y: 1, z: 0),
+            startTransform: Transform(
+                translation: simd_float3(0,0.2,0.6)),
+                spinClockwise: false,
+                orientToPath: false,
+                rotationCount: 100.0,
+            bindTarget: .transform,
+            repeatMode: .repeat
+        )
+        animationResource1 = try! AnimationResource.generate(with: self.animationDefinition1!)
+        
+        
+        animationDefinition3 = OrbitAnimation(
+            duration: 9,
+            axis: SIMD3<Float>(x: 0, y: 1, z: 0),
+            startTransform: Transform(
+                translation: simd_float3(0,0.2,0.6)),
+                spinClockwise: false,
+                orientToPath: false,
+                rotationCount: 100.0,
+            bindTarget: .transform,
+            repeatMode: .repeat,
+            offset: 3
+            )
+        animationResource3 = try! AnimationResource.generate(with: animationDefinition3!)
+        
+        
+        animationDefinition4 = OrbitAnimation(
+            duration: 9,
+            axis: SIMD3<Float>(x: 0, y: 1, z: 0),
+            startTransform: Transform(
+                translation: simd_float3(0,0.2,0.6)),
+                spinClockwise: false,
+                orientToPath: false,
+                rotationCount: 100.0,
+            bindTarget: .transform,
+            repeatMode: .repeat,
+            offset: 6
+            )
+        animationResource4 = try! AnimationResource.generate(with: animationDefinition4!)
+        
+
+        animationDefinition2 = OrbitAnimation(
+            duration: 9,
+            axis: SIMD3<Float>(x: 0, y: -1, z: 0),
+            startTransform: Transform(
+                translation: simd_float3(0,0.40,0.6)),
+                spinClockwise: true,
+                orientToPath: true,
+                rotationCount: 100.0,
+            bindTarget: .transform,
+            repeatMode: .repeat
+            )
+        animationResource2 = try! AnimationResource.generate(with: animationDefinition2!)
+        
+        
+        animationDefinition5 = OrbitAnimation(
+            duration: 9,
+            axis: SIMD3<Float>(x: 0, y: -1, z: 0),
+            startTransform: Transform(
+                translation: simd_float3(0,0.40,0.6)),
+                spinClockwise: true,
+                orientToPath: true,
+                rotationCount: 100.0,
+            bindTarget: .transform,
+            repeatMode: .repeat,
+            offset: 3
+            )
+        animationResource5 = try! AnimationResource.generate(with: animationDefinition5!)
+        
+
+        animationDefinition6 = OrbitAnimation(
+            duration: 9,
+            axis: SIMD3<Float>(x: 0, y: -1, z: 0),
+            startTransform: Transform(
+                translation: simd_float3(0,0.40,0.6)),
+                spinClockwise: true,
+                orientToPath: true,
+                rotationCount: 100.0,
+            bindTarget: .transform,
+            repeatMode: .repeat,
+            offset: 6
+            )
+        animationResource6 = try! AnimationResource.generate(with: animationDefinition6!)
+        
+
+        animationDefinition7 = OrbitAnimation(
+            duration: 9,
+            axis: SIMD3<Float>(x: 0, y: 1, z: 0),
+            startTransform: Transform(
+                translation: simd_float3(0,0.60,0.6)),
+                spinClockwise: true,
+                orientToPath: true,
+                rotationCount: 100.0,
+            bindTarget: .transform,
+            repeatMode: .repeat
+            )
+        animationResource7 = try! AnimationResource.generate(with: animationDefinition7!)
+        
+
+        animationDefinition8 = OrbitAnimation(
+            duration: 9,
+            axis: SIMD3<Float>(x: 0, y: 1, z: 0),
+            startTransform: Transform(
+                translation: simd_float3(0,0.60,0.6)),
+                spinClockwise: true,
+                orientToPath: true,
+                rotationCount: 100.0,
+            bindTarget: .transform,
+            repeatMode: .repeat,
+            offset: 3
+            )
+        animationResource8 = try! AnimationResource.generate(with: animationDefinition8!)
+        
+        
+        animationDefinition9 = OrbitAnimation(
+            duration: 9,
+            axis: SIMD3<Float>(x: 0, y: 1, z: 0),
+            startTransform: Transform(
+                translation: simd_float3(0,0.60,0.6)),
+                spinClockwise: true,
+                orientToPath: true,
+                rotationCount: 100.0,
+            bindTarget: .transform,
+            repeatMode: .repeat,
+            offset: 6
+            )
+        animationResource9 = try! AnimationResource.generate(with: animationDefinition9!)
+        
+
+        animationDefinition10 = OrbitAnimation(
+            duration: 9,
+            axis: SIMD3<Float>(x: 0, y: -1, z: 0),
+            startTransform: Transform(
+                translation: simd_float3(0,0.80,0.6)),
+                spinClockwise: true,
+                orientToPath: true,
+                rotationCount: 100.0,
+            bindTarget: .transform,
+            repeatMode: .repeat
+            )
+        animationResource10 = try! AnimationResource.generate(with: animationDefinition10!)
+        
+        
+        animationDefinition11 = OrbitAnimation(
+            duration: 9,
+            axis: SIMD3<Float>(x: 0, y: -1, z: 0),
+            startTransform: Transform(
+                translation: simd_float3(0,0.80,0.6)),
+                spinClockwise: true,
+                orientToPath: true,
+                rotationCount: 100.0,
+            bindTarget: .transform,
+            repeatMode: .repeat,
+            offset: 3
+            )
+        animationResource11 = try! AnimationResource.generate(with: animationDefinition11!)
+        
+        
+        // Animacion box12 giro
+        animationDefinition12 = OrbitAnimation(
+            duration: 9,
+            axis: SIMD3<Float>(x: 0, y: -1, z: 0),
+            startTransform: Transform(
+                translation: simd_float3(0,0.80,0.6)),
+                spinClockwise: true,
+                orientToPath: true,
+                rotationCount: 100.0,
+            bindTarget: .transform,
+            repeatMode: .repeat,
+            offset: 6
+            )
+        animationResource12 = try! AnimationResource.generate(with: animationDefinition12!)
+    }
     
     // Remove animation for box on collision with a Bullet
     func animate(entity: HasTransform, angle: Float, axis: SIMD3<Float>, duration: TimeInterval, loop: Bool, currentPosition: SIMD3<Float>){
@@ -259,13 +572,13 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 self.animate(entity: entity1, angle: .pi, axis: [0, 1, 0], duration: 1, loop: false, currentPosition: entity1.position)
                 
                 // Checks the index of the box that has been removed to support the progress
-                self.arrayObjetos[entityReal - 1] = true
+                self.arrayObjetos[self.currZona][entityReal - 1] = true
                 
                 // TODO: Delete on production: just to check array for the progress
-                print(self.arrayObjetos)
+                print(self.arrayObjetos[self.currZona])
                 
                 // If the arrayObjects is all setted as true, then marks it up as completed
-                if (!self.arrayObjetos.contains(false)) {
+                if (!self.arrayObjetos[self.currZona].contains(false)) {
                     print("se ha completado coordinator")
                     Coordinator.completed.complete = true
                     print(Coordinator.completed.complete)
@@ -288,10 +601,10 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                     }
                     
                     self.animate(entity: entity2, angle: .pi, axis: [0, 1, 0], duration: 1, loop: false, currentPosition: entity2.position)
-                    self.arrayObjetos[entityReal - 1] = true
+                    self.arrayObjetos[self.currZona][entityReal - 1] = true
                     
-                    print(self.arrayObjetos)
-                    if (!self.arrayObjetos.contains(false)) {
+                    print(self.arrayObjetos[self.currZona])
+                    if (!self.arrayObjetos[self.currZona].contains(false)) {
                         print("se ha completado coordinator")
                         Coordinator.completed.complete = true
                     }
@@ -644,346 +957,76 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                     print("Zona actual: ", currZona)
                 }
             }
+            
+            // Remove the actual entities from the anchor if the anchor is added and have models
+            if(view.scene.anchors.count == 2) {
+                for element in view.scene.anchors[1].children {
+                    view.scene.anchors[1].removeChild(element)
+                }
+            }
+            // Remove the actual anchor
             view.scene.removeAnchor(anchor)
             
-            
-        // Si se encuentra en la zona actual, ejecuta ekl siguiente codigo
+        // Si se encuentra en la zona actual, ejecuta el siguiente codigo
         } else {
             // Si aun no se ha montado la escena, se monta con este if
-            if(view.scene.anchors.count == 1) {
+            if(view.scene.anchors.count == 1 && !models.isEmpty) {
+                
                 // Se carga el modelo Principal en negro sin textura
-                // TODO: Anadir modelo correcto con zona.url
-                guard let entityPirinolaSalon = try? ModelEntity.load(named: "Models/pirinola_black") else {
-                    fatalError("Model was not found!")
+                do {
+                    // TODO: Anadir modelo correcto con zona.url
+                    entityPirinolaSalon = try ModelEntity.load(named: "Models/pirinola_black")
                 }
-                entityPirinolaSalon.setPosition(SIMD3(x: 0, y: 0.6, z: -0.5), relativeTo: nil)
-                entityPirinolaSalon.setScale(SIMD3(x: 0.09, y: 0.09, z: 0.09), relativeTo: entityPirinolaSalon)
-                anchor.addChild(entityPirinolaSalon)
-
-                // Muestra el texto de ka obra actual
-                let textEntity = textGen(textString: models[currZona].nombre)
+                catch {
+                    print("Model could not be loaded")
+                }
+                
+                entityPirinolaSalon?.setPosition(SIMD3(x: 0, y: 0.6, z: -0.5), relativeTo: nil)
+                entityPirinolaSalon?.setScale(SIMD3(x: 0.09, y: 0.09, z: 0.09), relativeTo: entityPirinolaSalon)
+                anchor.addChild(entityPirinolaSalon ?? auxModel)
+                
+                // Shows the text of the current Obra
+                textEntity = textGen(textString: models[currZona].nombre)
                 textEntity.setPosition(SIMD3(x: 0.0, y: 0.9, z: 0.0), relativeTo: nil)
                 anchor.addChild(textEntity)
                 
-                // Caja - 1 Collision
-                // TODO: Check if boxes have to be initiated just once instead for each scene
-                let box1 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .red, isMetallic: false)])
-                box1.generateCollisionShapes(recursive: true)
-                box1.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-                box1.name = "box/1/"
-                box1.setPosition(SIMD3(x: 0, y: 2, z: -0.5), relativeTo: nil)
-
+                // Add boxes to the anchor
                 anchor.addChild(box1)
-                view.installGestures(.all, for: box1)
-                
-                
-                // Caja - 2 Collision
-                let box2 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .blue, isMetallic: false)])
-                box2.generateCollisionShapes(recursive: true)
-                box2.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-                box2.name = "box/2/"
-                
                 anchor.addChild(box2)
-                view.installGestures(.all, for: box2)
-                
-                // Caja - 3 Collision
-                let box3 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .purple, isMetallic: false)])
-                box3.generateCollisionShapes(recursive: true)
-                box3.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-                box3.name = "box/3/"
-
                 anchor.addChild(box3)
-                view.installGestures(.all, for: box3)
-                
-                // Caja - 4 Collision
-                let boxSalon4 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .yellow, isMetallic: false)])
-                boxSalon4.generateCollisionShapes(recursive: true)
-                boxSalon4.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-                boxSalon4.name = "box/4/"
-
-                anchor.addChild(boxSalon4)
-                view.installGestures(.all, for: boxSalon4)
-                
-                // Caja - 5 Collision
-                let box5 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .orange, isMetallic: false)])
-                box5.generateCollisionShapes(recursive: true)
-                box5.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-                box5.name = "box/5/"
-
+                anchor.addChild(box4)
                 anchor.addChild(box5)
-                view.installGestures(.all, for: box5)
-                
-                
-                // Caja - 6 Collision
-                let box6 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .yellow, isMetallic: false)])
-                box6.generateCollisionShapes(recursive: true)
-                box6.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-                box6.name = "box/6/"
-
                 anchor.addChild(box6)
-                view.installGestures(.all, for: box6)
-                
-                // Caja - 7 Collision
-                let box7 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .cyan, isMetallic: false)])
-                box7.generateCollisionShapes(recursive: true)
-                box7.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-                box7.name = "box/7/"
-
                 anchor.addChild(box7)
-                view.installGestures(.all, for: box7)
-                
-                
-                // Caja - 8 Collision
-                let box8 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .brown, isMetallic: false)])
-                box8.generateCollisionShapes(recursive: true)
-                box8.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-                box8.name = "box/8/"
-
                 anchor.addChild(box8)
-                view.installGestures(.all, for: box8)
-                
-                
-                // Caja - 9 Collision
-                let box9 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .cyan, isMetallic: false)])
-                box9.generateCollisionShapes(recursive: true)
-                box9.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-                box9.name = "box/9/"
-
                 anchor.addChild(box9)
-                view.installGestures(.all, for: box9)
-                
-                
-                // Caja - 10 Collision
-                let box10 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .red, isMetallic: false)])
-                box10.generateCollisionShapes(recursive: true)
-                box10.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-                box10.name = "box/10/"
-
                 anchor.addChild(box10)
-                view.installGestures(.all, for: box10)
-                
-                // Caja - 11 Collision
-                let box11 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .blue, isMetallic: false)])
-                box11.generateCollisionShapes(recursive: true)
-                box11.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-                box11.name = "box/11/"
-
                 anchor.addChild(box11)
-                view.installGestures(.all, for: box11)
-                
-                // Caja - 12 Collision
-                let box12 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [SimpleMaterial(color: .orange, isMetallic: false)])
-                box12.generateCollisionShapes(recursive: true)
-                box12.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-                box12.name = "box/12/"
-
                 anchor.addChild(box12)
-                view.installGestures(.all, for: box12)
-    
-        
-                // TODO: Add the builded anchor to the scene
+                
+                // Add the anchor to the scene
                 anchor.move(to: Transform(translation: simd_float3(0,0,-1)), relativeTo: nil)
                 view.scene.addAnchor(anchor)
                 
-                // Animacion box1 giro
-                let animationDefinition1 = OrbitAnimation(
-                    duration: 9,
-                    axis: SIMD3<Float>(x: 0, y: 1, z: 0),
-                    startTransform: Transform(
-                        translation: simd_float3(0,0.2,0.6)),
-                        spinClockwise: false,
-                        orientToPath: false,
-                        rotationCount: 100.0,
-                    bindTarget: .transform,
-                    repeatMode: .repeat
-                    )
-                let animationResource1 = try! AnimationResource.generate(with: animationDefinition1)
-                box1.playAnimation(animationResource1)
-                
-                // Animacion box3 giro
-                let animationDefinition3 = OrbitAnimation(
-                    duration: 9,
-                    axis: SIMD3<Float>(x: 0, y: 1, z: 0),
-                    startTransform: Transform(
-                        translation: simd_float3(0,0.2,0.6)),
-                        spinClockwise: false,
-                        orientToPath: false,
-                        rotationCount: 100.0,
-                    bindTarget: .transform,
-                    repeatMode: .repeat,
-                    offset: 3
-                    )
-                let animationResource3 = try! AnimationResource.generate(with: animationDefinition3)
-                box3.playAnimation(animationResource3)
-                
-                
-                // Animacion box4 giro
-                let animationDefinition4 = OrbitAnimation(
-                    duration: 9,
-                    axis: SIMD3<Float>(x: 0, y: 1, z: 0),
-                    startTransform: Transform(
-                        translation: simd_float3(0,0.2,0.6)),
-                        spinClockwise: false,
-                        orientToPath: false,
-                        rotationCount: 100.0,
-                    bindTarget: .transform,
-                    repeatMode: .repeat,
-                    offset: 6
-                    )
-                let animationResource4 = try! AnimationResource.generate(with: animationDefinition4)
-                boxSalon4.playAnimation(animationResource4)
-                
-                
-                // Animacion box2 giro
-                let animationDefinition2 = OrbitAnimation(
-                    duration: 9,
-                    axis: SIMD3<Float>(x: 0, y: -1, z: 0),
-                    startTransform: Transform(
-                        translation: simd_float3(0,0.40,0.6)),
-                        spinClockwise: true,
-                        orientToPath: true,
-                        rotationCount: 100.0,
-                    bindTarget: .transform,
-                    repeatMode: .repeat
-                    )
-                let animationResource2 = try! AnimationResource.generate(with: animationDefinition2)
-                box2.playAnimation(animationResource2)
-                
-                
-                // Animacion box5 giro
-                let animationDefinition5 = OrbitAnimation(
-                    duration: 9,
-                    axis: SIMD3<Float>(x: 0, y: -1, z: 0),
-                    startTransform: Transform(
-                        translation: simd_float3(0,0.40,0.6)),
-                        spinClockwise: true,
-                        orientToPath: true,
-                        rotationCount: 100.0,
-                    bindTarget: .transform,
-                    repeatMode: .repeat,
-                    offset: 3
-                    )
-                let animationResource5 = try! AnimationResource.generate(with: animationDefinition5)
-                box5.playAnimation(animationResource5)
-                
-                
-                // Animacion box6 giro
-                let animationDefinition6 = OrbitAnimation(
-                    duration: 9,
-                    axis: SIMD3<Float>(x: 0, y: -1, z: 0),
-                    startTransform: Transform(
-                        translation: simd_float3(0,0.40,0.6)),
-                        spinClockwise: true,
-                        orientToPath: true,
-                        rotationCount: 100.0,
-                    bindTarget: .transform,
-                    repeatMode: .repeat,
-                    offset: 6
-                    )
-                let animationResource6 = try! AnimationResource.generate(with: animationDefinition6)
-                box6.playAnimation(animationResource6)
-                
-                
-                // Animacion box7 giro
-                let animationDefinition7 = OrbitAnimation(
-                    duration: 9,
-                    axis: SIMD3<Float>(x: 0, y: 1, z: 0),
-                    startTransform: Transform(
-                        translation: simd_float3(0,0.60,0.6)),
-                        spinClockwise: true,
-                        orientToPath: true,
-                        rotationCount: 100.0,
-                    bindTarget: .transform,
-                    repeatMode: .repeat
-                    )
-                let animationResource7 = try! AnimationResource.generate(with: animationDefinition7)
-                box7.playAnimation(animationResource7)
-                
-                // Animacion box8 giro
-                let animationDefinition8 = OrbitAnimation(
-                    duration: 9,
-                    axis: SIMD3<Float>(x: 0, y: 1, z: 0),
-                    startTransform: Transform(
-                        translation: simd_float3(0,0.60,0.6)),
-                        spinClockwise: true,
-                        orientToPath: true,
-                        rotationCount: 100.0,
-                    bindTarget: .transform,
-                    repeatMode: .repeat,
-                    offset: 3
-                    )
-                let animationResource8 = try! AnimationResource.generate(with: animationDefinition8)
-                box8.playAnimation(animationResource8)
-                    
-                // Animacion box9 giro
-                let animationDefinition9 = OrbitAnimation(
-                    duration: 9,
-                    axis: SIMD3<Float>(x: 0, y: 1, z: 0),
-                    startTransform: Transform(
-                        translation: simd_float3(0,0.60,0.6)),
-                        spinClockwise: true,
-                        orientToPath: true,
-                        rotationCount: 100.0,
-                    bindTarget: .transform,
-                    repeatMode: .repeat,
-                    offset: 6
-                    )
-                let animationResource9 = try! AnimationResource.generate(with: animationDefinition9)
-                box9.playAnimation(animationResource9)
-                
-                
-                // Animacion box10 giro
-                let animationDefinition10 = OrbitAnimation(
-                    duration: 9,
-                    axis: SIMD3<Float>(x: 0, y: -1, z: 0),
-                    startTransform: Transform(
-                        translation: simd_float3(0,0.80,0.6)),
-                        spinClockwise: true,
-                        orientToPath: true,
-                        rotationCount: 100.0,
-                    bindTarget: .transform,
-                    repeatMode: .repeat
-                    )
-                let animationResource10 = try! AnimationResource.generate(with: animationDefinition10)
-                box10.playAnimation(animationResource10)
-                
-                // Animacion box11 giro
-                let animationDefinition11 = OrbitAnimation(
-                    duration: 9,
-                    axis: SIMD3<Float>(x: 0, y: -1, z: 0),
-                    startTransform: Transform(
-                        translation: simd_float3(0,0.80,0.6)),
-                        spinClockwise: true,
-                        orientToPath: true,
-                        rotationCount: 100.0,
-                    bindTarget: .transform,
-                    repeatMode: .repeat,
-                    offset: 3
-                    )
-                let animationResource11 = try! AnimationResource.generate(with: animationDefinition11)
-                box11.playAnimation(animationResource11)
-                
-                // Animacion box12 giro
-                let animationDefinition12 = OrbitAnimation(
-                    duration: 9,
-                    axis: SIMD3<Float>(x: 0, y: -1, z: 0),
-                    startTransform: Transform(
-                        translation: simd_float3(0,0.80,0.6)),
-                        spinClockwise: true,
-                        orientToPath: true,
-                        rotationCount: 100.0,
-                    bindTarget: .transform,
-                    repeatMode: .repeat,
-                    offset: 6
-                    )
-                let animationResource12 = try! AnimationResource.generate(with: animationDefinition12)
-                box12.playAnimation(animationResource12)
+                // Play the orbiting animations
+                box1.playAnimation(animationResource1!)
+                box3.playAnimation(animationResource3!)
+                box4.playAnimation(animationResource4!)
+                box2.playAnimation(animationResource2!)
+                box5.playAnimation(animationResource5!)
+                box6.playAnimation(animationResource6!)
+                box7.playAnimation(animationResource7!)
+                box8.playAnimation(animationResource8!)
+                box9.playAnimation(animationResource9!)
+                box10.playAnimation(animationResource10!)
+                box11.playAnimation(animationResource11!)
+                box12.playAnimation(animationResource12!)
                 
             }
             
-            if(!self.arrayObjetos.contains(false) && self.arrayRunOnce[1] == false) {
-                
-                // Anadir color a la pirinola
+            if(!self.arrayObjetos[self.currZona].contains(false) && self.arrayRunOnce[1] == false) {
+                // Anadir color a la Obra
+                // TODO: Anadir el USDZ directamente del modelo actual
                 newEntityPirinola = ModelEntity.loadAsync(named: "Models/pirinola")
                     .sink { loadCompletion in
                         if case let .failure(error) = loadCompletion {
