@@ -12,6 +12,10 @@ import ARKit
 
 struct ContentView: View {
     
+    // Network shared instance
+    @StateObject var network = Network.sharedInstance
+    @State var models: [Obra] = []
+    
     @State private var selection = 2
     
     // Coordinates variables
@@ -81,7 +85,7 @@ struct ContentView: View {
         
         TabView(selection:$selection) {
             
-            Text("Your Progress")
+            Text("Your Progress" )
                 .font(.system(size: 30, weight: .bold, design: .rounded))
                 .tabItem {
                     Image(systemName: "list.clipboard")
@@ -89,7 +93,7 @@ struct ContentView: View {
                 }
                 .tag(1)
 
-            ARViewContainer(coordinates: .constant((lat: coordinates.lat, lon: coordinates.lon)))
+            ARViewContainer(coordinates: .constant((lat: coordinates.lat, lon: coordinates.lon)), models: .constant(self.models))
                 .edgesIgnoringSafeArea(.top)
                 .font(.system(size: 30, weight: .bold, design: .rounded))
                 .tabItem {
@@ -111,7 +115,21 @@ struct ContentView: View {
                         observeCoordinateUpdates()
                         observeDeniedLocationAccess()
                         deviceLocationService.requestLocationUpdates()
+                        network.getModels()
+                        observeModels()
                     }
+    }
+    
+    // Returns the models when received
+    func observeModels() {
+        network.obrasPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                print("Handle \(completion) for error and finished subscription.")
+            } receiveValue: { model in
+                self.models = model
+            }
+            .store(in: &tokens)
     }
 
     // Updates coordinates

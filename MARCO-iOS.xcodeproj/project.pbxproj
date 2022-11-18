@@ -10,6 +10,8 @@
 		0525C3DF2911DBE400BD410B /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0525C3DE2911DBE400BD410B /* Coordinator.swift */; };
 		0525C3E12911DD2500BD410B /* Models in Resources */ = {isa = PBXBuildFile; fileRef = 0525C3E02911DD2500BD410B /* Models */; };
 		0525C3E42911DE7600BD410B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0525C3E32911DE7600BD410B /* Assets.xcassets */; };
+		053CE2302926FF0A0005EE43 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 053CE22F2926FF0A0005EE43 /* Network.swift */; };
+		053CE2342926FF830005EE43 /* ObraModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 053CE2332926FF830005EE43 /* ObraModel.swift */; };
 		FB5F879928FF705100A4E95C /* DeviceLocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB5F879828FF705100A4E95C /* DeviceLocationService.swift */; };
 		FC32475D28FF34170034F324 /* ARView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC32475C28FF34170034F324 /* ARView.swift */; };
 		FC64E63228F7330C00FCB2AA /* MARCO_iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC64E63128F7330C00FCB2AA /* MARCO_iOSApp.swift */; };
@@ -21,6 +23,8 @@
 		0525C3DE2911DBE400BD410B /* Coordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
 		0525C3E02911DD2500BD410B /* Models */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Models; sourceTree = "<group>"; };
 		0525C3E32911DE7600BD410B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		053CE22F2926FF0A0005EE43 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
+		053CE2332926FF830005EE43 /* ObraModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObraModel.swift; sourceTree = "<group>"; };
 		FB5F879528FF654600A4E95C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		FB5F879828FF705100A4E95C /* DeviceLocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLocationService.swift; sourceTree = "<group>"; };
 		FC32475C28FF34170034F324 /* ARView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARView.swift; sourceTree = "<group>"; };
@@ -41,6 +45,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		053CE22E2926FEF80005EE43 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				053CE22F2926FF0A0005EE43 /* Network.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		053CE2322926FF610005EE43 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				053CE2332926FF830005EE43 /* ObraModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		FC32475B28FF34090034F324 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -75,6 +95,8 @@
 				0525C3E32911DE7600BD410B /* Assets.xcassets */,
 				FC64E63128F7330C00FCB2AA /* MARCO_iOSApp.swift */,
 				FC32475B28FF34090034F324 /* Views */,
+				053CE2322926FF610005EE43 /* Model */,
+				053CE22E2926FEF80005EE43 /* Services */,
 				0525C3E02911DD2500BD410B /* Models */,
 				FC64E63728F7330D00FCB2AA /* Preview Content */,
 			);
@@ -161,7 +183,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				FB5F879928FF705100A4E95C /* DeviceLocationService.swift in Sources */,
+				053CE2342926FF830005EE43 /* ObraModel.swift in Sources */,
 				FC64E63428F7330C00FCB2AA /* ContentView.swift in Sources */,
+				053CE2302926FF0A0005EE43 /* Network.swift in Sources */,
 				0525C3DF2911DBE400BD410B /* Coordinator.swift in Sources */,
 				FC64E63228F7330C00FCB2AA /* MARCO_iOSApp.swift in Sources */,
 				FC32475D28FF34170034F324 /* ARView.swift in Sources */,

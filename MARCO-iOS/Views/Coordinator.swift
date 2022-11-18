@@ -10,14 +10,30 @@ import RealityKit
 import Combine
 import SwiftUI
 
+
 class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     
     weak var view: ARView?
     var collisionSubscriptions = [Cancellable]()
     
+    // Read Models
+    var models: [Obra] = []
+    var modelsLoaded = false
+    var zonas: Array<(name: String, latMin: Double, latMax: Double, lonMin: Double, lonMax: Double)> = [
+        ("Zona B", 25.66100, 25.67000, -100.26000, -100.25000),
+        ("Zona C", 25.67100, 25.68000, -100.26000, -100.25000),
+        ("Zona D", 25.68100, 25.69000, -100.26000, -100.25000),
+        ("Zona E", 25.69100, 25.70000, -100.26000, -100.25000),
+        ("Zona F", 25.70100, 25.71000, -100.26000, -100.25000),
+        ("Zona G", 25.71100, 25.72000, -100.26000, -100.25000),
+        ("Zona A", 25.65000, 25.66000, -100.26000, -100.25000) // Mi casita
+    ]
+    var currZona = 0
+    // Finish Read Models
+    
     // Loading asynchronous models
     var newEntityPirinola: AnyCancellable?
-
+    
     // Variable para saber si ya se capturaron todos los cubitos
     static let completed = Coordinator()
     var complete = false
@@ -46,7 +62,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     
     var arrayObjetos = [false, false, false, false, false, false, false, false, false, false, false, false]
     var arrayRunOnce = [false, false]
-
+    
     // Entity global que tiene todo
     // let anchor = AnchorEntity(plane: .horizontal, classification: .floor)
     let anchor = AnchorEntity(plane: .horizontal)
@@ -86,8 +102,14 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     var motion = PhysicsMotionComponent.init()
     
     var materialTransparent = UnlitMaterial(color: .blue)
+
     
-    //
+    func initModelsData(newObras: [Obra]) {
+        if(!newObras.isEmpty && modelsLoaded == false) {
+            models = newObras
+            modelsLoaded = true
+        }
+    }
     
     func initBullets() {
         guard let view = self.view else { return }
@@ -173,7 +195,6 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         view.installGestures(.all, for: bullet15)
         
         currBullet.name = bullet1.name
-        // anchorBullet.addChild(self.currBullet)
     }
     
     
@@ -236,10 +257,9 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                     Coordinator.completed.complete = true
                     print(Coordinator.completed.complete)
                 }
-    
+
             } else {
                 // Substrings of the object's name
-                
                 entityName = entity2.name
                 typeIndex = entityName.firstIndex(of: "/")!
                 lastIndex = entityName.lastIndex(of: "/")!
@@ -283,7 +303,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     // Generate Text
     func textGen(textString: String) -> ModelEntity {
         let materialVar = SimpleMaterial(color: .white, roughness: 0, isMetallic: false)
-        
+    
         let depthVar: Float = 0.01
         let fontVar = UIFont.systemFont(ofSize: 0.2)
         let containerFrameVar = CGRect(x: -0.5, y: -0.5, width: 1, height: 1)
@@ -306,6 +326,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     @objc func handleTap(_ recognizer: UITapGestureRecognizer) {
         guard let view = self.view else { return }
         
+        print(models[0].nombre)
         tapPoint = recognizer.location(in: view)
         // Throw ball location - direction
         (origin, direction) = view.ray(through: tapPoint) ?? (SIMD3<Float>([0,0,0]), SIMD3<Float>([0,0,0]))
@@ -326,9 +347,9 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         // currBullet.components.set(kinematics)
         
         if let raycastVal = raycasts.first {
-            print("raycast X: ", raycastVal.normal[0])
-            print("raycast Y: ", raycastVal.normal[1])
-            print("raycast Z: ", raycastVal.normal[2])
+            // print("raycast X: ", raycastVal.normal[0])
+            // print("raycast Y: ", raycastVal.normal[1])
+            // print("raycast Z: ", raycastVal.normal[2])
             
             if(raycastVal.normal[0] == 0.0 || raycastVal.normal[1] == 0.0 || raycastVal.normal[2] == 0.0) {
                 motion = .init(linearVelocity: [0,0,0],angularVelocity: [0, 0, 0])
@@ -801,6 +822,20 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         
         guard let view = self.view else { return }
         boxMask = CollisionGroup.all.subtracting(sphereGroup)
+        
+        
+        // Difereciar entre zonas //
+        // Si ya no se encuentra dentro de la zona actual, busca cual es la zona actual
+        if (lat < zonas[currZona].latMin || lat > zonas[currZona].latMax || lon < zonas[currZona].lonMin || lon > zonas[currZona].lonMax) {
+            print("no se encuentra dentro de la zona actual")
+            
+            for (index, zona) in zonas.enumerated() {
+                if(lat > zona.latMin && lat < zona.latMax && lon > zona.lonMin && lon < zona.lonMax) {
+                    currZona = index
+                    print(currZona)
+                }
+            }
+        }
         
         // Simulacion del Salon
         if (lat > pirinolaLimitLat[0] && lat < pirinolaLimitLat[1] && lon > pirinolaLimitLon[0] && lon < pirinolaLimitLon[1]) {
