@@ -22,8 +22,8 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     var modelsLoaded = false
     // Array of zonas in the MARCO
     var zonas: Array<(name: String, latMin: Double, latMax: Double, lonMin: Double, lonMax: Double)> = [
-        ("Zona C", 25.65700, 25.65880, -100.26000, -100.25000), // Piso abajo 1
-        ("Zona D", 25.65881, 25.66600, -100.26000, -100.25000), // Piso abajo 2
+        ("Zona C", 25.65700, 25.65920, -100.26000, -100.25000), // Piso abajo 1
+        ("Zona D", 25.65921, 25.66700, -100.26000, -100.25000), // Piso abajo 2
         // ("Zona A", 25.65000, 25.66000, -100.26000, -100.25000), // Mi casita
         // ("Zona E", 25.69100, 25.70000, -100.26000, -100.25000),
         // ("Zona F", 25.70100, 25.71000, -100.26000, -100.25000),
@@ -49,13 +49,13 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     var sphereMask: CollisionGroup = .init()
     
     // Array para definir cuando se ha completado una Zona
-    // TODO: Replicar para las demas zonas
+    // TODO: Replicar para el numero de zonas
     var arrayObjetos = [
         [false, false, false, false, false, false, false, false, false, false, false, false],
         [false, false, false, false, false, false, false, false, false, false, false, false],
     ]
-    // Array para saber cuando se ha completado cada zona independientemente, cuando se comp-leta este array, se gana el juego
-    var arrayRunOnce = [false, false]
+    // Array para saber cuando se ha completado cada zona independientemente, cuando se completa este array, se gana el juego
+    var arrayRunOnce = [false, false] // Anadir un campo adicional por cada zona
     var progresoActual = 0
     
     // Anchor para los modelos
@@ -991,10 +991,31 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 // Se carga el modelo Principal en negro sin textura
                 do {
                     // TODO: Anadir modelo correcto con zona.url
-                    entityPirinolaSalon = try ModelEntity.load(named: "Models/pirinola_black")
+                    if(self.arrayRunOnce[self.currZona] == false) {
+                        entityPirinolaSalon = try ModelEntity.load(named: "Models/pirinola_black")
+                    } else {
+                        entityPirinolaSalon = try ModelEntity.load(named: "Models/pirinola")
+                    }
                 }
                 catch {
                     print("Model could not be loaded")
+                }
+                
+                
+                // Add boxes if the games has not been completed
+                if(self.arrayRunOnce[self.currZona] == false) {
+                    self.arrayObjetos[self.currZona][0] = false
+                    self.arrayObjetos[self.currZona][1] = false
+                    self.arrayObjetos[self.currZona][2] = false
+                    self.arrayObjetos[self.currZona][3] = false
+                    self.arrayObjetos[self.currZona][4] = false
+                    self.arrayObjetos[self.currZona][5] = false
+                    self.arrayObjetos[self.currZona][6] = false
+                    self.arrayObjetos[self.currZona][7] = false
+                    self.arrayObjetos[self.currZona][8] = false
+                    self.arrayObjetos[self.currZona][9] = false
+                    self.arrayObjetos[self.currZona][10] = false
+                    self.arrayObjetos[self.currZona][11] = false
                 }
                 
                 entityPirinolaSalon?.setPosition(SIMD3(x: 0, y: 0.6, z: -0.5), relativeTo: nil)
@@ -1006,37 +1027,43 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 textEntity.setPosition(SIMD3(x: 0.0, y: 0.9, z: 0.0), relativeTo: nil)
                 anchor.addChild(textEntity)
                 
-                box1.model?.materials = [box1Material]
-                box2.model?.materials = [box2Material]
-                box3.model?.materials = [box3Material]
-                box4.model?.materials = [box4Material]
-                box5.model?.materials = [box5Material]
-                box6.model?.materials = [box6Material]
-                box7.model?.materials = [box7Material]
-                box8.model?.materials = [box8Material]
-                box9.model?.materials = [box9Material]
-                box10.model?.materials = [box10Material]
-                box11.model?.materials = [box11Material]
-                box12.model?.materials = [box12Material]
+                if(self.arrayRunOnce[self.currZona] == false) {
+                    box1.model?.materials = [box1Material]
+                    box2.model?.materials = [box2Material]
+                    box3.model?.materials = [box3Material]
+                    box4.model?.materials = [box4Material]
+                    box5.model?.materials = [box5Material]
+                    box6.model?.materials = [box6Material]
+                    box7.model?.materials = [box7Material]
+                    box8.model?.materials = [box8Material]
+                    box9.model?.materials = [box9Material]
+                    box10.model?.materials = [box10Material]
+                    box11.model?.materials = [box11Material]
+                    box12.model?.materials = [box12Material]
+                    
+                    // Add boxes to the anchor
+                    anchor.addChild(box1)
+                    anchor.addChild(box2)
+                    anchor.addChild(box3)
+                    anchor.addChild(box4)
+                    anchor.addChild(box5)
+                    anchor.addChild(box6)
+                    anchor.addChild(box7)
+                    anchor.addChild(box8)
+                    anchor.addChild(box9)
+                    anchor.addChild(box10)
+                    anchor.addChild(box11)
+                    anchor.addChild(box12)
+                }
+                
                
-                // Add boxes to the anchor
-                anchor.addChild(box1)
-                anchor.addChild(box2)
-                anchor.addChild(box3)
-                anchor.addChild(box4)
-                anchor.addChild(box5)
-                anchor.addChild(box6)
-                anchor.addChild(box7)
-                anchor.addChild(box8)
-                anchor.addChild(box9)
-                anchor.addChild(box10)
-                anchor.addChild(box11)
-                anchor.addChild(box12)
+                
                 
                 // Add the anchor to the scene
                 anchor.move(to: Transform(translation: simd_float3(0,0,-1)), relativeTo: nil)
                 view.scene.addAnchor(anchor)
                 
+               
                 // Play the orbiting animations
                 box1.playAnimation(animationResource1!)
                 box3.playAnimation(animationResource3!)
@@ -1050,7 +1077,6 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 box10.playAnimation(animationResource10!)
                 box11.playAnimation(animationResource11!)
                 box12.playAnimation(animationResource12!)
-                
             }
             
             if(!self.arrayObjetos[self.currZona].contains(false) && self.arrayRunOnce[self.currZona] == false) {
@@ -1068,17 +1094,22 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                         newEntity.setScale(SIMD3(x: 0.09, y: 0.09, z: 0.09), relativeTo: newEntity)
                         
                         // Change black entity for new model Entity
-                        view.scene.anchors[1].children[0] = newEntity
-                        self.arrayRunOnce[self.currZona] = true
-                    
-                        self.progresoActual = self.progresoActual + 1
-                        print("Progreso: ", self.progresoActual)
-                        
-                        // Checks when the game has been completed
-                        if(!self.arrayRunOnce.contains(false)) {
-                            print("se ha completado el juego: ")
-                            Coordinator.completed.complete = true
-                            print(Coordinator.completed.complete)
+                        if(view.scene.anchors.count == 2) {
+                            view.scene.anchors[1].children[0] = newEntity
+                            
+                            if(self.arrayRunOnce[self.currZona] == false) {
+                                self.arrayRunOnce[self.currZona] = true
+                            
+                                self.progresoActual = self.progresoActual + 1
+                                print("Progreso: ", self.progresoActual)
+                                
+                                // Checks when the game has been completed
+                                if(!self.arrayRunOnce.contains(false)) {
+                                    print("se ha completado el juego: ")
+                                    Coordinator.completed.complete = true
+                                    print(Coordinator.completed.complete)
+                                }
+                            }
                         }
                     }
             }
