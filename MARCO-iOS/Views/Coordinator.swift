@@ -18,17 +18,17 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     
     // Obras/models from the API
     var models: [Obra] = []
+    var rutas: [URL] = []
     // Checks if the obras/models are already loaded (to avoid loading more than once)
     var modelsLoaded = false
     // Array of zonas in the MARCO
     var zonas: Array<(name: String, latMin: Double, latMax: Double, lonMin: Double, lonMax: Double)> = [
         ("Zona C", 25.65700, 25.65920, -100.26000, -100.25000), // Piso abajo 1
         ("Zona D", 25.65921, 25.66700, -100.26000, -100.25000), // Piso abajo 2
-        // ("Zona A", 25.65000, 25.66000, -100.26000, -100.25000), // Mi casita
-        // ("Zona E", 25.69100, 25.70000, -100.26000, -100.25000),
-        // ("Zona F", 25.70100, 25.71000, -100.26000, -100.25000),
-        // ("Zona B", 25.60008, 25.66009, -100.29169, -100.28800), // Salon Swift
-        // ("Zona G", 25.71100, 25.72000, -100.26000, -100.25000)
+        ("Zona A", 25.65000, 25.66000, -100.26000, -100.25000), // Mi casita
+        ("Zona E", 25.69100, 25.70000, -100.26000, -100.25000),
+        ("Zona B", 25.60008, 25.66009, -100.29169, -100.28800), // Salon Swift
+        ("Zona G", 25.71100, 25.72000, -100.26000, -100.25000), // cubiculos biblio
     ]
     // index of the current zona in the array, it has to match the models[Obra] based on the index
     var currZona = 0
@@ -53,9 +53,13 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     var arrayObjetos = [
         [false, false, false, false, false, false, false, false, false, false, false, false],
         [false, false, false, false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false, false, false, false],
     ]
     // Array para saber cuando se ha completado cada zona independientemente, cuando se completa este array, se gana el juego
-    var arrayRunOnce = [false, false] // Anadir un campo adicional por cada zona
+    var arrayRunOnce = [false, false, false, false, false, false] // Anadir un campo adicional por cada zona
     var progresoActual = 0
     
     // Anchor para los modelos
@@ -105,6 +109,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     
     // Variables for the Anchor Model
     var entityPirinolaSalon: Entity? = ModelEntity()
+    var modelPlaceholder: ModelEntity = ModelEntity()
     var auxModel: Entity = ModelEntity()
     var textEntity: ModelEntity = ModelEntity()
     var box1: ModelEntity = ModelEntity()
@@ -162,8 +167,16 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             models = newObras
             modelsLoaded = true
         }
+        
     }
     
+    func initRutasData(newRutas: [URL]) {
+        if(newRutas.count != models.count) {
+            rutas = newRutas
+            print(rutas)
+        }
+    }
+
     // Inits the bullets configurations
     func initBullets() {
         guard let view = self.view else { return }
@@ -250,6 +263,8 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         bullet15.generateCollisionShapes(recursive: true)
         bullet15.name = "bullet/15/"
         view.installGestures(.all, for: bullet15)
+        
+        
         
         // Stores the current name of the bullet that is launched
         currBullet.name = bullet1.name
@@ -528,6 +543,9 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             offset: 6
             )
         animationResource12 = try! AnimationResource.generate(with: animationDefinition12!)
+        
+        let modelPlaceholderMaterial = SimpleMaterial(color: .black, isMetallic: false)
+        modelPlaceholder = ModelEntity(mesh: MeshResource.generateBox(width: 0.6, height: 1.1, depth: 0.4), materials: [modelPlaceholderMaterial])
     }
     
     // Remove animation for box on collision with a Bullet
@@ -634,7 +652,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         let materialVar = SimpleMaterial(color: .white, roughness: 0, isMetallic: false)
         let depthVar: Float = 0.01
         let fontVar = UIFont.systemFont(ofSize: 0.2)
-        let containerFrameVar = CGRect(x: -0.5, y: -0.5, width: 1, height: 1)
+        let containerFrameVar = CGRect(x: -1, y: -0.5, width: 2, height: 1)
         let alignmentVar: CTTextAlignment = .center
         let lineBreakModeVar : CTLineBreakMode = .byWordWrapping
         let textMeshResource : MeshResource = .generateText(textString,
@@ -964,7 +982,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     @objc func updateMarcoModels(lat: Double, lon: Double) {
         
         guard let view = self.view else { return }
-                
+            
         // Si ya no se encuentra dentro de la zona actual, busca cual es la zona actual
         if (lat < zonas[currZona].latMin || lat > zonas[currZona].latMax || lon < zonas[currZona].lonMin || lon > zonas[currZona].lonMax) {
             for (index, zona) in zonas.enumerated() {
@@ -977,87 +995,90 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             // Remove the actual entities from the anchor if the anchor is added and have models
             if(view.scene.anchors.count == 2) {
                 view.scene.anchors[1].removeChild(textEntity)
-                for element in view.scene.anchors[1].children {
-                    view.scene.anchors[1].removeChild(element)
-                }
+                view.scene.anchors[1].removeChild(box1)
+                view.scene.anchors[1].removeChild(box2)
+                view.scene.anchors[1].removeChild(box3)
+                view.scene.anchors[1].removeChild(box4)
+                view.scene.anchors[1].removeChild(box5)
+                view.scene.anchors[1].removeChild(box6)
+                view.scene.anchors[1].removeChild(box7)
+                view.scene.anchors[1].removeChild(box8)
+                view.scene.anchors[1].removeChild(box9)
+                view.scene.anchors[1].removeChild(box10)
+                view.scene.anchors[1].removeChild(box11)
+                view.scene.anchors[1].removeChild(box12)
+                print("se ejecutra el remove")
+                view.scene.anchors[1].removeChild(modelPlaceholder)
+                view.scene.anchors[1].removeChild(entityPirinolaSalon ?? auxModel)
+                
             }
             // Remove the actual anchor
             view.scene.removeAnchor(anchor)
             
         // Si se encuentra en la zona actual, ejecuta el siguiente codigo
         } else {
+            
             // Si aun no se ha montado la escena, se monta con este if
             if(view.scene.anchors.count == 1 && !models.isEmpty) {
-                // Se carga el modelo Principal en negro sin textura
-                do {
-                    // TODO: Anadir modelo correcto con zona.url
-                    if(self.arrayRunOnce[self.currZona] == false) {
-                        entityPirinolaSalon = try ModelEntity.load(named: "Models/pirinola_black")
-                    } else {
-                        entityPirinolaSalon = try ModelEntity.load(named: "Models/pirinola")
-                    }
-                }
-                catch {
-                    print("Model could not be loaded")
-                }
-                
-                
-                // Add boxes if the games has not been completed
-                if(self.arrayRunOnce[self.currZona] == false) {
-                    self.arrayObjetos[self.currZona][0] = false
-                    self.arrayObjetos[self.currZona][1] = false
-                    self.arrayObjetos[self.currZona][2] = false
-                    self.arrayObjetos[self.currZona][3] = false
-                    self.arrayObjetos[self.currZona][4] = false
-                    self.arrayObjetos[self.currZona][5] = false
-                    self.arrayObjetos[self.currZona][6] = false
-                    self.arrayObjetos[self.currZona][7] = false
-                    self.arrayObjetos[self.currZona][8] = false
-                    self.arrayObjetos[self.currZona][9] = false
-                    self.arrayObjetos[self.currZona][10] = false
-                    self.arrayObjetos[self.currZona][11] = false
-                }
-                
-                entityPirinolaSalon?.setPosition(SIMD3(x: 0, y: 0.6, z: -0.5), relativeTo: nil)
-                entityPirinolaSalon?.setScale(SIMD3(x: 0.09, y: 0.09, z: 0.09), relativeTo: entityPirinolaSalon)
-                anchor.addChild(entityPirinolaSalon ?? auxModel)
+                modelPlaceholder.setPosition(SIMD3(x: 0, y: 0.4, z: 0), relativeTo: nil)
+                anchor.addChild(modelPlaceholder)
                 
                 // Shows the text of the current Obra
                 textEntity = textGen(textString: models[currZona].nombre)
-                textEntity.setPosition(SIMD3(x: 0.0, y: 0.9, z: 0.0), relativeTo: nil)
+                textEntity.setPosition(SIMD3(x: 0.0, y: -0.2, z: 0.0), relativeTo: nil)
                 anchor.addChild(textEntity)
                 
+                box1.model?.materials = [box1Material]
+                box2.model?.materials = [box2Material]
+                box3.model?.materials = [box3Material]
+                box4.model?.materials = [box4Material]
+                box5.model?.materials = [box5Material]
+                box6.model?.materials = [box6Material]
+                box7.model?.materials = [box7Material]
+                box8.model?.materials = [box8Material]
+                box9.model?.materials = [box9Material]
+                box10.model?.materials = [box10Material]
+                box11.model?.materials = [box11Material]
+                box12.model?.materials = [box12Material]
+                                          
                 if(self.arrayRunOnce[self.currZona] == false) {
-                    box1.model?.materials = [box1Material]
-                    box2.model?.materials = [box2Material]
-                    box3.model?.materials = [box3Material]
-                    box4.model?.materials = [box4Material]
-                    box5.model?.materials = [box5Material]
-                    box6.model?.materials = [box6Material]
-                    box7.model?.materials = [box7Material]
-                    box8.model?.materials = [box8Material]
-                    box9.model?.materials = [box9Material]
-                    box10.model?.materials = [box10Material]
-                    box11.model?.materials = [box11Material]
-                    box12.model?.materials = [box12Material]
-                    
-                    // Add boxes to the anchor
-                    anchor.addChild(box1)
-                    anchor.addChild(box2)
-                    anchor.addChild(box3)
-                    anchor.addChild(box4)
-                    anchor.addChild(box5)
-                    anchor.addChild(box6)
-                    anchor.addChild(box7)
-                    anchor.addChild(box8)
-                    anchor.addChild(box9)
-                    anchor.addChild(box10)
-                    anchor.addChild(box11)
-                    anchor.addChild(box12)
+                    if(self.arrayObjetos[self.currZona][0] == false) {
+                        anchor.addChild(box1)
+                    }
+                    if(self.arrayObjetos[self.currZona][1] == false) {
+                        anchor.addChild(box2)
+                    }
+                    if(self.arrayObjetos[self.currZona][2] == false) {
+                        anchor.addChild(box3)
+                    }
+                    if(self.arrayObjetos[self.currZona][3] == false) {
+                        anchor.addChild(box4)
+                    }
+                    if(self.arrayObjetos[self.currZona][4] == false) {
+                        anchor.addChild(box5)
+                    }
+                    if(self.arrayObjetos[self.currZona][5] == false) {
+                        anchor.addChild(box6)
+                    }
+                    if(self.arrayObjetos[self.currZona][6] == false) {
+                        anchor.addChild(box7)
+                    }
+                    if(self.arrayObjetos[self.currZona][7] == false) {
+                        anchor.addChild(box8)
+                    }
+                    if(self.arrayObjetos[self.currZona][8] == false) {
+                        anchor.addChild(box9)
+                    }
+                    if(self.arrayObjetos[self.currZona][9] == false) {
+                        anchor.addChild(box10)
+                    }
+                    if(self.arrayObjetos[self.currZona][10] == false) {
+                        anchor.addChild(box11)
+                    }
+                    if(self.arrayObjetos[self.currZona][11] == false) {
+                        anchor.addChild(box12)
+                    }
                 }
-                
-               
-                
                 
                 // Add the anchor to the scene
                 anchor.move(to: Transform(translation: simd_float3(0,0,-1)), relativeTo: nil)
@@ -1082,20 +1103,35 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             if(!self.arrayObjetos[self.currZona].contains(false) && self.arrayRunOnce[self.currZona] == false) {
                 // Anadir color a la Obra
                 // TODO: Anadir el USDZ directamente del modelo actual
-                newEntityPirinola = ModelEntity.loadAsync(named: "Models/pirinola")
+                var rutaIndex = 0
+                for (index, ruta) in self.rutas.enumerated() {
+                    let rutaName = ruta.absoluteString
+                    let firstIndex = rutaName.index(rutaName.lastIndex(of: "-")!, offsetBy: 1)
+                    let lastIndex = rutaName.index(rutaName.lastIndex(of: ".")!, offsetBy: -1)
+                    let completeName = rutaName[firstIndex...lastIndex]
+                    
+                    if(completeName.uppercased() == models[self.currZona].nombre.uppercased()) {
+                        rutaIndex = index
+ 
+                    }
+                }
+                
+                newEntityPirinola = ModelEntity.loadModelAsync(contentsOf: self.rutas[rutaIndex])
                     .sink { loadCompletion in
                         if case let .failure(error) = loadCompletion {
                             print("Unable to load model \(error)")
                         }
-                        
+                    
                         self.newEntityPirinola?.cancel()
                     } receiveValue: { newEntity in
-                        newEntity.setPosition(SIMD3(x: 0, y: 0.6, z: -0.5), relativeTo: nil)
+                        newEntity.setPosition(SIMD3(x: 0, y: 0.6, z: 0), relativeTo: nil)
                         newEntity.setScale(SIMD3(x: 0.09, y: 0.09, z: 0.09), relativeTo: newEntity)
-                        
+                        print("se carga con exito")
                         // Change black entity for new model Entity
                         if(view.scene.anchors.count == 2) {
-                            view.scene.anchors[1].children[0] = newEntity
+//                            view.scene.anchors[1].children[0] = newEntity
+                            view.scene.anchors[1].removeChild(self.modelPlaceholder)
+                            view.scene.anchors[1].addChild(newEntity)
                             
                             if(self.arrayRunOnce[self.currZona] == false) {
                                 self.arrayRunOnce[self.currZona] = true

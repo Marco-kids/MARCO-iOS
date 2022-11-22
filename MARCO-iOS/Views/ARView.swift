@@ -14,6 +14,7 @@ struct ARViewContainer: UIViewRepresentable {
     
     @Binding var coordinates: (lat: Double, lon: Double)
     @Binding var models: [Obra]
+    @Binding var rutas: [URL]
 
     func makeUIView(context: Context) -> ARView {
         let arView = ARView(frame: .zero)
@@ -41,11 +42,12 @@ struct ARViewContainer: UIViewRepresentable {
     func updateUIView(_ uiView: ARView, context: Context) {
         context.coordinator.updateMarcoModels(lat: coordinates.lat, lon: coordinates.lon)
         context.coordinator.initModelsData(newObras: models)
+        context.coordinator.initRutasData(newRutas: rutas)
     }
 }
 
 struct ARView_Previews: PreviewProvider {
     static var previews: some View {
-        ARViewContainer(coordinates: .constant((lat: 1.0, lon: 1.0)), models: .constant([]))
+        ARViewContainer(coordinates: .constant((lat: 1.0, lon: 1.0)), models: .constant([]), rutas: .constant([]))
     }
 }

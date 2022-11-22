@@ -15,6 +15,7 @@ struct ContentView: View {
     // Network shared instance
     @StateObject var network = Network.sharedInstance
     @State var models: [Obra] = []
+    @State var rutas: [URL] = []
     
     @State private var selection = 2
     
@@ -35,10 +36,9 @@ struct ContentView: View {
     // Simulador
     // var objetoLimitLat = [0.0000, 100.0000]
     //  var objetoLimitLon =  [-123.00000, -122.00000]
-    
     // Salon Swift coordenadas
     var pirinolaLimitLat = [25.60008, 25.66009]
-    var pirinolaLimitLon = [-100.29069, -100.290400]
+    var pirinolaLimitLon = [-100.29169, -100.28800]
     
     // Simulador cualquier lugar
     // var objetoLimitLat = [20.0000, 28.00000]
@@ -93,7 +93,7 @@ struct ContentView: View {
                 }
                 .tag(1)
 
-            ARViewContainer(coordinates: .constant((lat: coordinates.lat, lon: coordinates.lon)), models: .constant(self.models))
+            ARViewContainer(coordinates: .constant((lat: coordinates.lat, lon: coordinates.lon)), models: .constant(self.models), rutas: .constant(self.rutas))
                 .edgesIgnoringSafeArea(.top)
                 .font(.system(size: 30, weight: .bold, design: .rounded))
                 .tabItem {
@@ -128,6 +128,15 @@ struct ContentView: View {
                 print("Handle \(completion) for error and finished subscription.")
             } receiveValue: { model in
                 self.models = model
+            }
+            .store(in: &tokens)
+        
+        network.rutasPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                print("Handle \(completion) for error and finished subscription.")
+            } receiveValue: { newRutas in
+                self.rutas = newRutas
             }
             .store(in: &tokens)
     }

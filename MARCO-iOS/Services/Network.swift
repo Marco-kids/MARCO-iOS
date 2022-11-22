@@ -9,8 +9,8 @@ import SwiftUI
 import Combine
 
 // private let url = "http://10.14.255.70:10205/api/all-obras"
-private let url = "http://192.168.100.29:8080/api/all-obras" // Casita
-// private let url = "http://10.22.191.41:8080/api/all-obras" // Salon Swift
+// private let url = "http://192.168.100.29:8080/api/all-obras" // Casita
+private let url = "http://10.22.186.29:8080/api/all-obras" // Salon Swift
 
 class Network: NSObject, ObservableObject {
     
@@ -20,6 +20,7 @@ class Network: NSObject, ObservableObject {
     @Published var rutas: [URL] = []
     
     var obrasPublisher = PassthroughSubject<[Obra], Error>()
+    var rutasPublisher = PassthroughSubject<[URL], Error>()
     
     
     func getModels() {
@@ -43,9 +44,8 @@ class Network: NSObject, ObservableObject {
                     do {
                         let decodedModels = try JSONDecoder().decode([Obra].self, from: data)
                         self.models = decodedModels
-                        print("entra aqui")
                         self.obrasPublisher.send(decodedModels)
-                        // self.loadModels() // Downloads USDZ models
+                        self.loadModels() // Downloads USDZ models
                     } catch let error {
                         print("Error decoding: ", error)
                     }
@@ -77,6 +77,7 @@ class Network: NSObject, ObservableObject {
             try! fileManager.moveItem(atPath: location!.path, toPath: destinationUrl.path)
             DispatchQueue.main.async {
                 self.rutas.append(destinationUrl)
+                self.rutasPublisher.send(self.rutas)
             }
         })
         downloadTask.resume()
