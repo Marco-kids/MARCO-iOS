@@ -79,6 +79,11 @@ class Network: NSObject, ObservableObject {
             try! fileManager.moveItem(atPath: location!.path, toPath: destinationUrl.path)
             DispatchQueue.main.async {
                 self.rutas.append(destinationUrl)
+                for (index, obra) in self.models.enumerated() {
+                    if obra.modelo == model {
+                        self.models[index].modelo = destinationUrl.absoluteString
+                    }
+                }
                 self.rutasPublisher.send(self.rutas)
             }
         })

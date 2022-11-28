@@ -1,0 +1,54 @@
+//
+//  ProgressView.swift
+//  MARCO-iOS
+//
+//  Created by Jose Castillo on 11/23/22.
+//
+
+import SwiftUI
+
+struct ProgressView: View {
+    
+    @StateObject var network = Network.sharedInstance
+    
+    @State var currentProgress: CGFloat = 0.7
+    
+    let obra = Obra(_id: "0", nombre: "Pirinola", autor: "Daniel", descripcion: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", modelo: "Models/pirinola.usdz", longitud: "0", latitud: "0")
+    
+    var body: some View {
+        NavigationView {
+            ZStack(alignment: .bottomTrailing) {
+                VStack {
+                    HStack(spacing: 30) {
+                        ZStack(alignment: .leading) {
+                            RoundedRectangle(cornerRadius: 20)
+                                .foregroundColor(Color(.systemGray))
+                                .frame(width: 200, height: 20)
+                            RoundedRectangle(cornerRadius: 20)
+                                .foregroundColor(Color(.systemPink))
+                                .frame(width: 200*currentProgress, height: 20)
+                        }
+                        Text("7 / 10")
+                            .font(.title).bold()
+                    }
+                    .padding(.vertical)
+                    ScrollView {
+                        LazyVStack {
+                            ForEach(network.models, id: \.self) { model in
+                                NavigationLink(destination: ObraView(obra: model)) {
+                                    ProgressRowView(obra: model, url: URL(string: model.modelo)!)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct ProgressView_Previews: PreviewProvider {
+    static var previews: some View {
+        ProgressView()
+    }
+}
