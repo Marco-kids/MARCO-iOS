@@ -177,6 +177,28 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             print(rutas)
         }
     }
+    
+    func runCoachingOverlay() {
+        guard let view = self.view else { return }
+
+        let coachingOverlay = ARCoachingOverlayView(frame: view.frame)
+        
+        coachingOverlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+
+        view.addSubview(coachingOverlay)
+
+        coachingOverlay.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        coachingOverlay.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        coachingOverlay.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        coachingOverlay.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        
+        coachingOverlay.goal = .horizontalPlane
+        coachingOverlay.activatesAutomatically = true
+
+        coachingOverlay.session = view.session
+    }
+    
+
 
     // Inits the bullets configurations
     func initBullets() {
@@ -1046,8 +1068,6 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             
             // Si aun no se ha montado la escena, se monta con este if
             if(view.scene.anchors.count == 1 && !models.isEmpty) {
-                
-                
                 modelPlaceholder.setPosition(SIMD3(x: 0, y: 0.4, z: 0), relativeTo: nil)
                 if (self.arrayRunOnce[self.currZona] == false) {
                     modelPlaceholder.stopAllAnimations(recursive: true)

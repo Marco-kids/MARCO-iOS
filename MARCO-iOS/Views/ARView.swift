@@ -24,13 +24,13 @@ struct ARViewContainer: UIViewRepresentable {
         
         // Gesture to launch bullets
         arView.addGestureRecognizer(UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTap)))
-        
         context.coordinator.view = arView
         context.coordinator.initCollisionDetection()
         context.coordinator.initBullets()
         context.coordinator.initBoxes()
-        arView.session.run(configuration)
+        arView.session.run(configuration, options: [.resetTracking])
         arView.session.delegate = context.coordinator
+        context.coordinator.runCoachingOverlay()
         
         return arView
     }
@@ -45,6 +45,7 @@ struct ARViewContainer: UIViewRepresentable {
         context.coordinator.initRutasData(newRutas: rutas)
     }
 }
+
 
 struct ARView_Previews: PreviewProvider {
     static var previews: some View {
