@@ -37,86 +37,104 @@ struct ContentView: View {
     // var objetoLimitLat = [0.0000, 100.0000]
     //  var objetoLimitLon =  [-123.00000, -122.00000]
     // Salon Swift coordenadas
-    var pirinolaLimitLat = [25.6587001, 25.66700]
-    var pirinolaLimitLon = [-100.26000, -100.25000]
-    // Simulador cualquier lugar
-    // var objetoLimitLat = [20.0000, 28.00000]
-    // var objetoLimitLon =  [-101.00000, -100.0000]
+    // var pirinolaLimitLat = [25.6587001, 25.66700]
+    // var pirinolaLimitLon = [-100.26000, -100.25000]
+    var pirinolaLimitLat = [25.65000, 25.7000]
+    var pirinolaLimitLon = [-100.30000, -100.28000]
 
     
     var body: some View {
-        
-        VStack {
-            if (coordinates.lat > pirinolaLimitLat[0] && coordinates.lat < pirinolaLimitLat[1] && coordinates.lon > pirinolaLimitLon[0] && coordinates.lon < pirinolaLimitLon[1]) {
-                Text("Latitude: \(coordinates.lat)")
-                    .font(.largeTitle)
-                    .foregroundColor(.green)
-                Text("Longitude: \(coordinates.lon)")
-                    .font(.largeTitle)
-                    .foregroundColor(.green)
-            } else if (coordinates.lat > objetoLimitLat[0] && coordinates.lat < objetoLimitLat[1] && coordinates.lon > objetoLimitLon[0] && coordinates.lon < objetoLimitLon[1]) {
-                Text("Latitude: \(coordinates.lat)")
-                    .font(.largeTitle)
-                    .foregroundColor(.blue)
-                Text("Longitude: \(coordinates.lon)")
-                    .font(.largeTitle)
-                    .foregroundColor(.blue)
-            } else {
-                Text("Latitude: \(coordinates.lat)")
-                    .font(.largeTitle)
-                    .foregroundColor(.red)
-                Text("Longitude: \(coordinates.lon)")
-                    .font(.largeTitle)
-                    .foregroundColor(.red)
-            }
+        ZStack {
             
-            if(completed.complete) {
-                Text("SI completado")
-                    .font(.largeTitle)
-                    .foregroundColor(.green)
-            } else {
-                Text("NO completado")
-                    .font(.largeTitle)
-                    .foregroundColor(.red)
-            }
-
-        }
-        
-        TabView(selection:$selection) {
-            
-            Text("Your Progress" )
-                .font(.system(size: 30, weight: .bold, design: .rounded))
-                .tabItem {
-                    Image(systemName: "list.clipboard")
-                    Text("Progress")
-                }
-                .tag(1)
-
-            ARViewContainer(coordinates: .constant((lat: coordinates.lat, lon: coordinates.lon)), models: .constant(self.models), rutas: .constant(self.rutas))
-                .edgesIgnoringSafeArea(.top)
-                .font(.system(size: 30, weight: .bold, design: .rounded))
-                .tabItem {
-                    Image(systemName: "camera.fill")
-                    Text("Camera")
-                }
-                .tag(2)
-            
-
-            Text("Settings")
-                .font(.system(size: 30, weight: .bold, design: .rounded))
-                .tabItem {
-                    Image(systemName: "gear")
-                    Text("Settings")
-                }
-                .tag(3)
-        }
-        .onAppear {
-                        observeCoordinateUpdates()
-                        observeDeniedLocationAccess()
-                        deviceLocationService.requestLocationUpdates()
-                        network.getModels()
-                        observeModels()
+            // Tabview
+            TabView(selection:$selection) {
+                
+                Text("Your Progress" )
+                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                    .tabItem {
+                        Image(systemName: "list.clipboard")
+                        Text("Progress")
                     }
+                    .tag(1)
+
+                // -> No supe como separar la TabView de este archivo por esto :(
+                ARViewContainer(coordinates: .constant((lat: coordinates.lat, lon: coordinates.lon)), models: .constant(self.models), rutas: .constant(self.rutas))
+                    .edgesIgnoringSafeArea(.top)
+                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                    .tabItem {
+                        Image(systemName: "camera.fill")
+                        Text("Camera")
+                    }
+                    .tag(2)
+                
+
+                Text("Settings")
+                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                    .tabItem {
+                        Image(systemName: "gear")
+                        Text("Settings")
+                    }
+                    .tag(3)
+            }
+            .onAppear {
+                            observeCoordinateUpdates()
+                            observeDeniedLocationAccess()
+                            deviceLocationService.requestLocationUpdates()
+                            network.getModels()
+                            observeModels()
+                        }
+            
+            // Coordinates in the screen
+            VStack {
+                if (coordinates.lat > pirinolaLimitLat[0] && coordinates.lat < pirinolaLimitLat[1] && coordinates.lon > pirinolaLimitLon[0] && coordinates.lon < pirinolaLimitLon[1]) {
+                    Text("Latitude: \(coordinates.lat)")
+                        .font(.largeTitle)
+                        .foregroundColor(.green)
+                    Text("Longitude: \(coordinates.lon)")
+                        .font(.largeTitle)
+                        .foregroundColor(.green)
+                } else if (coordinates.lat > objetoLimitLat[0] && coordinates.lat < objetoLimitLat[1] && coordinates.lon > objetoLimitLon[0] && coordinates.lon < objetoLimitLon[1]) {
+                    Text("Latitude: \(coordinates.lat)")
+                        .font(.largeTitle)
+                        .foregroundColor(.blue)
+                    Text("Longitude: \(coordinates.lon)")
+                        .font(.largeTitle)
+                        .foregroundColor(.blue)
+                } else {
+                    Text("Latitude: \(coordinates.lat)")
+                        .font(.largeTitle)
+                        .foregroundColor(.red)
+                    Text("Longitude: \(coordinates.lon)")
+                        .font(.largeTitle)
+                        .foregroundColor(.red)
+                }
+                
+                if(completed.complete) {
+                    Text("SI completado")
+                        .font(.largeTitle)
+                        .foregroundColor(.green)
+                } else {
+                    Text("NO completado")
+                        .font(.largeTitle)
+                        .foregroundColor(.red)
+                }
+
+            }
+                
+            // Tutorial
+            TutorialView()
+            
+            // =======
+            // struct ContentView: View {
+                
+            //     var body: some View {
+            //        ZStack {
+            //             // No supe como juntar esto :(
+            //             TabBarView()
+            //             TutorialView()
+            //         }
+            // >>>>>>> main
+        }
     }
     
     // Returns the models when received
@@ -159,16 +177,6 @@ struct ContentView: View {
                 print("Handle access denied event, possibly with an alert.")
                 }
                 .store(in: &tokens)
-// =======
-
-// struct ContentView: View {
-    
-//     var body: some View {
-//        ZStack {
-//             TabBarView()
-//             TutorialView()
-//         }
-// >>>>>>> main
     }
 }
 

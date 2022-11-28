@@ -22,14 +22,14 @@ struct TabBarView: View {
                 }
                 .tag(1)
 
-            ARView()
-                .edgesIgnoringSafeArea(.top)
-                .font(.system(size: 30, weight: .bold, design: .rounded))
-                .tabItem {
-                    Image(systemName: "camera.fill")
-                    Text("Camera")
-                }
-                .tag(2)
+//            ARViewContainer(coordinates: .constant((lat: coordinates.lat, lon: coordinates.lon)), models: .constant(self.models), rutas: .constant(self.rutas))
+//                .edgesIgnoringSafeArea(.top)
+//                .font(.system(size: 30, weight: .bold, design: .rounded))
+//                .tabItem {
+//                    Image(systemName: "camera.fill")
+//                    Text("Camera")
+//                }
+//                .tag(2)
 
             Text("Settings")
                 .font(.system(size: 30, weight: .bold, design: .rounded))
