@@ -20,6 +20,8 @@
 		FC64E63928F7330D00FCB2AA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC64E63828F7330D00FCB2AA /* Preview Assets.xcassets */; };
 		FC80D9D0292EFFB600724704 /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC80D9CF292EFFB600724704 /* ProgressView.swift */; };
 		FC80D9D3292F038200724704 /* ProgressRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC80D9D2292F038200724704 /* ProgressRowView.swift */; };
+		FCE7CB9928FF8CB50011CF69 /* TabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCE7CB9828FF8CB50011CF69 /* TabBarView.swift */; };
+		FCF4F79928FF3A540017043F /* TutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF4F79828FF3A540017043F /* TutorialView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +40,8 @@
 		FC64E63828F7330D00FCB2AA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		FC80D9CF292EFFB600724704 /* ProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
 		FC80D9D2292F038200724704 /* ProgressRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressRowView.swift; sourceTree = "<group>"; };
+		FCE7CB9828FF8CB50011CF69 /* TabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarView.swift; sourceTree = "<group>"; };
+		FCF4F79828FF3A540017043F /* TutorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +81,8 @@
 				FC80D9CF292EFFB600724704 /* ProgressView.swift */,
 				FC80D9D2292F038200724704 /* ProgressRowView.swift */,
 				FC53ACF4292F2E5A00A582B0 /* ObraView.swift */,
+				FCF4F79828FF3A540017043F /* TutorialView.swift */,
+				FCE7CB9828FF8CB50011CF69 /* TabBarView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -193,6 +199,7 @@
 			files = (
 				FB5F879928FF705100A4E95C /* DeviceLocationService.swift in Sources */,
 				053CE2342926FF830005EE43 /* ObraModel.swift in Sources */,
+				FCF4F79928FF3A540017043F /* TutorialView.swift in Sources */,
 				FC64E63428F7330C00FCB2AA /* ContentView.swift in Sources */,
 				FC80D9D3292F038200724704 /* ProgressRowView.swift in Sources */,
 				053CE2302926FF0A0005EE43 /* Network.swift in Sources */,
@@ -200,6 +207,7 @@
 				FC53ACF5292F2E5A00A582B0 /* ObraView.swift in Sources */,
 				FC80D9D0292EFFB600724704 /* ProgressView.swift in Sources */,
 				FC64E63228F7330C00FCB2AA /* MARCO_iOSApp.swift in Sources */,
+				FCE7CB9928FF8CB50011CF69 /* TabBarView.swift in Sources */,
 				FC32475D28FF34170034F324 /* ARView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
