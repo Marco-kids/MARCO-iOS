@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Obra:  Decodable {
+struct Obra:  Decodable, Hashable {
     var _id : String
     var nombre : String
     var autor : String

@@ -14,9 +14,12 @@
 		053CE2342926FF830005EE43 /* ObraModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 053CE2332926FF830005EE43 /* ObraModel.swift */; };
 		FB5F879928FF705100A4E95C /* DeviceLocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB5F879828FF705100A4E95C /* DeviceLocationService.swift */; };
 		FC32475D28FF34170034F324 /* ARView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC32475C28FF34170034F324 /* ARView.swift */; };
+		FC53ACF5292F2E5A00A582B0 /* ObraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC53ACF4292F2E5A00A582B0 /* ObraView.swift */; };
 		FC64E63228F7330C00FCB2AA /* MARCO_iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC64E63128F7330C00FCB2AA /* MARCO_iOSApp.swift */; };
 		FC64E63428F7330C00FCB2AA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC64E63328F7330C00FCB2AA /* ContentView.swift */; };
 		FC64E63928F7330D00FCB2AA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC64E63828F7330D00FCB2AA /* Preview Assets.xcassets */; };
+		FC80D9D0292EFFB600724704 /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC80D9CF292EFFB600724704 /* ProgressView.swift */; };
+		FC80D9D3292F038200724704 /* ProgressRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC80D9D2292F038200724704 /* ProgressRowView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,10 +31,13 @@
 		FB5F879528FF654600A4E95C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		FB5F879828FF705100A4E95C /* DeviceLocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLocationService.swift; sourceTree = "<group>"; };
 		FC32475C28FF34170034F324 /* ARView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARView.swift; sourceTree = "<group>"; };
+		FC53ACF4292F2E5A00A582B0 /* ObraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObraView.swift; sourceTree = "<group>"; };
 		FC64E62E28F7330C00FCB2AA /* MARCO-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MARCO-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC64E63128F7330C00FCB2AA /* MARCO_iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MARCO_iOSApp.swift; sourceTree = "<group>"; };
 		FC64E63328F7330C00FCB2AA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		FC64E63828F7330D00FCB2AA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		FC80D9CF292EFFB600724704 /* ProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
+		FC80D9D2292F038200724704 /* ProgressRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressRowView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +74,9 @@
 				FC32475C28FF34170034F324 /* ARView.swift */,
 				FB5F879828FF705100A4E95C /* DeviceLocationService.swift */,
 				0525C3DE2911DBE400BD410B /* Coordinator.swift */,
+				FC80D9CF292EFFB600724704 /* ProgressView.swift */,
+				FC80D9D2292F038200724704 /* ProgressRowView.swift */,
+				FC53ACF4292F2E5A00A582B0 /* ObraView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -185,8 +194,11 @@
 				FB5F879928FF705100A4E95C /* DeviceLocationService.swift in Sources */,
 				053CE2342926FF830005EE43 /* ObraModel.swift in Sources */,
 				FC64E63428F7330C00FCB2AA /* ContentView.swift in Sources */,
+				FC80D9D3292F038200724704 /* ProgressRowView.swift in Sources */,
 				053CE2302926FF0A0005EE43 /* Network.swift in Sources */,
 				0525C3DF2911DBE400BD410B /* Coordinator.swift in Sources */,
+				FC53ACF5292F2E5A00A582B0 /* ObraView.swift in Sources */,
+				FC80D9D0292EFFB600724704 /* ProgressView.swift in Sources */,
 				FC64E63228F7330C00FCB2AA /* MARCO_iOSApp.swift in Sources */,
 				FC32475D28FF34170034F324 /* ARView.swift in Sources */,
 			);
@@ -317,7 +329,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MARCO-iOS/Preview Content\"";
-				DEVELOPMENT_TEAM = 4HSKQW8W3C;
+				DEVELOPMENT_TEAM = 24H428V334;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "MARCO-iOS/Info.plist";
@@ -335,7 +347,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = nuevaIntento;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.marco-kids-ar";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -351,7 +363,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MARCO-iOS/Preview Content\"";
-				DEVELOPMENT_TEAM = 4HSKQW8W3C;
+				DEVELOPMENT_TEAM = 24H428V334;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "MARCO-iOS/Info.plist";
@@ -369,7 +381,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = nuevaIntento;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.marco-kids-ar";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
