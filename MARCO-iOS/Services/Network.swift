@@ -8,9 +8,9 @@
 import SwiftUI
 import Combine
 
-// private let url = "http://10.14.255.70:10205/api/all-obras"
-private let url = "http://192.168.100.29:8080/api/all-obras" // Casita
-// private let url = "http://10.22.189.202:8080/api/all-obras" // Salon Swift
+private let url = "http://10.14.255.70:10205/api/all-obras"
+// private let url = "http://192.168.100.29:8080/api/all-obras" // Casita
+// private let url = "http://10.22.187.200:8080/api/all-obras" // Salon Swift
 
 class Network: NSObject, ObservableObject {
     
