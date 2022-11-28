@@ -30,16 +30,15 @@ struct ContentView: View {
     @StateObject var completed = Coordinator.completed
     
     // Casa
-    var objetoLimitLat = [25.65000, 25.66000]
+    var objetoLimitLat = [25.65700, 25.658700]
     var objetoLimitLon =  [-100.26000, -100.25000]
-    
+
     // Simulador
     // var objetoLimitLat = [0.0000, 100.0000]
     //  var objetoLimitLon =  [-123.00000, -122.00000]
     // Salon Swift coordenadas
-    var pirinolaLimitLat = [25.60008, 25.66009]
-    var pirinolaLimitLon = [-100.29169, -100.28800]
-    
+    var pirinolaLimitLat = [25.6587001, 25.66700]
+    var pirinolaLimitLon = [-100.26000, -100.25000]
     // Simulador cualquier lugar
     // var objetoLimitLat = [20.0000, 28.00000]
     // var objetoLimitLon =  [-101.00000, -100.0000]

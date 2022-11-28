@@ -23,18 +23,21 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     var modelsLoaded = false
     // Array of zonas in the MARCO
     var zonas: Array<(name: String, latMin: Double, latMax: Double, lonMin: Double, lonMax: Double)> = [
-        ("Zona C", 25.65700, 25.65920, -100.26000, -100.25000), // Piso abajo 1
-        ("Zona D", 25.65921, 25.66700, -100.26000, -100.25000), // Piso abajo 2
-        ("Zona A", 25.65000, 25.66000, -100.26000, -100.25000), // Mi casita
-        ("Zona E", 25.69100, 25.70000, -100.26000, -100.25000),
-        ("Zona B", 25.60008, 25.66009, -100.29169, -100.28800), // Salon Swift
-        ("Zona G", 25.71100, 25.72000, -100.26000, -100.25000), // cubiculos biblio
+        // ("Zona E", 25.65000, 25.7000, -100.26000, -100.25000), // Tec biblio 1
+        ("Zona B", 25.60008, 25.650050, -100.29169, -100.28800), // Salon Swift
+        // ("Zona A", 25.65000, 25.66000, -100.26000, -100.25000), // Mi casita
+        ("Zona C", 25.65700, 25.658700, -100.26000, -100.25000), // Piso abajo 1
+        ("Zona D", 25.6587001, 25.66700, -100.26000, -100.25000), // Piso abajo 2
+        ("Zona G", 25.00000, 25.4999, -100.26000, -100.25000), // Tec biblio 2
+        
+       //  ("Zona G", 25.650051, 25.70000, -100.29169, -100.28800) // Salon Swift 2
     ]
     // index of the current zona in the array, it has to match the models[Obra] based on the index
     var currZona = 0
     
     // Variable for loading asynchronous models
     var newEntityPirinola: AnyCancellable?
+    var newEntity: Entity = ModelEntity()
     
     // Variable para saber si ya se capturaron todos los cubitos
     static let completed = Coordinator()
@@ -55,11 +58,10 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         [false, false, false, false, false, false, false, false, false, false, false, false],
         [false, false, false, false, false, false, false, false, false, false, false, false],
         [false, false, false, false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false, false, false, false],
     ]
     // Array para saber cuando se ha completado cada zona independientemente, cuando se completa este array, se gana el juego
-    var arrayRunOnce = [false, false, false, false, false, false] // Anadir un campo adicional por cada zona
+    var arrayNombreObrasCompletadas: [String] = []
+    var arrayRunOnce = [false, false, false, false] // Anadir un campo adicional por cada zona
     var progresoActual = 0
     
     // Anchor para los modelos
@@ -108,9 +110,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     var materialTransparent = UnlitMaterial(color: .blue)
     
     // Variables for the Anchor Model
-    var entityPirinolaSalon: Entity? = ModelEntity()
     var modelPlaceholder: ModelEntity = ModelEntity()
-    var auxModel: Entity = ModelEntity()
     var textEntity: ModelEntity = ModelEntity()
     var box1: ModelEntity = ModelEntity()
     var box2: ModelEntity = ModelEntity()
@@ -153,13 +153,13 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     let box3Material = SimpleMaterial(color: .purple, isMetallic: false)
     let box4Material = SimpleMaterial(color: .yellow, isMetallic: false)
     let box5Material = SimpleMaterial(color: .orange, isMetallic: false)
-    let box6Material = SimpleMaterial(color: .yellow, isMetallic: false)
+    let box6Material = SimpleMaterial(color: .magenta, isMetallic: false)
     let box7Material = SimpleMaterial(color: .cyan, isMetallic: false)
-    let box8Material = SimpleMaterial(color: .brown, isMetallic: false)
-    let box9Material = SimpleMaterial(color: .cyan, isMetallic: false)
-    let box10Material = SimpleMaterial(color: .red, isMetallic: false)
-    let box11Material = SimpleMaterial(color: .blue, isMetallic: false)
-    let box12Material = SimpleMaterial(color: .orange, isMetallic: false)
+    let box8Material = SimpleMaterial(color: .green, isMetallic: false)
+    let box9Material = SimpleMaterial(color: .red, isMetallic: false)
+    let box10Material = SimpleMaterial(color: .blue, isMetallic: false)
+    let box11Material = SimpleMaterial(color: .purple, isMetallic: false)
+    let box12Material = SimpleMaterial(color: .magenta, isMetallic: false)
 
     // Inits the information from the API to the models variable with the Obras loaded
     func initModelsData(newObras: [Obra]) {
@@ -171,8 +171,9 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     }
     
     func initRutasData(newRutas: [URL]) {
-        if(newRutas.count != models.count) {
+        if(rutas.count != models.count) {
             rutas = newRutas
+            print("rutas: ")
             print(rutas)
         }
     }
@@ -280,49 +281,49 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         guard let view = self.view else { return }
         
         // Box - 1 Collision
-        box1 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [box1Material])
+        box1 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box1Material])
         box1.generateCollisionShapes(recursive: true)
         box1.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box1.name = "box/1/"
         view.installGestures(.all, for: box1)
         
         // Box - 2 Collision
-        box2 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [box2Material])
+        box2 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box2Material])
         box2.generateCollisionShapes(recursive: true)
         box2.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box2.name = "box/2/"
         view.installGestures(.all, for: box2)
         
         // Box - 3 Collision
-        box3 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [box3Material])
+        box3 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box3Material])
         box3.generateCollisionShapes(recursive: true)
         box3.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box3.name = "box/3/"
         view.installGestures(.all, for: box3)
         
         // Box - 4 Collision
-        box4 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [box4Material])
+        box4 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box4Material])
         box4.generateCollisionShapes(recursive: true)
         box4.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box4.name = "box/4/"
         view.installGestures(.all, for: box4)
 
         // Box - 5 Collision
-        box5 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [box5Material])
+        box5 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box5Material])
         box5.generateCollisionShapes(recursive: true)
         box5.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box5.name = "box/5/"
         view.installGestures(.all, for: box5)
         
         // Box - 6 Collision
-        box6 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [box6Material])
+        box6 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box6Material])
         box6.generateCollisionShapes(recursive: true)
         box6.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box6.name = "box/6/"
         view.installGestures(.all, for: box6)
         
         // Box - 7 Collision
-        box7 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [box7Material])
+        box7 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box7Material])
         box7.generateCollisionShapes(recursive: true)
         box7.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box7.name = "box/7/"
@@ -330,7 +331,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         
         
         // Box - 8 Collision
-        box8 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [box8Material])
+        box8 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box8Material])
         box8.generateCollisionShapes(recursive: true)
         box8.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box8.name = "box/8/"
@@ -338,7 +339,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         
         
         // Box - 9 Collision
-        box9 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [box9Material])
+        box9 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box9Material])
         box9.generateCollisionShapes(recursive: true)
         box9.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box9.name = "box/9/"
@@ -346,7 +347,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         
         
         // Box - 10 Collision
-        box10 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [box10Material])
+        box10 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box10Material])
         box10.generateCollisionShapes(recursive: true)
         box10.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box10.name = "box/10/"
@@ -354,7 +355,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         
         
         // Box - 11 Collision
-        box11 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [box11Material])
+        box11 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box11Material])
         box11.generateCollisionShapes(recursive: true)
         box11.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box11.name = "box/11/"
@@ -362,7 +363,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
 
         
         // Box - 12 Collision
-        box12 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02), materials: [box12Material])
+        box12 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box12Material])
         box12.generateCollisionShapes(recursive: true)
         box12.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box12.name = "box/12/"
@@ -545,7 +546,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         animationResource12 = try! AnimationResource.generate(with: animationDefinition12!)
         
         let modelPlaceholderMaterial = SimpleMaterial(color: .black, isMetallic: false)
-        modelPlaceholder = ModelEntity(mesh: MeshResource.generateBox(width: 0.6, height: 1.1, depth: 0.4), materials: [modelPlaceholderMaterial])
+        modelPlaceholder = ModelEntity(mesh: MeshResource.generateBox(width: 0.6, height: 1.1 , depth: 0.4), materials: [modelPlaceholderMaterial])
     }
     
     // Remove animation for box on collision with a Bullet
@@ -566,6 +567,26 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         animUpdateSubscriptions.append(view.scene.subscribe(to: AnimationEvents.PlaybackCompleted.self, on: entity)
         { _ in
             self.animate(entity: entity, angle: angle, axis: axis, duration: duration, loop: loop, currentPosition: currentPosition)
+        })
+    }
+    
+    // Remove animation for box on collision with a Bullet
+    func animateModel(entity: HasTransform, angle: Float, axis: SIMD3<Float>, duration: TimeInterval, loop: Bool, currentPosition: SIMD3<Float>){
+        guard let view = self.view else { return }
+        
+        var transform = entity.transform
+        transform.rotation *= simd_quatf(angle: angle, axis: axis)
+        transform.scale.x = 0.05
+        transform.scale.y = 0.05
+        transform.scale.z = 0.05
+        entity.move(to: transform,
+                    relativeTo: entity,
+                        duration: duration)
+
+        guard loop == true else { return }
+        animUpdateSubscriptions.append(view.scene.subscribe(to: AnimationEvents.PlaybackCompleted.self, on: entity)
+        { _ in
+            self.animateModel(entity: entity, angle: angle, axis: axis, duration: duration, loop: loop, currentPosition: currentPosition)
         })
     }
 
@@ -1009,7 +1030,12 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 view.scene.anchors[1].removeChild(box12)
                 print("se ejecutra el remove")
                 view.scene.anchors[1].removeChild(modelPlaceholder)
-                view.scene.anchors[1].removeChild(entityPirinolaSalon ?? auxModel)
+                // view.scene.anchors[1].removeChild(newEntity)
+                
+                for currModels in anchor.children {
+                    anchor.removeChild(currModels)
+                }
+                print("se ejecutra el remove CHLDREN: ", anchor.children.count)
                 
             }
             // Remove the actual anchor
@@ -1020,8 +1046,21 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             
             // Si aun no se ha montado la escena, se monta con este if
             if(view.scene.anchors.count == 1 && !models.isEmpty) {
+                
+                
                 modelPlaceholder.setPosition(SIMD3(x: 0, y: 0.4, z: 0), relativeTo: nil)
-                anchor.addChild(modelPlaceholder)
+                if (self.arrayRunOnce[self.currZona] == false) {
+                    modelPlaceholder.stopAllAnimations(recursive: true)
+                    print(modelPlaceholder.scale)
+                    if(modelPlaceholder.scale.x < 0.8) {
+                        modelPlaceholder.scale.x = 1
+                        modelPlaceholder.scale.y = 1
+                        modelPlaceholder.scale.z = 1
+                        self.modelPlaceholder.model?.materials = [SimpleMaterial(color: .black, isMetallic: false)]
+                    }
+                    
+                    anchor.addChild(modelPlaceholder)
+                }
                 
                 // Shows the text of the current Obra
                 textEntity = textGen(textString: models[currZona].nombre)
@@ -1040,7 +1079,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 box10.model?.materials = [box10Material]
                 box11.model?.materials = [box11Material]
                 box12.model?.materials = [box12Material]
-                                          
+                
                 if(self.arrayRunOnce[self.currZona] == false) {
                     if(self.arrayObjetos[self.currZona][0] == false) {
                         anchor.addChild(box1)
@@ -1084,7 +1123,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 anchor.move(to: Transform(translation: simd_float3(0,0,-1)), relativeTo: nil)
                 view.scene.addAnchor(anchor)
                 
-               
+                
                 // Play the orbiting animations
                 box1.playAnimation(animationResource1!)
                 box3.playAnimation(animationResource3!)
@@ -1098,11 +1137,47 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 box10.playAnimation(animationResource10!)
                 box11.playAnimation(animationResource11!)
                 box12.playAnimation(animationResource12!)
+                
+                
+                if(self.arrayRunOnce[self.currZona] == true) {
+                    print("ZONA PREVIAMENTE COMPLETADA: ", self.currZona)
+                    var rutaIndex = 0
+                    for (index, ruta) in self.rutas.enumerated() {
+                        let rutaName = ruta.absoluteString
+                        let firstIndex = rutaName.index(rutaName.lastIndex(of: "-")!, offsetBy: 1)
+                        let lastIndex = rutaName.index(rutaName.lastIndex(of: ".")!, offsetBy: -1)
+                        let completeName = rutaName[firstIndex...lastIndex]
+                        
+                        if(completeName.uppercased() == models[self.currZona].nombre.uppercased()) {
+                            rutaIndex = index
+                        }
+                    }
+                    
+                    newEntityPirinola = ModelEntity.loadModelAsync(contentsOf: self.rutas[rutaIndex])
+                        .sink { loadCompletion in
+                            if case let .failure(error) = loadCompletion {
+                                print("Unable to load model \(error)")
+                            }
+                            self.newEntityPirinola?.cancel()
+                        } receiveValue: { newEntity in
+                            newEntity.setPosition(SIMD3(x: 0, y: 0.6, z: 0), relativeTo: nil)
+                            newEntity.setScale(SIMD3(x: 0.09, y: 0.09, z: 0.09), relativeTo: newEntity)
+                            print("se carga con exito")
+                            // Change black entity for new model Entity
+                            if(view.scene.anchors.count == 2) {
+    //                            view.scene.anchors[1].children[0] = newEntity
+                                // view.scene.anchors[1].removeChild(self.modelPlaceholder)
+                                view.scene.anchors[1].addChild(newEntity)
+                            }
+                        }
+                }
             }
             
+            
+            
+            
             if(!self.arrayObjetos[self.currZona].contains(false) && self.arrayRunOnce[self.currZona] == false) {
-                // Anadir color a la Obra
-                // TODO: Anadir el USDZ directamente del modelo actual
+                
                 var rutaIndex = 0
                 for (index, ruta) in self.rutas.enumerated() {
                     let rutaName = ruta.absoluteString
@@ -1112,16 +1187,19 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                     
                     if(completeName.uppercased() == models[self.currZona].nombre.uppercased()) {
                         rutaIndex = index
- 
+                        
                     }
                 }
                 
+                
+                self.modelPlaceholder.model?.materials = [SimpleMaterial(color: .white, isMetallic: false)]
+                self.animateModel(entity: self.modelPlaceholder, angle: .pi, axis:  [0, 1, 0], duration: 4, loop: false, currentPosition: self.modelPlaceholder.position)
+ 
                 newEntityPirinola = ModelEntity.loadModelAsync(contentsOf: self.rutas[rutaIndex])
                     .sink { loadCompletion in
                         if case let .failure(error) = loadCompletion {
                             print("Unable to load model \(error)")
                         }
-                    
                         self.newEntityPirinola?.cancel()
                     } receiveValue: { newEntity in
                         newEntity.setPosition(SIMD3(x: 0, y: 0.6, z: 0), relativeTo: nil)
@@ -1134,10 +1212,14 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                             view.scene.anchors[1].addChild(newEntity)
                             
                             if(self.arrayRunOnce[self.currZona] == false) {
+                                
                                 self.arrayRunOnce[self.currZona] = true
+                                self.arrayNombreObrasCompletadas.append(self.models[self.currZona].nombre)
                             
                                 self.progresoActual = self.progresoActual + 1
                                 print("Progreso: ", self.progresoActual)
+                                print(self.arrayNombreObrasCompletadas)
+                                print("ZONA NUEVA COMPLETADA: ", self.currZona)
                                 
                                 // Checks when the game has been completed
                                 if(!self.arrayRunOnce.contains(false)) {

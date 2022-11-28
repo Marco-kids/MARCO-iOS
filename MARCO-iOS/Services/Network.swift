@@ -9,8 +9,8 @@ import SwiftUI
 import Combine
 
 // private let url = "http://10.14.255.70:10205/api/all-obras"
-// private let url = "http://192.168.100.29:8080/api/all-obras" // Casita
-private let url = "http://10.22.186.29:8080/api/all-obras" // Salon Swift
+private let url = "http://192.168.100.29:8080/api/all-obras" // Casita
+// private let url = "http://10.22.189.202:8080/api/all-obras" // Salon Swift
 
 class Network: NSObject, ObservableObject {
     
@@ -30,7 +30,6 @@ class Network: NSObject, ObservableObject {
         let urlRequest = URLRequest(url: url)
 
         let dataTask = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
-            
             if let error = error {
                 print("Request error: ", error)
                 return
@@ -38,6 +37,7 @@ class Network: NSObject, ObservableObject {
 
             guard let response = response as? HTTPURLResponse else { return }
 
+            print("URL error")
             if response.statusCode == 200 {
                 guard let data = data else { return }
                 DispatchQueue.main.async {
@@ -45,6 +45,8 @@ class Network: NSObject, ObservableObject {
                         let decodedModels = try JSONDecoder().decode([Obra].self, from: data)
                         self.models = decodedModels
                         self.obrasPublisher.send(decodedModels)
+                        print(decodedModels)
+                        // TODO: Uncomment
                         self.loadModels() // Downloads USDZ models
                     } catch let error {
                         print("Error decoding: ", error)

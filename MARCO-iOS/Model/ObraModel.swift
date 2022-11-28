@@ -13,6 +13,7 @@ struct Obra:  Decodable {
     var autor : String
     var descripcion : String
     var modelo : String
-    var longitud : String
-    var latitud : String
+//    var longitud : String
+//    var latitud : String
+    var zona: String
 }
