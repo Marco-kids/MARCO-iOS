@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		0525C3DF2911DBE400BD410B /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0525C3DE2911DBE400BD410B /* Coordinator.swift */; };
-		0525C3E12911DD2500BD410B /* Models in Resources */ = {isa = PBXBuildFile; fileRef = 0525C3E02911DD2500BD410B /* Models */; };
 		0525C3E42911DE7600BD410B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0525C3E32911DE7600BD410B /* Assets.xcassets */; };
 		053CE2302926FF0A0005EE43 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 053CE22F2926FF0A0005EE43 /* Network.swift */; };
 		053CE2342926FF830005EE43 /* ObraModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 053CE2332926FF830005EE43 /* ObraModel.swift */; };
@@ -20,13 +19,11 @@
 		FC64E63928F7330D00FCB2AA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC64E63828F7330D00FCB2AA /* Preview Assets.xcassets */; };
 		FC80D9D0292EFFB600724704 /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC80D9CF292EFFB600724704 /* ProgressView.swift */; };
 		FC80D9D3292F038200724704 /* ProgressRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC80D9D2292F038200724704 /* ProgressRowView.swift */; };
-		FCE7CB9928FF8CB50011CF69 /* TabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCE7CB9828FF8CB50011CF69 /* TabBarView.swift */; };
 		FCF4F79928FF3A540017043F /* TutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF4F79828FF3A540017043F /* TutorialView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0525C3DE2911DBE400BD410B /* Coordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
-		0525C3E02911DD2500BD410B /* Models */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Models; sourceTree = "<group>"; };
 		0525C3E32911DE7600BD410B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		053CE22F2926FF0A0005EE43 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		053CE2332926FF830005EE43 /* ObraModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObraModel.swift; sourceTree = "<group>"; };
@@ -40,7 +37,6 @@
 		FC64E63828F7330D00FCB2AA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		FC80D9CF292EFFB600724704 /* ProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
 		FC80D9D2292F038200724704 /* ProgressRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressRowView.swift; sourceTree = "<group>"; };
-		FCE7CB9828FF8CB50011CF69 /* TabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarView.swift; sourceTree = "<group>"; };
 		FCF4F79828FF3A540017043F /* TutorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -58,6 +54,7 @@
 		053CE22E2926FEF80005EE43 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				FB5F879828FF705100A4E95C /* DeviceLocationService.swift */,
 				053CE22F2926FF0A0005EE43 /* Network.swift */,
 			);
 			path = Services;
@@ -75,14 +72,11 @@
 			isa = PBXGroup;
 			children = (
 				FC64E63328F7330C00FCB2AA /* ContentView.swift */,
-				FC32475C28FF34170034F324 /* ARView.swift */,
-				FB5F879828FF705100A4E95C /* DeviceLocationService.swift */,
-				0525C3DE2911DBE400BD410B /* Coordinator.swift */,
 				FC80D9CF292EFFB600724704 /* ProgressView.swift */,
 				FC80D9D2292F038200724704 /* ProgressRowView.swift */,
 				FC53ACF4292F2E5A00A582B0 /* ObraView.swift */,
+				FC32475C28FF34170034F324 /* ARView.swift */,
 				FCF4F79828FF3A540017043F /* TutorialView.swift */,
-				FCE7CB9828FF8CB50011CF69 /* TabBarView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -109,10 +103,10 @@
 				FB5F879528FF654600A4E95C /* Info.plist */,
 				0525C3E32911DE7600BD410B /* Assets.xcassets */,
 				FC64E63128F7330C00FCB2AA /* MARCO_iOSApp.swift */,
-				FC32475B28FF34090034F324 /* Views */,
 				053CE2322926FF610005EE43 /* Model */,
+				FC32475B28FF34090034F324 /* Views */,
+				FC7BBE9A293558AA0082CD0E /* Controller */,
 				053CE22E2926FEF80005EE43 /* Services */,
-				0525C3E02911DD2500BD410B /* Models */,
 				FC64E63728F7330D00FCB2AA /* Preview Content */,
 			);
 			path = "MARCO-iOS";
@@ -124,6 +118,14 @@
 				FC64E63828F7330D00FCB2AA /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		FC7BBE9A293558AA0082CD0E /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				0525C3DE2911DBE400BD410B /* Coordinator.swift */,
+			);
+			path = Controller;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -186,7 +188,6 @@
 			files = (
 				FC64E63928F7330D00FCB2AA /* Preview Assets.xcassets in Resources */,
 				0525C3E42911DE7600BD410B /* Assets.xcassets in Resources */,
-				0525C3E12911DD2500BD410B /* Models in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -207,7 +208,6 @@
 				FC53ACF5292F2E5A00A582B0 /* ObraView.swift in Sources */,
 				FC80D9D0292EFFB600724704 /* ProgressView.swift in Sources */,
 				FC64E63228F7330C00FCB2AA /* MARCO_iOSApp.swift in Sources */,
-				FCE7CB9928FF8CB50011CF69 /* TabBarView.swift in Sources */,
 				FC32475D28FF34170034F324 /* ARView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -17,11 +17,12 @@ struct ContentView: View {
     @State var models: [Obra] = []
     @State var rutas: [URL] = []
     
+    // Tabbar selection
     @State private var selection = 2
     
     // Coordinates variables
     @StateObject var deviceLocationService = DeviceLocationService.shared
-
+    
     @State var tokens: Set<AnyCancellable> = []
     @State var coordinates: (lat: Double, lon: Double) = (1.0,1.0)
     @State var textColor: Color = .red
@@ -32,7 +33,7 @@ struct ContentView: View {
     // Casa
     var objetoLimitLat = [25.65700, 25.658700]
     var objetoLimitLon =  [-100.26000, -100.25000]
-
+    
     // Simulador
     // var objetoLimitLat = [0.0000, 100.0000]
     //  var objetoLimitLon =  [-123.00000, -122.00000]
@@ -42,7 +43,9 @@ struct ContentView: View {
     // Simulador cualquier lugar
     // var objetoLimitLat = [20.0000, 28.00000]
     // var objetoLimitLon =  [-101.00000, -100.0000]
-
+    
+    // Light or dark mode
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         
@@ -84,14 +87,14 @@ struct ContentView: View {
         
         TabView(selection:$selection) {
             
-            Text("Your Progress" )
+            ProgressView()
                 .font(.system(size: 30, weight: .bold, design: .rounded))
                 .tabItem {
                     Image(systemName: "list.clipboard")
                     Text("Progress")
                 }
                 .tag(1)
-
+            
             ARViewContainer(coordinates: .constant((lat: coordinates.lat, lon: coordinates.lon)), models: .constant(self.models), rutas: .constant(self.rutas))
                 .edgesIgnoringSafeArea(.top)
                 .font(.system(size: 30, weight: .bold, design: .rounded))
@@ -101,7 +104,6 @@ struct ContentView: View {
                 }
                 .tag(2)
             
-
             Text("Settings")
                 .font(.system(size: 30, weight: .bold, design: .rounded))
                 .tabItem {
@@ -110,13 +112,19 @@ struct ContentView: View {
                 }
                 .tag(3)
         }
+        .accentColor(colorScheme == .dark ? Color.white : Color.black)
         .onAppear {
-                        observeCoordinateUpdates()
-                        observeDeniedLocationAccess()
-                        deviceLocationService.requestLocationUpdates()
-                        network.getModels()
-                        observeModels()
-                    }
+            // Correct the transparency bug for Tab Bars
+            let tabBarAppearance = UITabBarAppearance()
+            tabBarAppearance.configureWithOpaqueBackground()
+            UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
+            // Starting methods
+            observeCoordinateUpdates()
+            observeDeniedLocationAccess()
+            deviceLocationService.requestLocationUpdates()
+            network.getModels()
+            observeModels()
+        }
     }
     
     // Returns the models when received
@@ -139,42 +147,26 @@ struct ContentView: View {
             }
             .store(in: &tokens)
     }
-
+    
     // Updates coordinates
     func observeCoordinateUpdates() {
-            deviceLocationService.coordinatesPublisher
-                .receive(on: DispatchQueue.main)
-                .sink { completion in
-                    print("Handle \(completion) for error and finished subscription.")
-                } receiveValue: { coordinates in
-                    self.coordinates = (coordinates.latitude, coordinates.longitude)
-                }
-                .store(in: &tokens)
-        }
-
+        deviceLocationService.coordinatesPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                print("Handle \(completion) for error and finished subscription.")
+            } receiveValue: { coordinates in
+                self.coordinates = (coordinates.latitude, coordinates.longitude)
+            }
+            .store(in: &tokens)
+    }
+    
     func observeDeniedLocationAccess() {
         deviceLocationService.deniedLocationAccessPublisher
             .receive(on: DispatchQueue.main)
             .sink {
                 print("Handle access denied event, possibly with an alert.")
-                }
-                .store(in: &tokens)
-// =======
-
-// struct ContentView: View {
+            }
+            .store(in: &tokens)
+    }
     
-//     var body: some View {
-//        ZStack {
-//             TabBarView()
-//             TutorialView()
-//         }
-// >>>>>>> main
-    }
 }
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-}
-
