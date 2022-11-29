@@ -15,14 +15,15 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     
     weak var view: ARView?
     var collisionSubscriptions = [Cancellable]()
-    
     // Obras/models from the API
+    @StateObject var network = Network.sharedInstance
     var models: [Obra] = []
     var rutas: [URL] = []
     // Checks if the obras/models are already loaded (to avoid loading more than once)
     var modelsLoaded = false
     // Array of zonas in the MARCO
     var zonas: Array<(name: String, latMin: Double, latMax: Double, lonMin: Double, lonMax: Double)> = [
+        // (Nombre, latMax, latMin, lonMin, LonMax)
         ("Zona E", 25.65000, 25.7000, -100.26000, -100.25000), // Tec biblio 1
         ("Zona B", 25.60008, 25.6600, -100.29169, -100.28800), // Salon Swift
         ("Zona A", 25.65000, 25.66000, -100.26000, -100.25000), // Mi casita
@@ -1225,6 +1226,8 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                         newEntity.setPosition(SIMD3(x: 0, y: 0.6, z: 0), relativeTo: nil)
                         newEntity.setScale(SIMD3(x: 0.09, y: 0.09, z: 0.09), relativeTo: newEntity)
                         print("se carga con exito")
+                        self.network.models[0].completed = true
+                        print(self.network.models)
                         // Change black entity for new model Entity
                         if(view.scene.anchors.count == 2) {
 //                            view.scene.anchors[1].children[0] = newEntity

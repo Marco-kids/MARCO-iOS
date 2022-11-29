@@ -36,7 +36,9 @@ struct ProgressView: View {
                         LazyVStack {
                             ForEach(network.models, id: \.self) { model in
                                 NavigationLink(destination: ObraView(obra: model)) {
-                                    ProgressRowView(obra: model, url: URL(string: model.modelo)!)
+                                    if (model.completed) {
+                                        ProgressRowView(obra: model, url: URL(string: model.modelo)!)
+                                    }
                                 }
                             }
                         }
