@@ -24,7 +24,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     // Array of zonas in the MARCO
     var zonas: Array<(name: String, latMin: Double, latMax: Double, lonMin: Double, lonMax: Double)> = [
         ("Zona E", 25.65000, 25.7000, -100.26000, -100.25000), // Tec biblio 1
-        ("Zona B", 25.60008, 25.650050, -100.29169, -100.28800), // Salon Swift
+        ("Zona B", 25.60008, 25.6600, -100.29169, -100.28800), // Salon Swift
         ("Zona A", 25.65000, 25.66000, -100.26000, -100.25000), // Mi casita
         ("Zona C", 25.65700, 25.658700, -100.26000, -100.25000), // Piso abajo 1
         ("Zona D", 25.6587001, 25.66700, -100.26000, -100.25000), // Piso abajo 2
@@ -65,8 +65,8 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     var progresoActual = 0
     
     // Anchor para los modelos
-    // let anchor = AnchorEntity(plane: .horizontal, classification: .floor) // Production
-    let anchor = AnchorEntity(plane: .horizontal) // For testing puposes
+    let anchor = AnchorEntity(plane: .horizontal, classification: .floor) // Production
+    //  let anchor = AnchorEntity(plane: .horizontal) // For testing puposes
     // let anchor = AnchorEntity()
     
     let anchorBullet = AnchorEntity(world: [0,0,0])

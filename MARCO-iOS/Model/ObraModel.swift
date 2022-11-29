@@ -13,7 +13,10 @@ struct Obra:  Decodable, Hashable {
     var autor : String
     var descripcion : String
     var modelo : String
-//    var longitud : String
-//    var latitud : String
     var zona: String
+    var completed: Bool = false
+    
+    private enum CodingKeys: String, CodingKey {
+        case _id, nombre, autor, descripcion, modelo, zona
+    }
 }

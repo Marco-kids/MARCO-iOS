@@ -48,43 +48,43 @@ struct ContentView: View {
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
-        
-//        VStack {
-//            if (coordinates.lat > pirinolaLimitLat[0] && coordinates.lat < pirinolaLimitLat[1] && coordinates.lon > pirinolaLimitLon[0] && coordinates.lon < pirinolaLimitLon[1]) {
-//                Text("Latitude: \(coordinates.lat)")
-//                    .font(.largeTitle)
-//                    .foregroundColor(.green)
-//                Text("Longitude: \(coordinates.lon)")
-//                    .font(.largeTitle)
-//                    .foregroundColor(.green)
-//            } else if (coordinates.lat > objetoLimitLat[0] && coordinates.lat < objetoLimitLat[1] && coordinates.lon > objetoLimitLon[0] && coordinates.lon < objetoLimitLon[1]) {
-//                Text("Latitude: \(coordinates.lat)")
-//                    .font(.largeTitle)
-//                    .foregroundColor(.blue)
-//                Text("Longitude: \(coordinates.lon)")
-//                    .font(.largeTitle)
-//                    .foregroundColor(.blue)
-//            } else {
-//                Text("Latitude: \(coordinates.lat)")
-//                    .font(.largeTitle)
-//                    .foregroundColor(.red)
-//                Text("Longitude: \(coordinates.lon)")
-//                    .font(.largeTitle)
-//                    .foregroundColor(.red)
-//            }
-//
-//            if(completed.complete) {
-//                Text("SI completado")
-//                    .font(.largeTitle)
-//                    .foregroundColor(.green)
-//            } else {
-//                Text("NO completado")
-//                    .font(.largeTitle)
-//                    .foregroundColor(.red)
-//            }
-//
-//        }
-        
+            
+    //        VStack {
+    //            if (coordinates.lat > pirinolaLimitLat[0] && coordinates.lat < pirinolaLimitLat[1] && coordinates.lon > pirinolaLimitLon[0] && coordinates.lon < pirinolaLimitLon[1]) {
+    //                Text("Latitude: \(coordinates.lat)")
+    //                    .font(.largeTitle)
+    //                    .foregroundColor(.green)
+    //                Text("Longitude: \(coordinates.lon)")
+    //                    .font(.largeTitle)
+    //                    .foregroundColor(.green)
+    //            } else if (coordinates.lat > objetoLimitLat[0] && coordinates.lat < objetoLimitLat[1] && coordinates.lon > objetoLimitLon[0] && coordinates.lon < objetoLimitLon[1]) {
+    //                Text("Latitude: \(coordinates.lat)")
+    //                    .font(.largeTitle)
+    //                    .foregroundColor(.blue)
+    //                Text("Longitude: \(coordinates.lon)")
+    //                    .font(.largeTitle)
+    //                    .foregroundColor(.blue)
+    //            } else {
+    //                Text("Latitude: \(coordinates.lat)")
+    //                    .font(.largeTitle)
+    //                    .foregroundColor(.red)
+    //                Text("Longitude: \(coordinates.lon)")
+    //                    .font(.largeTitle)
+    //                    .foregroundColor(.red)
+    //            }
+    //
+    //            if(completed.complete) {
+    //                Text("SI completado")
+    //                    .font(.largeTitle)
+    //                    .foregroundColor(.green)
+    //            } else {
+    //                Text("NO completado")
+    //                    .font(.largeTitle)
+    //                    .foregroundColor(.red)
+    //            }
+    //
+    //        }
+            
         ZStack {
             TabView(selection:$selection) {
                 
