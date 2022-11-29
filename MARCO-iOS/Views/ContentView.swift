@@ -17,6 +17,8 @@ struct ContentView: View {
     @State var models: [Obra] = []
     @State var rutas: [URL] = []
     
+    // @ObservedObject var coordinator = Coordinator.completed
+    
     // Tabbar selection
     @State private var selection = 2
     
@@ -128,6 +130,8 @@ struct ContentView: View {
             }
             
             TutorialView()
+        }.sheet(isPresented: $completed.currSheet) {
+            ObraView(obra: network.models[0])
         }
     }
     

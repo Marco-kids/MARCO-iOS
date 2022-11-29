@@ -17,6 +17,13 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     var collisionSubscriptions = [Cancellable]()
     // Obras/models from the API
     @StateObject var network = Network.sharedInstance
+    
+//    @Published var showingSheet: Bool
+//
+//    override init() {
+//        self.showingSheet = false
+//    }
+    
     var models: [Obra] = []
     var rutas: [URL] = []
     // Checks if the obras/models are already loaded (to avoid loading more than once)
@@ -43,6 +50,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     // Variable para saber si ya se capturaron todos los cubitos
     static let completed = Coordinator()
     var complete = false
+    var currSheet = false
     
     // Grupos para detectar colisiones
     let boxGroup = CollisionGroup(rawValue: 1 << 0)
@@ -1227,7 +1235,12 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                         newEntity.setScale(SIMD3(x: 0.09, y: 0.09, z: 0.09), relativeTo: newEntity)
                         print("se carga con exito")
                         self.network.models[0].completed = true
+                        // self.showingSheet = true
+                        Coordinator.completed.currSheet = true
                         print(self.network.models)
+//                        ObraView(obra: self.network.models[0])
+                        
+                        
                         // Change black entity for new model Entity
                         if(view.scene.anchors.count == 2) {
 //                            view.scene.anchors[1].children[0] = newEntity
