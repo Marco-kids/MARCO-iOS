@@ -48,82 +48,86 @@ struct ContentView: View {
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
-        
-        VStack {
-            if (coordinates.lat > pirinolaLimitLat[0] && coordinates.lat < pirinolaLimitLat[1] && coordinates.lon > pirinolaLimitLon[0] && coordinates.lon < pirinolaLimitLon[1]) {
-                Text("Latitude: \(coordinates.lat)")
-                    .font(.largeTitle)
-                    .foregroundColor(.green)
-                Text("Longitude: \(coordinates.lon)")
-                    .font(.largeTitle)
-                    .foregroundColor(.green)
-            } else if (coordinates.lat > objetoLimitLat[0] && coordinates.lat < objetoLimitLat[1] && coordinates.lon > objetoLimitLon[0] && coordinates.lon < objetoLimitLon[1]) {
-                Text("Latitude: \(coordinates.lat)")
-                    .font(.largeTitle)
-                    .foregroundColor(.blue)
-                Text("Longitude: \(coordinates.lon)")
-                    .font(.largeTitle)
-                    .foregroundColor(.blue)
-            } else {
-                Text("Latitude: \(coordinates.lat)")
-                    .font(.largeTitle)
-                    .foregroundColor(.red)
-                Text("Longitude: \(coordinates.lon)")
-                    .font(.largeTitle)
-                    .foregroundColor(.red)
+            
+    //        VStack {
+    //            if (coordinates.lat > pirinolaLimitLat[0] && coordinates.lat < pirinolaLimitLat[1] && coordinates.lon > pirinolaLimitLon[0] && coordinates.lon < pirinolaLimitLon[1]) {
+    //                Text("Latitude: \(coordinates.lat)")
+    //                    .font(.largeTitle)
+    //                    .foregroundColor(.green)
+    //                Text("Longitude: \(coordinates.lon)")
+    //                    .font(.largeTitle)
+    //                    .foregroundColor(.green)
+    //            } else if (coordinates.lat > objetoLimitLat[0] && coordinates.lat < objetoLimitLat[1] && coordinates.lon > objetoLimitLon[0] && coordinates.lon < objetoLimitLon[1]) {
+    //                Text("Latitude: \(coordinates.lat)")
+    //                    .font(.largeTitle)
+    //                    .foregroundColor(.blue)
+    //                Text("Longitude: \(coordinates.lon)")
+    //                    .font(.largeTitle)
+    //                    .foregroundColor(.blue)
+    //            } else {
+    //                Text("Latitude: \(coordinates.lat)")
+    //                    .font(.largeTitle)
+    //                    .foregroundColor(.red)
+    //                Text("Longitude: \(coordinates.lon)")
+    //                    .font(.largeTitle)
+    //                    .foregroundColor(.red)
+    //            }
+    //
+    //            if(completed.complete) {
+    //                Text("SI completado")
+    //                    .font(.largeTitle)
+    //                    .foregroundColor(.green)
+    //            } else {
+    //                Text("NO completado")
+    //                    .font(.largeTitle)
+    //                    .foregroundColor(.red)
+    //            }
+    //
+    //        }
+            
+        ZStack {
+            TabView(selection:$selection) {
+                
+                ProgressView()
+                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                    .tabItem {
+                        Image(systemName: "list.clipboard")
+                        Text("Progress")
+                    }
+                    .tag(1)
+                
+                ARViewContainer(coordinates: .constant((lat: coordinates.lat, lon: coordinates.lon)), models: .constant(self.models), rutas: .constant(self.rutas))
+                    .edgesIgnoringSafeArea(.top)
+                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                    .tabItem {
+                        Image(systemName: "camera.fill")
+                        Text("Camera")
+                    }
+                    .tag(2)
+                
+                Text("Settings")
+                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                    .tabItem {
+                        Image(systemName: "gear")
+                        Text("Settings")
+                    }
+                    .tag(3)
+            }
+            .accentColor(colorScheme == .dark ? Color.white : Color.black)
+            .onAppear {
+                // Correct the transparency bug for Tab Bars
+                let tabBarAppearance = UITabBarAppearance()
+                tabBarAppearance.configureWithOpaqueBackground()
+                UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
+                // Starting methods
+                observeCoordinateUpdates()
+                observeDeniedLocationAccess()
+                deviceLocationService.requestLocationUpdates()
+                network.getModels()
+                observeModels()
             }
             
-            if(completed.complete) {
-                Text("SI completado")
-                    .font(.largeTitle)
-                    .foregroundColor(.green)
-            } else {
-                Text("NO completado")
-                    .font(.largeTitle)
-                    .foregroundColor(.red)
-            }
-
-        }
-        
-        TabView(selection:$selection) {
-            
-            ProgressView()
-                .font(.system(size: 30, weight: .bold, design: .rounded))
-                .tabItem {
-                    Image(systemName: "list.clipboard")
-                    Text("Progress")
-                }
-                .tag(1)
-            
-            ARViewContainer(coordinates: .constant((lat: coordinates.lat, lon: coordinates.lon)), models: .constant(self.models), rutas: .constant(self.rutas))
-                .edgesIgnoringSafeArea(.top)
-                .font(.system(size: 30, weight: .bold, design: .rounded))
-                .tabItem {
-                    Image(systemName: "camera.fill")
-                    Text("Camera")
-                }
-                .tag(2)
-            
-            Text("Settings")
-                .font(.system(size: 30, weight: .bold, design: .rounded))
-                .tabItem {
-                    Image(systemName: "gear")
-                    Text("Settings")
-                }
-                .tag(3)
-        }
-        .accentColor(colorScheme == .dark ? Color.white : Color.black)
-        .onAppear {
-            // Correct the transparency bug for Tab Bars
-            let tabBarAppearance = UITabBarAppearance()
-            tabBarAppearance.configureWithOpaqueBackground()
-            UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
-            // Starting methods
-            observeCoordinateUpdates()
-            observeDeniedLocationAccess()
-            deviceLocationService.requestLocationUpdates()
-            network.getModels()
-            observeModels()
+            TutorialView()
         }
     }
     
