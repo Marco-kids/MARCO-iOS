@@ -94,7 +94,7 @@ struct ContentView: View {
                 ProgressView()
                     .font(.system(size: 30, weight: .bold, design: .rounded))
                     .tabItem {
-                        Image(systemName: "list.clipboard")
+                        Image(systemName: "square.and.pencil")
                         Text("Progress")
                     }
                     .tag(1)

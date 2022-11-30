@@ -113,7 +113,7 @@ extension CardView {
                                 .foregroundColor(.black)
                                 .padding(.top, 3)
                         }
-                        .frame(width: 280, height: 200)
+                        .frame(width: proxy.size.width/3, height: proxy.size.height/6)
                     }
                     .padding(.top, 0)
                     .padding(.bottom, 40)
