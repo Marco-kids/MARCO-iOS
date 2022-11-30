@@ -32,6 +32,7 @@ struct ContentView: View {
     // Obra de arte completada
     @StateObject var completed = Coordinator.completed
     
+    
     // Casa
     var objetoLimitLat = [25.65700, 25.658700]
     var objetoLimitLon =  [-100.26000, -100.25000]
@@ -131,7 +132,7 @@ struct ContentView: View {
             
             TutorialView()
         }.sheet(isPresented: $completed.currSheet) {
-            ObraView(obra: network.models[0])
+            ObraView(obra: completed.currModel)
         }
     }
     

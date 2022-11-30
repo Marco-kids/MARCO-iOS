@@ -26,11 +26,11 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     var zonas: Array<(name: String, latMin: Double, latMax: Double, lonMin: Double, lonMax: Double)> = [
         // (Nombre, latMax, latMin, lonMin, LonMax)
         // ("Zona E", 25.65000, 25.7000, -100.26000, -100.25000), // Tec biblio 1
-        ("Zona B", 25.60008, 25.6600, -100.29169, -100.28800), // Salon Swift
         ("Zona A", 25.65000, 25.66000, -100.26000, -100.25000), // Mi casita
         ("Zona C", 25.65700, 25.658700, -100.26000, -100.25000), // Piso abajo 1
         ("Zona D", 25.6587001, 25.66700, -100.26000, -100.25000), // Piso abajo 2
         ("Zona G", 25.00000, 25.4999, -100.26000, -100.25000), // Tec biblio 2
+        ("Zona B", 25.60008, 25.6600, -100.29169, -100.28800), // Salon Swift
         
        //  ("Zona G", 25.650051, 25.70000, -100.29169, -100.28800) // Salon Swift 2
     ]
@@ -45,6 +45,9 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     static let completed = Coordinator()
     var complete = false
     var currSheet = false
+    var currModel: Obra = Obra(_id: "", nombre: "Hola", autor: "", descripcion: "", modelo: "", zona: "")
+    var progreso: CGFloat = 0
+    var progresoActual: Int = 0
     
     // Grupos para detectar colisiones
     let boxGroup = CollisionGroup(rawValue: 1 << 0)
@@ -61,11 +64,13 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         [false, false, false, false, false, false, false, false, false, false, false, false],
         [false, false, false, false, false, false, false, false, false, false, false, false],
         [false, false, false, false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false, false, false, false],
     ]
     // Array para saber cuando se ha completado cada zona independientemente, cuando se completa este array, se gana el juego
     var arrayNombreObrasCompletadas: [String] = []
-    var arrayRunOnce = [false, false, false, false] // Anadir un campo adicional por cada zona
-    var progresoActual = 0
+    var arrayRunOnce = [false, false, false, false, false, false, false] // Anadir un campo adicional por cada zona
     
     // Anchor para los modelos
     // let anchor = AnchorEntity(plane: .horizontal, classification: .floor) // Production
@@ -166,11 +171,11 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
 
     // Inits the information from the API to the models variable with the Obras loaded
     func initModelsData(newObras: [Obra]) {
-        if(count < 8) {
+        // if(count < 8) {
             models = newObras
             print(models)
             count = count + 1
-        }
+        // }
     }
     
     func runCoachingOverlay() {
@@ -1198,6 +1203,10 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                         newEntity.setScale(SIMD3(x: 0.09, y: 0.09, z: 0.09), relativeTo: newEntity)
                         print("se carga con exito")
                         
+                        
+                        Coordinator.completed.currModel = self.network.models[self.currZona]
+                        Coordinator.completed.progreso += 0.1
+                        Coordinator.completed.progresoActual += 1
                         self.network.models[self.currZona].completed = true
                         Coordinator.completed.currSheet = true
                         
