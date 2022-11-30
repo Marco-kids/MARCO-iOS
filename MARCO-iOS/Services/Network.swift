@@ -73,7 +73,7 @@ class Network: NSObject, ObservableObject {
             if fileManager.fileExists(atPath: destinationUrl.path) {
                 try! fileManager.removeItem(atPath: destinationUrl.path)
             }
-            try? fileManager.moveItem(atPath: location!.path, toPath: destinationUrl.path)
+            try? fileManager.moveItem(atPath: location?.path ?? "", toPath: destinationUrl.path) // MARK: Check errors to catch in ?? and ""
             DispatchQueue.main.async {
                 for (index, obra) in self.models.enumerated() {
                     if obra.modelo == model {
