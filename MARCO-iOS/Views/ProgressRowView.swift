@@ -28,10 +28,10 @@ struct ProgressRowView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 VStack(spacing: 5) {
                     Text(obra.nombre)
-                        .font(.title).bold()
+                        .font(.title3).bold()
                         .foregroundColor(Color(.white))
                     Text(obra.autor)
-                        .font(.title3).bold()
+                        .font(.headline).bold()
                         .foregroundColor(Color(.white))
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
