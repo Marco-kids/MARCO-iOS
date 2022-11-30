@@ -8,9 +8,9 @@
 import SwiftUI
 import Combine
 
-private let url = "http://10.14.255.70:10205/api/all-obras"
+// private let url = "http://10.14.255.70:10205/api/all-obras"
 // private let url = "http://192.168.100.29:8080/api/all-obras" // Casita
-// private let url = "http://10.22.187.200:8080/api/all-obras" // Salon Swift
+private let url = "http://10.22.186.24:8080/api/all-obras" // Salon Swift
 // private let url = "http://192.168.1.236:8080/api/all-obras" // Casa Jose
 
 class Network: NSObject, ObservableObject {
@@ -18,11 +18,8 @@ class Network: NSObject, ObservableObject {
     static let sharedInstance = Network() // Comparte la instancia de Network() entre clases views, etc.
     
     @Published var models: [Obra] = []
-    @Published var rutas: [URL] = []
     
     var obrasPublisher = PassthroughSubject<[Obra], Error>()
-    var rutasPublisher = PassthroughSubject<[URL], Error>()
-    
     
     func getModels() {
         print("Started USDZ request")
@@ -45,9 +42,8 @@ class Network: NSObject, ObservableObject {
                     do {
                         let decodedModels = try JSONDecoder().decode([Obra].self, from: data)
                         self.models = decodedModels
-                        self.obrasPublisher.send(decodedModels)
                         print(decodedModels)
-                        // TODO: Uncomment
+                        self.obrasPublisher.send(self.models)
                         self.loadModels() // Downloads USDZ models
                     } catch let error {
                         print("Error decoding: ", error)
@@ -77,15 +73,15 @@ class Network: NSObject, ObservableObject {
             if fileManager.fileExists(atPath: destinationUrl.path) {
                 try! fileManager.removeItem(atPath: destinationUrl.path)
             }
-            try! fileManager.moveItem(atPath: location!.path, toPath: destinationUrl.path)
+            try? fileManager.moveItem(atPath: location!.path, toPath: destinationUrl.path)
             DispatchQueue.main.async {
-                self.rutas.append(destinationUrl)
                 for (index, obra) in self.models.enumerated() {
                     if obra.modelo == model {
                         self.models[index].modelo = destinationUrl.absoluteString
+                        print("Loading models")
                     }
                 }
-                self.rutasPublisher.send(self.rutas)
+                self.obrasPublisher.send(self.models)
             }
         })
         downloadTask.resume()

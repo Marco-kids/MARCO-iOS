@@ -15,23 +15,17 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     
     weak var view: ARView?
     var collisionSubscriptions = [Cancellable]()
+    
     // Obras/models from the API
     @StateObject var network = Network.sharedInstance
     
-//    @Published var showingSheet: Bool
-//
-//    override init() {
-//        self.showingSheet = false
-//    }
-    
     var models: [Obra] = []
-    var rutas: [URL] = []
-    // Checks if the obras/models are already loaded (to avoid loading more than once)
-    var modelsLoaded = false
+    var count: Int = 0
+
     // Array of zonas in the MARCO
     var zonas: Array<(name: String, latMin: Double, latMax: Double, lonMin: Double, lonMax: Double)> = [
         // (Nombre, latMax, latMin, lonMin, LonMax)
-        ("Zona E", 25.65000, 25.7000, -100.26000, -100.25000), // Tec biblio 1
+        // ("Zona E", 25.65000, 25.7000, -100.26000, -100.25000), // Tec biblio 1
         ("Zona B", 25.60008, 25.6600, -100.29169, -100.28800), // Salon Swift
         ("Zona A", 25.65000, 25.66000, -100.26000, -100.25000), // Mi casita
         ("Zona C", 25.65700, 25.658700, -100.26000, -100.25000), // Piso abajo 1
@@ -74,8 +68,8 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     var progresoActual = 0
     
     // Anchor para los modelos
-    let anchor = AnchorEntity(plane: .horizontal, classification: .floor) // Production
-    //  let anchor = AnchorEntity(plane: .horizontal) // For testing puposes
+    // let anchor = AnchorEntity(plane: .horizontal, classification: .floor) // Production
+    let anchor = AnchorEntity(plane: .horizontal) // For testing puposes
     // let anchor = AnchorEntity()
     
     let anchorBullet = AnchorEntity(world: [0,0,0])
@@ -172,18 +166,10 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
 
     // Inits the information from the API to the models variable with the Obras loaded
     func initModelsData(newObras: [Obra]) {
-        if(!newObras.isEmpty && modelsLoaded == false) {
+        if(count < 8) {
             models = newObras
-            modelsLoaded = true
-        }
-        
-    }
-    
-    func initRutasData(newRutas: [URL]) {
-        if(rutas.count != models.count) {
-            rutas = newRutas
-            print("rutas: ")
-            print(rutas)
+            print(models)
+            count = count + 1
         }
     }
     
@@ -1033,6 +1019,9 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     // Cargar los modelos dependiendo de la zona
     @objc func updateMarcoModels(lat: Double, lon: Double) {
         
+        print("lat: ", lat, "  -  lon: ", lon)
+        print("ZONA: ", self.currZona)
+        
         guard let view = self.view else { return }
             
         // Si ya no se encuentra dentro de la zona actual, busca cual es la zona actual
@@ -1074,9 +1063,10 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             
         // Si se encuentra en la zona actual, ejecuta el siguiente codigo
         } else {
-            
             // Si aun no se ha montado la escena, se monta con este if
+            
             if(view.scene.anchors.count == 1 && !models.isEmpty) {
+                print("Entra aqui")
                 modelPlaceholder.setPosition(SIMD3(x: 0, y: 0.4, z: 0), relativeTo: nil)
                 if (self.arrayRunOnce[self.currZona] == false) {
                     modelPlaceholder.stopAllAnimations(recursive: true)
@@ -1169,20 +1159,8 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 
                 
                 if(self.arrayRunOnce[self.currZona] == true) {
-                    print("ZONA PREVIAMENTE COMPLETADA: ", self.currZona)
-                    var rutaIndex = 0
-                    for (index, ruta) in self.rutas.enumerated() {
-                        let rutaName = ruta.absoluteString
-                        let firstIndex = rutaName.index(rutaName.lastIndex(of: "-")!, offsetBy: 1)
-                        let lastIndex = rutaName.index(rutaName.lastIndex(of: ".")!, offsetBy: -1)
-                        let completeName = rutaName[firstIndex...lastIndex]
-                        
-                        if(completeName.uppercased() == models[self.currZona].nombre.uppercased()) {
-                            rutaIndex = index
-                        }
-                    }
-                    
-                    newEntityPirinola = ModelEntity.loadModelAsync(contentsOf: self.rutas[rutaIndex])
+                    let modeloFile = URL(string: self.models[self.currZona].modelo)!
+                    newEntityPirinola = ModelEntity.loadModelAsync(contentsOf: modeloFile)
                         .sink { loadCompletion in
                             if case let .failure(error) = loadCompletion {
                                 print("Unable to load model \(error)")
@@ -1192,10 +1170,9 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                             newEntity.setPosition(SIMD3(x: 0, y: 0.6, z: 0), relativeTo: nil)
                             newEntity.setScale(SIMD3(x: 0.09, y: 0.09, z: 0.09), relativeTo: newEntity)
                             print("se carga con exito")
+                            
                             // Change black entity for new model Entity
                             if(view.scene.anchors.count == 2) {
-    //                            view.scene.anchors[1].children[0] = newEntity
-                                // view.scene.anchors[1].removeChild(self.modelPlaceholder)
                                 view.scene.anchors[1].addChild(newEntity)
                             }
                         }
@@ -1204,27 +1181,13 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             
             
             
-            
             if(!self.arrayObjetos[self.currZona].contains(false) && self.arrayRunOnce[self.currZona] == false) {
-                
-                var rutaIndex = 0
-                for (index, ruta) in self.rutas.enumerated() {
-                    let rutaName = ruta.absoluteString
-                    let firstIndex = rutaName.index(rutaName.lastIndex(of: "-")!, offsetBy: 1)
-                    let lastIndex = rutaName.index(rutaName.lastIndex(of: ".")!, offsetBy: -1)
-                    let completeName = rutaName[firstIndex...lastIndex]
-                    
-                    if(completeName.uppercased() == models[self.currZona].nombre.uppercased()) {
-                        rutaIndex = index
-                        
-                    }
-                }
-                
                 
                 self.modelPlaceholder.model?.materials = [SimpleMaterial(color: .white, isMetallic: false)]
                 self.animateModel(entity: self.modelPlaceholder, angle: .pi, axis:  [0, 1, 0], duration: 4, loop: false, currentPosition: self.modelPlaceholder.position)
  
-                newEntityPirinola = ModelEntity.loadModelAsync(contentsOf: self.rutas[rutaIndex])
+                let modeloFile = URL(string: self.models[self.currZona].modelo)!
+                newEntityPirinola = ModelEntity.loadModelAsync(contentsOf: modeloFile)
                     .sink { loadCompletion in
                         if case let .failure(error) = loadCompletion {
                             print("Unable to load model \(error)")
@@ -1234,16 +1197,12 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                         newEntity.setPosition(SIMD3(x: 0, y: 0.6, z: 0), relativeTo: nil)
                         newEntity.setScale(SIMD3(x: 0.09, y: 0.09, z: 0.09), relativeTo: newEntity)
                         print("se carga con exito")
-                        self.network.models[0].completed = true
-                        // self.showingSheet = true
-                        Coordinator.completed.currSheet = true
-                        print(self.network.models)
-//                        ObraView(obra: self.network.models[0])
                         
+                        self.network.models[self.currZona].completed = true
+                        Coordinator.completed.currSheet = true
                         
                         // Change black entity for new model Entity
                         if(view.scene.anchors.count == 2) {
-//                            view.scene.anchors[1].children[0] = newEntity
                             view.scene.anchors[1].removeChild(self.modelPlaceholder)
                             view.scene.anchors[1].addChild(newEntity)
                             
