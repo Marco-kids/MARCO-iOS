@@ -26,11 +26,21 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     var zonas: Array<(name: String, latMin: Double, latMax: Double, lonMin: Double, lonMax: Double)> = [
         // (Nombre, latMax, latMin, lonMin, LonMax)
         // ("Zona E", 25.65000, 25.7000, -100.26000, -100.25000), // Tec biblio 1
+        // ("Zona C", 25.65700, 25.658700, -100.26000, -100.25000), // Piso abajo 1
+        // ("Zona D", 25.6587001, 25.66700, -100.26000, -100.25000), // Piso abajo 2
+        // ("Zona G", 25.00000, 25.4999, -100.26000, -100.25000), // Tec biblio 2
         ("Zona A", 25.65000, 25.66000, -100.26000, -100.25000), // Mi casita
-        ("Zona C", 25.65700, 25.658700, -100.26000, -100.25000), // Piso abajo 1
-        ("Zona D", 25.6587001, 25.66700, -100.26000, -100.25000), // Piso abajo 2
-        ("Zona G", 25.00000, 25.4999, -100.26000, -100.25000), // Tec biblio 2
         ("Zona B", 25.60008, 25.6600, -100.29169, -100.28800), // Salon Swift
+        
+        // Zonas Marco
+        // Zona 3 - Diamante
+        ("Patio central", 25.664670, 25.665063, -100.310227, -100.309577), // Patio central
+        
+        // Zona 4 - PicoMirandola
+        ("Sala 1", 25.664916, 25.665043, -100.309774, -100.309590),
+        
+        // Zona 5 - Piramide
+        ("Patio de las esculturas", 25.664480, 25.664529, -100.309658, -100.309494), // Patio de las esculturas
         
        //  ("Zona G", 25.650051, 25.70000, -100.29169, -100.28800) // Salon Swift 2
     ]
@@ -171,11 +181,10 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
 
     // Inits the information from the API to the models variable with the Obras loaded
     func initModelsData(newObras: [Obra]) {
-        // if(count < 8) {
-            models = newObras
-            print(models)
-            count = count + 1
-        // }
+        // Todo make a variable to avoid triggering this function once the models are loaded in the file
+        models = newObras
+        print(models)
+        count = count + 1
     }
     
     func runCoachingOverlay() {
@@ -1069,7 +1078,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         // Si se encuentra en la zona actual, ejecuta el siguiente codigo
         } else {
             // Si aun no se ha montado la escena, se monta con este if
-            
+            print("lat: ", lat, "  -  lon: ", lon)
             if(view.scene.anchors.count == 1 && !models.isEmpty) {
                 print("Entra aqui")
                 modelPlaceholder.setPosition(SIMD3(x: 0, y: 0.4, z: 0), relativeTo: nil)
