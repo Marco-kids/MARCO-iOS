@@ -9,16 +9,17 @@ import SwiftUI
 import Combine
 
 // private let url = "http://10.14.255.70:10205/api/all-obras"
-private let url = "http://192.168.84.171:8080/api/all-obras" // Datos celular
+//private let url = "http://192.168.84.171:8080/api/all-obras" // Datos celular
 // private let url = "http://192.168.100.29:8080/api/all-obras" // Casita
 // private let url = "http://10.22.186.24:8080/api/all-obras" // Salon Swift
-// private let url = "http://192.168.1.236:8080/api/all-obras" // Casa Jose
+private let url = "http://192.168.1.236:8080/api/all-obras" // Casa Jose
 
 class Network: NSObject, ObservableObject {
     
     static let sharedInstance = Network() // Comparte la instancia de Network() entre clases views, etc.
     
     @Published var models: [Obra] = []
+    var rutas: [URL] = []
     
     var obrasPublisher = PassthroughSubject<[Obra], Error>()
     
@@ -43,7 +44,6 @@ class Network: NSObject, ObservableObject {
                     do {
                         let decodedModels = try JSONDecoder().decode([Obra].self, from: data)
                         self.models = decodedModels
-                        print(decodedModels)
                         self.obrasPublisher.send(self.models)
                         self.loadModels() // Downloads USDZ models
                     } catch let error {
@@ -79,8 +79,10 @@ class Network: NSObject, ObservableObject {
                 for (index, obra) in self.models.enumerated() {
                     if obra.modelo == model {
                         self.models[index].modelo = destinationUrl.absoluteString
+                        self.rutas.append(destinationUrl)
                     }
                 }
+                print(self.rutas)
                 self.obrasPublisher.send(self.models)
             }
         })

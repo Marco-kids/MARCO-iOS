@@ -41,6 +41,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         
         // Zona 5 - Piramide
         ("Patio de las esculturas", 25.664480, 25.664529, -100.309658, -100.309494), // Patio de las esculturas
+        ("Casa Jose", 20.70, 30.40, -120, -90)
         
        //  ("Zona G", 25.650051, 25.70000, -100.29169, -100.28800) // Salon Swift 2
     ]
@@ -183,7 +184,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     func initModelsData(newObras: [Obra]) {
         // Todo make a variable to avoid triggering this function once the models are loaded in the file
         models = newObras
-        print(models)
+//        print(models)
         count = count + 1
     }
     
@@ -658,8 +659,8 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 self.arrayObjetos[self.currZona][entityReal - 1] = true
                 
                 // TODO: Delete on production: just to check array for the progress
-                print("Boxes destroyes:")
-                print(self.arrayObjetos)
+//                print("Boxes destroyes:")
+//                print(self.arrayObjetos)
                 
                 // If the arrayObjects is all setted as true, then marks it up as completed
 //                if (!self.arrayObjetos[self.currZona].contains(false)) {
@@ -687,8 +688,8 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                     self.animate(entity: entity2, angle: .pi, axis: [0, 1, 0], duration: 1, loop: false, currentPosition: entity2.position)
                     self.arrayObjetos[self.currZona][entityReal - 1] = true
                     
-                    print("Boxes destroyes:")
-                    print(self.arrayObjetos)
+//                    print("Boxes destroyes:")
+//                    print(self.arrayObjetos)
 //                    print(self.arrayObjetos[self.currZona])
 //                    if (!self.arrayObjetos[self.currZona].contains(false)) {
 //                        print("se ha completado coordinator")
