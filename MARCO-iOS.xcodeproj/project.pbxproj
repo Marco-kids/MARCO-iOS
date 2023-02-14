@@ -11,7 +11,6 @@
 		0525C3E42911DE7600BD410B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0525C3E32911DE7600BD410B /* Assets.xcassets */; };
 		053CE2302926FF0A0005EE43 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 053CE22F2926FF0A0005EE43 /* Network.swift */; };
 		053CE2342926FF830005EE43 /* ObraModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 053CE2332926FF830005EE43 /* ObraModel.swift */; };
-		3355F8BA297F252A00DAC531 /* throwSound.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 3355F8B9297F252A00DAC531 /* throwSound.mp3 */; };
 		FB5F879928FF705100A4E95C /* DeviceLocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB5F879828FF705100A4E95C /* DeviceLocationService.swift */; };
 		FC32475D28FF34170034F324 /* ARView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC32475C28FF34170034F324 /* ARView.swift */; };
 		FC53ACF5292F2E5A00A582B0 /* ObraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC53ACF4292F2E5A00A582B0 /* ObraView.swift */; };
@@ -30,7 +29,6 @@
 		0525C3E32911DE7600BD410B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		053CE22F2926FF0A0005EE43 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		053CE2332926FF830005EE43 /* ObraModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObraModel.swift; sourceTree = "<group>"; };
-		3355F8B9297F252A00DAC531 /* throwSound.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = throwSound.mp3; sourceTree = "<group>"; };
 		FB5F879528FF654600A4E95C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		FB5F879828FF705100A4E95C /* DeviceLocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLocationService.swift; sourceTree = "<group>"; };
 		FC32475C28FF34170034F324 /* ARView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARView.swift; sourceTree = "<group>"; };
@@ -73,14 +71,6 @@
 				053CE2332926FF830005EE43 /* ObraModel.swift */,
 			);
 			path = Model;
-			sourceTree = "<group>";
-		};
-		3355F8B8297F252A00DAC531 /* Sounds */ = {
-			isa = PBXGroup;
-			children = (
-				3355F8B9297F252A00DAC531 /* throwSound.mp3 */,
-			);
-			path = Sounds;
 			sourceTree = "<group>";
 		};
 		FC32475B28FF34090034F324 /* Views */ = {
@@ -129,7 +119,6 @@
 				FC64E63128F7330C00FCB2AA /* MARCO_iOSApp.swift */,
 				053CE2322926FF610005EE43 /* Model */,
 				FC32475B28FF34090034F324 /* Views */,
-				3355F8B8297F252A00DAC531 /* Sounds */,
 				FC7BBE9A293558AA0082CD0E /* Controller */,
 				053CE22E2926FEF80005EE43 /* Services */,
 				FC64E63728F7330D00FCB2AA /* Preview Content */,
@@ -212,7 +201,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				FC64E63928F7330D00FCB2AA /* Preview Assets.xcassets in Resources */,
-				3355F8BA297F252A00DAC531 /* throwSound.mp3 in Resources */,
 				0525C3E42911DE7600BD410B /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct ProgressView: View {
-    
     @StateObject var network = Network.sharedInstance
     @StateObject var completed = Coordinator.completed
     

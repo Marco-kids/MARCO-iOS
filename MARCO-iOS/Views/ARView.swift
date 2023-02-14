@@ -11,8 +11,6 @@ import RealityKit
 import ARKit
 
 struct ARViewContainer: UIViewRepresentable {
-    
-    @Binding var coordinates: (lat: Double, lon: Double)
     @Binding var models: [Obra]
 
     func makeUIView(context: Context) -> ARView {
@@ -39,14 +37,16 @@ struct ARViewContainer: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: ARView, context: Context) {
-        context.coordinator.updateMarcoModels(lat: coordinates.lat, lon: coordinates.lon)
         context.coordinator.initModelsData(newObras: models)
+        if(models.count > 2){
+            context.coordinator.showMarcoModel(currentObra: models[0], gameType: 2)
+        }
     }
 }
 
 
 struct ARView_Previews: PreviewProvider {
     static var previews: some View {
-        ARViewContainer(coordinates: .constant((lat: 1.0, lon: 1.0)), models: .constant([]))
+        ARViewContainer(models: .constant([]))
     }
 }

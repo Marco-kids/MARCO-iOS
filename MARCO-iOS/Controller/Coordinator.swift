@@ -11,14 +11,6 @@ import Combine
 import SwiftUI
 import AVFoundation
 
-class CustomPointLight: Entity, HasPointLight {
-    required init() {
-        super.init()
-        
-        self.light = PointLightComponent(color: .white, intensity: 100000, attenuationRadius: 22.0)
-    }
-}
-
 class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     
     weak var view: ARView?
@@ -29,32 +21,9 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     
     var models: [Obra] = []
     var count: Int = 0
-
-    // Array of zonas in the MARCO
-    var zonas: Array<(name: String, latMin: Double, latMax: Double, lonMin: Double, lonMax: Double)> = [
-        // (Nombre, latMax, latMin, lonMin, LonMax)
-        // ("Zona E", 25.65000, 25.7000, -100.26000, -100.25000), // Tec biblio 1
-        // ("Zona C", 25.65700, 25.658700, -100.26000, -100.25000), // Piso abajo 1
-        // ("Zona D", 25.6587001, 25.66700, -100.26000, -100.25000), // Piso abajo 2
-        // ("Zona G", 25.00000, 25.4999, -100.26000, -100.25000), // Tec biblio 2
-        // ("Zona B", 25.60008, 25.6600, -100.29169, -100.28800), // Salon Swift
-        ("Zona A", 25.65000, 25.66000, -100.26000, -100.25000), // Mi casita
-        
-        // Zonas Marco
-        // Zona 3 - Diamante
-        ("Patio central", 25.664670, 25.665063, -100.310227, -100.309577), // Patio central
-        
-        // Zona 4 - PicoMirandola
-        ("Sala 1", 25.664916, 25.665043, -100.309774, -100.309590),
-        
-        // Zona 5 - Piramide
-        ("Patio de las esculturas", 25.664480, 25.664529, -100.309658, -100.309494), // Patio de las esculturas
-        // ("Casa Jose", 20.70, 30.40, -120, -90)
-        
-       //  ("Zona G", 25.650051, 25.70000, -100.29169, -100.28800) // Salon Swift 2
-    ]
-    // index of the current zona in the array, it has to match the models[Obra] based on the index
+    
     var currZona = 0
+    var currModel = Obra(_id: "0", nombre: "Pirinola", autor: "Daniel", descripcion: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", modelo: "Models/pirinola.usdz", zona: "", completed: false)
     
     // Variable for loading asynchronous models
     var newEntityPirinola: AnyCancellable?
@@ -64,7 +33,6 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     static let completed = Coordinator()
     var complete = false
     var currSheet = false
-    var currModel: Obra = Obra(_id: "", nombre: "Hola", autor: "", descripcion: "", modelo: "", zona: "")
     var progreso: CGFloat = 0
     var progresoActual: Int = 0
     
@@ -78,7 +46,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     
     // GameType => Difficulty
     // 0 =>
-    var gameType = 2
+    var gameType = 1
     
     
     // Array para definir cuando se ha completado una Zona
@@ -221,21 +189,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     func initModelsData(newObras: [Obra]) {
         // Todo make a variable to avoid triggering this function once the models are loaded in the file
         models = newObras
-//        print(models)
         count = count + 1
-    }
-    
-    func playSound() {
-        let source = Bundle.main.path(forResource: "throwSound", ofType: "mp3")
-        let url = URL(fileURLWithPath: source!)
-        
-        do {
-            print("plays sound")
-            let player = try AVAudioPlayer(contentsOf: url)
-            player.play()
-        } catch {
-            print("error")
-        }
     }
     
     func runCoachingOverlay() {
@@ -347,8 +301,6 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         bullet15.name = "bullet/15/"
         view.installGestures(.all, for: bullet15)
         
-        
-        
         // Stores the current name of the bullet that is launched
         currBullet.name = bullet1.name
         
@@ -359,99 +311,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         boxMask = CollisionGroup.all.subtracting(sphereGroup)
     }
     
-    func initBoxes() {
-        guard let view = self.view else { return }
-
-        
-        // Box - 1 Collision
-        box1 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box1Material])
-        box1.generateCollisionShapes(recursive: true)
-        box1.collision = CollisionComponent(shapes: [.generateBox(width: 0.15, height: 0.15, depth: 0.02)], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-        box1.name = "box/1/"
-        view.installGestures(.all, for: box1)
-        
-        // Box - 2 Collision
-        box2 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box2Material])
-        box2.generateCollisionShapes(recursive: true)
-        box2.collision = CollisionComponent(shapes: [.generateBox(width: 0.15, height: 0.15, depth: 0.02)], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-        box2.name = "box/2/"
-        view.installGestures(.all, for: box2)
-        
-        // Box - 3 Collision
-        box3 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box3Material])
-        box3.generateCollisionShapes(recursive: true)
-        box3.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-        box3.name = "box/3/"
-        view.installGestures(.all, for: box3)
-        
-        // Box - 4 Collision
-        box4 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box4Material])
-        box4.generateCollisionShapes(recursive: true)
-        box4.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-        box4.name = "box/4/"
-        view.installGestures(.all, for: box4)
-
-        // Box - 5 Collision
-        box5 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box5Material])
-        box5.generateCollisionShapes(recursive: true)
-        box5.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-        box5.name = "box/5/"
-        view.installGestures(.all, for: box5)
-        
-        // Box - 6 Collision
-        box6 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box6Material])
-        box6.generateCollisionShapes(recursive: true)
-        box6.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-        box6.name = "box/6/"
-        view.installGestures(.all, for: box6)
-        
-        // Box - 7 Collision
-        box7 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box7Material])
-        box7.generateCollisionShapes(recursive: true)
-        box7.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-        box7.name = "box/7/"
-        view.installGestures(.all, for: box7)
-        
-        
-        // Box - 8 Collision
-        box8 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box8Material])
-        box8.generateCollisionShapes(recursive: true)
-        box8.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-        box8.name = "box/8/"
-        view.installGestures(.all, for: box8)
-        
-        
-        // Box - 9 Collision
-        box9 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box9Material])
-        box9.generateCollisionShapes(recursive: true)
-        box9.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-        box9.name = "box/9/"
-        view.installGestures(.all, for: box9)
-        
-        
-        // Box - 10 Collision
-        box10 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box10Material])
-        box10.generateCollisionShapes(recursive: true)
-        box10.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-        box10.name = "box/10/"
-        view.installGestures(.all, for: box10)
-        
-        
-        // Box - 11 Collision
-        box11 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box11Material])
-        box11.generateCollisionShapes(recursive: true)
-        box11.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-        box11.name = "box/11/"
-        view.installGestures(.all, for: box11)
-
-        
-        // Box - 12 Collision
-        box12 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box12Material])
-        box12.generateCollisionShapes(recursive: true)
-        box12.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-        box12.name = "box/12/"
-        view.installGestures(.all, for: box12)
-        
+    func initAnimationsResource() {
         if(gameType == 1) {
             animationDefinition1 = OrbitAnimation(
                 duration: 9,
@@ -810,6 +670,99 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 box12.setScale(SIMD3([2.6,2.6,0.2]), relativeTo: nil)
             }
         }
+    }
+    
+    func initBoxes() {
+        guard let view = self.view else { return }
+
+        // Box - 1 Collision
+        box1 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box1Material])
+        box1.generateCollisionShapes(recursive: true)
+        box1.collision = CollisionComponent(shapes: [.generateBox(width: 0.15, height: 0.15, depth: 0.02)], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box1.name = "box/1/"
+        view.installGestures(.all, for: box1)
+        
+        // Box - 2 Collision
+        box2 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box2Material])
+        box2.generateCollisionShapes(recursive: true)
+        box2.collision = CollisionComponent(shapes: [.generateBox(width: 0.15, height: 0.15, depth: 0.02)], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box2.name = "box/2/"
+        view.installGestures(.all, for: box2)
+        
+        // Box - 3 Collision
+        box3 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box3Material])
+        box3.generateCollisionShapes(recursive: true)
+        box3.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box3.name = "box/3/"
+        view.installGestures(.all, for: box3)
+        
+        // Box - 4 Collision
+        box4 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box4Material])
+        box4.generateCollisionShapes(recursive: true)
+        box4.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box4.name = "box/4/"
+        view.installGestures(.all, for: box4)
+
+        // Box - 5 Collision
+        box5 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box5Material])
+        box5.generateCollisionShapes(recursive: true)
+        box5.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box5.name = "box/5/"
+        view.installGestures(.all, for: box5)
+        
+        // Box - 6 Collision
+        box6 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box6Material])
+        box6.generateCollisionShapes(recursive: true)
+        box6.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box6.name = "box/6/"
+        view.installGestures(.all, for: box6)
+        
+        // Box - 7 Collision
+        box7 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box7Material])
+        box7.generateCollisionShapes(recursive: true)
+        box7.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box7.name = "box/7/"
+        view.installGestures(.all, for: box7)
+        
+        
+        // Box - 8 Collision
+        box8 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box8Material])
+        box8.generateCollisionShapes(recursive: true)
+        box8.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box8.name = "box/8/"
+        view.installGestures(.all, for: box8)
+        
+        
+        // Box - 9 Collision
+        box9 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box9Material])
+        box9.generateCollisionShapes(recursive: true)
+        box9.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box9.name = "box/9/"
+        view.installGestures(.all, for: box9)
+        
+        
+        // Box - 10 Collision
+        box10 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box10Material])
+        box10.generateCollisionShapes(recursive: true)
+        box10.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box10.name = "box/10/"
+        view.installGestures(.all, for: box10)
+        
+        
+        // Box - 11 Collision
+        box11 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box11Material])
+        box11.generateCollisionShapes(recursive: true)
+        box11.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box11.name = "box/11/"
+        view.installGestures(.all, for: box11)
+
+        
+        // Box - 12 Collision
+        box12 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box12Material])
+        box12.generateCollisionShapes(recursive: true)
+        box12.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        box12.name = "box/12/"
+        view.installGestures(.all, for: box12)
         
         let pointLightFront = CustomPointLight()
         let pointLightBack = CustomPointLight()
@@ -911,19 +864,12 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     // Function to init the collision detection with Subscription
     func initCollisionDetection() {
         guard let view = self.view else { return }
-    
-
-        
         // Subscription for collision
         collisionSubscriptions.append(view.scene.subscribe(to: CollisionEvents.Began.self) { event in
-            
             
             // Entity1 and Entity2 could be either a box or a bullet (even a bullet and a bullet collision)
             guard let entity1 = event.entityA as? ModelEntity,
                   let entity2 = event.entityB as? ModelEntity else { return }
-        
-            // Play throw Sound
-            
             
             // Substrings of the object's name to check whether is a box or bullet, and the corresponding number
             var entityName = entity1.name
@@ -938,8 +884,6 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 entityReal = Int(String("\(entityId[1])\(entityId[2])")) ?? 0 // Int of the Object -> "box/1/" -> 1
             }
             
-            
-            
             // If the entity1 is a box
             if (entityType == "box/") {
                 // Makes the model white like an animation
@@ -951,18 +895,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 
                 // Checks the index of the box that has been removed to support the progress
                 self.arrayObjetos[self.currZona][entityReal - 1] = true
-                
-                // TODO: Delete on production: just to check array for the progress
-//                print("Boxes destroyes:")
-//                print(self.arrayObjetos)
-                
-                // If the arrayObjects is all setted as true, then marks it up as completed
-//                if (!self.arrayObjetos[self.currZona].contains(false)) {
-//                    print("se ha completado una Zona")
-//                    self.progresoActual = self.progresoActual + 1
-//                    print("Progreso: ", self.progresoActual)
-//                }
-
+                print(self.arrayObjetos)
             // Repeats the previous code in case the entity2 is the box
             } else {
                 // Substrings of the object's name
@@ -981,14 +914,6 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                     
                     self.animate(entity: entity2, angle: .pi, axis: [0, 1, 0], duration: 1, loop: false, currentPosition: entity2.position)
                     self.arrayObjetos[self.currZona][entityReal - 1] = true
-                    
-//                    print("Boxes destroyes:")
-//                    print(self.arrayObjetos)
-//                    print(self.arrayObjetos[self.currZona])
-//                    if (!self.arrayObjetos[self.currZona].contains(false)) {
-//                        print("se ha completado coordinator")
-//                        Coordinator.completed.complete = true
-//                    }
                 }
             }
         })
@@ -1016,7 +941,6 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     @objc func handleTap(_ recognizer: UITapGestureRecognizer) {
         guard let view = self.view else { return }
         
-        self.playSound()
         tapPoint = recognizer.location(in: view)
         // Throw ball location - direction
         (origin, direction) = view.ray(through: tapPoint) ?? (SIMD3<Float>([0,0,0]), SIMD3<Float>([0,0,0]))
@@ -1188,7 +1112,6 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
             }
         }
 
-        
         if(self.currBullet.name == "bullet/1/") {
             bullet1.position = origin
             bullet1.collision = CollisionComponent(shapes: [bulletShape], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
@@ -1326,24 +1249,15 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         }
     }
     
-    // Cargar los modelos dependiendo de la zona
-    @objc func updateMarcoModels(lat: Double, lon: Double) {
-        
-        print("lat: ", lat, "  -  lon: ", lon)
-        print("ZONA: ", self.currZona)
-        
+    func showMarcoModel(currentObra: Obra, gameType: Int) {
         guard let view = self.view else { return }
+        if(currModel._id != currentObra._id) {
+            currModel = currentObra
+            self.gameType = gameType
+            initAnimationsResource()
+            print("ModeloActual: ", currentObra.nombre)
             
-        // Si ya no se encuentra dentro de la zona actual, busca cual es la zona actual
-        if (lat < zonas[currZona].latMin || lat > zonas[currZona].latMax || lon < zonas[currZona].lonMin || lon > zonas[currZona].lonMax) {
-            for (index, zona) in zonas.enumerated() {
-                if(lat > zona.latMin && lat < zona.latMax && lon > zona.lonMin && lon < zona.lonMax) {
-                    currZona = index
-                    print("Zona actual: ", currZona)
-                }
-            }
             
-            // Remove the actual entities from the anchor if the anchor is added and have models
             if(view.scene.anchors.count == 2) {
                 view.scene.anchors[1].removeChild(textEntity)
                 view.scene.anchors[1].removeChild(box1)
@@ -1374,7 +1288,6 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         // Si se encuentra en la zona actual, ejecuta el siguiente codigo
         } else {
             // Si aun no se ha montado la escena, se monta con este if
-            print("lat: ", lat, "  -  lon: ", lon)
             if(view.scene.anchors.count == 1 && !models.isEmpty) {
                 print("Entra aqui")
                 modelPlaceholder.setPosition(SIMD3(x: 0, y: 0.4, z: 0), relativeTo: nil)
@@ -1387,12 +1300,11 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                         modelPlaceholder.scale.z = 1
                         self.modelPlaceholder.model?.materials = [SimpleMaterial(color: .black, isMetallic: false)]
                     }
-                    
                     anchor.addChild(modelPlaceholder)
                 }
                 
                 // Shows the text of the current Obra
-                textEntity = textGen(textString: models[currZona].nombre)
+                textEntity = textGen(textString: currentObra.nombre)
                 textEntity.setPosition(SIMD3(x: 0.0, y: -0.2, z: 0.0), relativeTo: nil)
                 anchor.addChild(textEntity)
                 
@@ -1453,7 +1365,6 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 view.scene.addAnchor(anchor)
                 
                 
-                
                 // Play the orbiting animations
                 if(gameType == 1) {
                     box1.playAnimation(animationResource1!)
@@ -1484,7 +1395,7 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 
                 
                 if(self.arrayRunOnce[self.currZona] == true) {
-                    let modeloFile = URL(string: self.models[self.currZona].modelo)!
+                    let modeloFile = URL(string: currentObra.modelo)!
                     newEntityPirinola = ModelEntity.loadModelAsync(contentsOf: modeloFile)
                         .sink { loadCompletion in
                             if case let .failure(error) = loadCompletion {
@@ -1503,7 +1414,6 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                         }
                 }
             }
-            
             
             
             if(!self.arrayObjetos[self.currZona].contains(false) && self.arrayRunOnce[self.currZona] == false) {
@@ -1539,13 +1449,13 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                     // Delete after loading models correct
                     if(self.arrayRunOnce[self.currZona] == false) {
                         self.arrayRunOnce[self.currZona] = true
-                        self.arrayNombreObrasCompletadas.append(self.models[self.currZona].nombre)
-                    
+                        self.arrayNombreObrasCompletadas.append(currentObra.nombre)
+                        
                         self.progresoActual = self.progresoActual + 1
                     }
                 }
                 
- 
+                
                 let modeloFile = URL(string: self.models[self.currZona].modelo)!
                 newEntityPirinola = ModelEntity.loadModelAsync(contentsOf: modeloFile)
                     .sink { loadCompletion in
@@ -1575,8 +1485,8 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                                 
                                 
                                 self.arrayRunOnce[self.currZona] = true
-                                self.arrayNombreObrasCompletadas.append(self.models[self.currZona].nombre)
-                            
+                                self.arrayNombreObrasCompletadas.append(currentObra.nombre)
+                                
                                 self.progresoActual = self.progresoActual + 1
                                 print("Progreso: ", self.progresoActual)
                                 print(self.arrayNombreObrasCompletadas)
@@ -1593,6 +1503,14 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                     }
             }
         }
+    }
+}
+
+class CustomPointLight: Entity, HasPointLight {
+    required init() {
+        super.init()
+        
+        self.light = PointLightComponent(color: .white, intensity: 100000, attenuationRadius: 22.0)
     }
 }
 
@@ -1614,6 +1532,7 @@ class CustomTimer {
             timer.invalidate()
         }
     }
+
 
     @objc func timerUpdate() {
         count += 1;
