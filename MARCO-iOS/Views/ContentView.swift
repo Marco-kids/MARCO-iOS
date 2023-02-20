@@ -22,8 +22,10 @@ struct ContentView: View {
     
     @State var tokens: Set<AnyCancellable> = []
     
+    #if !targetEnvironment(simulator)
     // Obra de arte completada
     @StateObject var completed = Coordinator.completed
+    #endif
     
     // Light or dark mode
     @Environment(\.colorScheme) var colorScheme
@@ -40,7 +42,7 @@ struct ContentView: View {
                         Text("Progress")
                     }
                     .tag(1)
-                
+                #if !targetEnvironment(simulator)
                 ARViewContainer(models: .constant(self.models))
                     .edgesIgnoringSafeArea(.top)
                     .font(.system(size: 30, weight: .bold, design: .rounded))
@@ -49,6 +51,16 @@ struct ContentView: View {
                         Text("Camera")
                     }
                     .tag(2)
+                #else
+                Text("Hello World!")
+                    .edgesIgnoringSafeArea(.top)
+                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                    .tabItem {
+                        Image(systemName: "camera.fill")
+                        Text("Camera")
+                    }
+                    .tag(2)
+                #endif
                 
                 Text("Settings")
                     .font(.system(size: 30, weight: .bold, design: .rounded))
@@ -69,9 +81,12 @@ struct ContentView: View {
             }
             
             TutorialView()
-        }.sheet(isPresented: $completed.currSheet) {
+        }
+        #if !targetEnvironment(simulator)
+        .sheet(isPresented: $completed.currSheet) {
             ObraView(obra: completed.currModel)
         }
+        #endif
     }
     
     // Returns the models when received
@@ -84,5 +99,11 @@ struct ContentView: View {
                 self.models = model
             }
             .store(in: &tokens)
+    }
+}
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
     }
 }

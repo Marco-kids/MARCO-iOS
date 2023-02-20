@@ -10,6 +10,7 @@ import SwiftUI
 import RealityKit
 import ARKit
 
+#if !targetEnvironment(simulator)
 struct ARViewContainer: UIViewRepresentable {
     @Binding var models: [Obra]
 
@@ -50,3 +51,4 @@ struct ARView_Previews: PreviewProvider {
         ARViewContainer(models: .constant([]))
     }
 }
+#endif

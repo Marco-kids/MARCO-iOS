@@ -11,6 +11,7 @@ import Combine
 import SwiftUI
 import AVFoundation
 
+#if !targetEnvironment(simulator)
 class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     
     weak var view: ARView?
@@ -1568,3 +1569,4 @@ extension Int {
         }
     }
 }
+#endif
