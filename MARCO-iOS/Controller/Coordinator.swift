@@ -22,7 +22,6 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
     var models: [Obra] = []
     var count: Int = 0
     
-    var currZona = 0
     var currModel = Obra(_id: "0", nombre: "Pirinola", autor: "Daniel", descripcion: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", modelo: "Models/pirinola.usdz", zona: "", completed: false)
     
     // Variable for loading asynchronous models
@@ -894,8 +893,12 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 self.animate(entity: entity1, angle: .pi, axis: [0, 1, 0], duration: 1, loop: false, currentPosition: entity1.position)
                 
                 // Checks the index of the box that has been removed to support the progress
-                self.arrayObjetos[self.currZona][entityReal - 1] = true
-                print(self.arrayObjetos)
+                // self.arrayObjetos[self.currZona][entityReal - 1] = true
+                for (index, currObra) in self.models.enumerated() {
+                    if(currObra._id == self.currModel._id) {
+                        self.arrayObjetos[index][entityReal - 1] = true
+                    }
+                }
             // Repeats the previous code in case the entity2 is the box
             } else {
                 // Substrings of the object's name
@@ -913,7 +916,13 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                     }
                     
                     self.animate(entity: entity2, angle: .pi, axis: [0, 1, 0], duration: 1, loop: false, currentPosition: entity2.position)
-                    self.arrayObjetos[self.currZona][entityReal - 1] = true
+                    // self.arrayObjetos[self.currZona][entityReal - 1] = true
+                    for (index, currObra) in self.models.enumerated() {
+                        if(currObra._id == self.currModel._id) {
+                            self.arrayObjetos[index][entityReal - 1] = true
+
+                        }
+                    }
                 }
             }
         })
@@ -1289,19 +1298,26 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
         } else {
             // Si aun no se ha montado la escena, se monta con este if
             if(view.scene.anchors.count == 1 && !models.isEmpty) {
-                print("Entra aqui")
                 modelPlaceholder.setPosition(SIMD3(x: 0, y: 0.4, z: 0), relativeTo: nil)
-                if (self.arrayRunOnce[self.currZona] == false) {
-                    modelPlaceholder.stopAllAnimations(recursive: true)
-                    print(modelPlaceholder.scale)
-                    if(modelPlaceholder.scale.x < 0.8) {
-                        modelPlaceholder.scale.x = 1
-                        modelPlaceholder.scale.y = 1
-                        modelPlaceholder.scale.z = 1
-                        self.modelPlaceholder.model?.materials = [SimpleMaterial(color: .black, isMetallic: false)]
+                // if (self.arrayRunOnce[self.currZona] == false) {
+                
+                // Regresar esto
+                for (index, currObra) in self.models.enumerated() {
+                    if(currObra._id == self.currModel._id) {
+                        if (self.arrayRunOnce[index] == false) {
+                            modelPlaceholder.stopAllAnimations(recursive: true)
+                            print(modelPlaceholder.scale)
+                            if(modelPlaceholder.scale.x < 0.8) {
+                                modelPlaceholder.scale.x = 1
+                                modelPlaceholder.scale.y = 1
+                                modelPlaceholder.scale.z = 1
+                                self.modelPlaceholder.model?.materials = [SimpleMaterial(color: .black, isMetallic: false)]
+                            }
+                            anchor.addChild(modelPlaceholder)
+                        }
                     }
-                    anchor.addChild(modelPlaceholder)
                 }
+                
                 
                 // Shows the text of the current Obra
                 textEntity = textGen(textString: currentObra.nombre)
@@ -1321,44 +1337,50 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                 box11.model?.materials = [box11Material]
                 box12.model?.materials = [box12Material]
                 
-                if(self.arrayRunOnce[self.currZona] == false) {
-                    if(self.arrayObjetos[self.currZona][0] == false) {
-                        anchor.addChild(box1)
-                    }
-                    if(self.arrayObjetos[self.currZona][1] == false) {
-                        anchor.addChild(box2)
-                    }
-                    if(self.arrayObjetos[self.currZona][2] == false) {
-                        anchor.addChild(box3)
-                    }
-                    if(self.arrayObjetos[self.currZona][3] == false) {
-                        anchor.addChild(box4)
-                    }
-                    if(self.arrayObjetos[self.currZona][4] == false) {
-                        anchor.addChild(box5)
-                    }
-                    if(self.arrayObjetos[self.currZona][5] == false) {
-                        anchor.addChild(box6)
-                    }
-                    if(self.arrayObjetos[self.currZona][6] == false) {
-                        anchor.addChild(box7)
-                    }
-                    if(self.arrayObjetos[self.currZona][7] == false) {
-                        anchor.addChild(box8)
-                    }
-                    if(self.arrayObjetos[self.currZona][8] == false) {
-                        anchor.addChild(box9)
-                    }
-                    if(self.arrayObjetos[self.currZona][9] == false) {
-                        anchor.addChild(box10)
-                    }
-                    if(self.arrayObjetos[self.currZona][10] == false) {
-                        anchor.addChild(box11)
-                    }
-                    if(self.arrayObjetos[self.currZona][11] == false) {
-                        anchor.addChild(box12)
+                for (index, currObra) in self.models.enumerated() {
+                    if(currObra._id == self.currModel._id) {
+                        if(self.arrayRunOnce[index] == false) {
+                            if(self.arrayObjetos[index][0] == false) {
+                                anchor.addChild(box1)
+                            }
+                            if(self.arrayObjetos[index][1] == false) {
+                                anchor.addChild(box2)
+                            }
+                            if(self.arrayObjetos[index][2] == false) {
+                                anchor.addChild(box3)
+                            }
+                            if(self.arrayObjetos[index][3] == false) {
+                                anchor.addChild(box4)
+                            }
+                            if(self.arrayObjetos[index][4] == false) {
+                                anchor.addChild(box5)
+                            }
+                            if(self.arrayObjetos[index][5] == false) {
+                                anchor.addChild(box6)
+                            }
+                            if(self.arrayObjetos[index][6] == false) {
+                                anchor.addChild(box7)
+                            }
+                            if(self.arrayObjetos[index][7] == false) {
+                                anchor.addChild(box8)
+                            }
+                            if(self.arrayObjetos[index][8] == false) {
+                                anchor.addChild(box9)
+                            }
+                            if(self.arrayObjetos[index][9] == false) {
+                                anchor.addChild(box10)
+                            }
+                            if(self.arrayObjetos[index][10] == false) {
+                                anchor.addChild(box11)
+                            }
+                            if(self.arrayObjetos[index][11] == false) {
+                                anchor.addChild(box12)
+                            }
+                        }
                     }
                 }
+                
+                
                 
                 // Add the anchor to the scene
                 anchor.move(to: Transform(translation: simd_float3(0,0,-1)), relativeTo: nil)
@@ -1393,9 +1415,76 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                     box12.playAnimation(animationResource12!)
                 }
                 
-                
-                if(self.arrayRunOnce[self.currZona] == true) {
-                    let modeloFile = URL(string: currentObra.modelo)!
+                for (index, currObra) in self.models.enumerated() {
+                    if(currObra._id == self.currModel._id) {
+                        if(self.arrayRunOnce[index] == true) {
+                            let modeloFile = URL(string: currentObra.modelo)!
+                            newEntityPirinola = ModelEntity.loadModelAsync(contentsOf: modeloFile)
+                                .sink { loadCompletion in
+                                    if case let .failure(error) = loadCompletion {
+                                        print("Unable to load model \(error)")
+                                    }
+                                    self.newEntityPirinola?.cancel()
+                                } receiveValue: { newEntity in
+                                    newEntity.setPosition(SIMD3(x: 0, y: 0.6, z: 0), relativeTo: nil)
+                                    newEntity.setScale(SIMD3(x: 0.09, y: 0.09, z: 0.09), relativeTo: newEntity)
+                                    print("se carga con exito")
+                                    
+                                    // Change black entity for new model Entity
+                                    if(view.scene.anchors.count == 2) {
+                                        view.scene.anchors[1].addChild(newEntity)
+                                    }
+                                }
+                        }
+                    }
+                }
+            }
+            
+
+            
+        for (index, currObra) in self.models.enumerated() {
+            if(currObra._id == self.currModel._id) {
+                if(!self.arrayObjetos[index].contains(false) && self.arrayRunOnce[index] == false) {
+                    
+                    self.modelPlaceholder.model?.materials = [SimpleMaterial(color: .white, isMetallic: false)]
+                    self.animateModel(entity: self.modelPlaceholder, angle: .pi, axis:  [0, 1, 0], duration: 4, loop: false, currentPosition: self.modelPlaceholder.position)
+                    
+                    // Move to receiveValue after loading model
+                    // Places completed boxes
+                    if(view.scene.anchors.count == 2) {
+                        self.placeBoxesAfterCompletition()
+                        view.scene.anchors[1].addChild(self.sphere1)
+                        view.scene.anchors[1].addChild(self.sphere2)
+                        view.scene.anchors[1].addChild(self.sphere3)
+                        view.scene.anchors[1].addChild(self.sphere4)
+                        view.scene.anchors[1].addChild(self.sphere5)
+                        view.scene.anchors[1].addChild(self.sphere6)
+                        view.scene.anchors[1].addChild(self.sphere7)
+                        view.scene.anchors[1].addChild(self.sphere8)
+                        view.scene.anchors[1].addChild(self.sphere9)
+                        view.scene.anchors[1].addChild(self.sphere10)
+                        view.scene.anchors[1].addChild(self.sphere11)
+                        view.scene.anchors[1].addChild(self.sphere12)
+                        view.scene.anchors[1].addChild(self.sphere13)
+                        view.scene.anchors[1].addChild(self.sphere14)
+                        view.scene.anchors[1].addChild(self.sphere15)
+                        view.scene.anchors[1].addChild(self.sphere16)
+                        view.scene.anchors[1].addChild(self.sphere17)
+                        view.scene.anchors[1].addChild(self.sphere18)
+                        view.scene.anchors[1].addChild(self.sphere19)
+                        view.scene.anchors[1].addChild(self.sphere20)
+                        
+                        // Delete after loading models correct
+                        if(self.arrayRunOnce[index] == false) {
+                            self.arrayRunOnce[index] = true
+                            self.arrayNombreObrasCompletadas.append(currentObra.nombre)
+                            
+                            self.progresoActual = self.progresoActual + 1
+                        }
+                    }
+                    
+                    
+                    let modeloFile = URL(string: self.models[index].modelo)!
                     newEntityPirinola = ModelEntity.loadModelAsync(contentsOf: modeloFile)
                         .sink { loadCompletion in
                             if case let .failure(error) = loadCompletion {
@@ -1407,101 +1496,43 @@ class Coordinator: NSObject, ARSessionDelegate, ObservableObject {
                             newEntity.setScale(SIMD3(x: 0.09, y: 0.09, z: 0.09), relativeTo: newEntity)
                             print("se carga con exito")
                             
+                            
+                            Coordinator.completed.currModel = self.network.models[index]
+                            Coordinator.completed.progreso += 0.1
+                            Coordinator.completed.progresoActual += 1
+                            self.network.models[index].completed = true
+                            Coordinator.completed.currSheet = true
+                            
                             // Change black entity for new model Entity
                             if(view.scene.anchors.count == 2) {
+                                view.scene.anchors[1].removeChild(self.modelPlaceholder)
                                 view.scene.anchors[1].addChild(newEntity)
-                            }
-                        }
-                }
-            }
-            
-            
-            if(!self.arrayObjetos[self.currZona].contains(false) && self.arrayRunOnce[self.currZona] == false) {
-                
-                self.modelPlaceholder.model?.materials = [SimpleMaterial(color: .white, isMetallic: false)]
-                self.animateModel(entity: self.modelPlaceholder, angle: .pi, axis:  [0, 1, 0], duration: 4, loop: false, currentPosition: self.modelPlaceholder.position)
-                
-                // Move to receiveValue after loading model
-                // Places completed boxes
-                if(view.scene.anchors.count == 2) {
-                    self.placeBoxesAfterCompletition()
-                    view.scene.anchors[1].addChild(self.sphere1)
-                    view.scene.anchors[1].addChild(self.sphere2)
-                    view.scene.anchors[1].addChild(self.sphere3)
-                    view.scene.anchors[1].addChild(self.sphere4)
-                    view.scene.anchors[1].addChild(self.sphere5)
-                    view.scene.anchors[1].addChild(self.sphere6)
-                    view.scene.anchors[1].addChild(self.sphere7)
-                    view.scene.anchors[1].addChild(self.sphere8)
-                    view.scene.anchors[1].addChild(self.sphere9)
-                    view.scene.anchors[1].addChild(self.sphere10)
-                    view.scene.anchors[1].addChild(self.sphere11)
-                    view.scene.anchors[1].addChild(self.sphere12)
-                    view.scene.anchors[1].addChild(self.sphere13)
-                    view.scene.anchors[1].addChild(self.sphere14)
-                    view.scene.anchors[1].addChild(self.sphere15)
-                    view.scene.anchors[1].addChild(self.sphere16)
-                    view.scene.anchors[1].addChild(self.sphere17)
-                    view.scene.anchors[1].addChild(self.sphere18)
-                    view.scene.anchors[1].addChild(self.sphere19)
-                    view.scene.anchors[1].addChild(self.sphere20)
-                    
-                    // Delete after loading models correct
-                    if(self.arrayRunOnce[self.currZona] == false) {
-                        self.arrayRunOnce[self.currZona] = true
-                        self.arrayNombreObrasCompletadas.append(currentObra.nombre)
-                        
-                        self.progresoActual = self.progresoActual + 1
-                    }
-                }
-                
-                
-                let modeloFile = URL(string: self.models[self.currZona].modelo)!
-                newEntityPirinola = ModelEntity.loadModelAsync(contentsOf: modeloFile)
-                    .sink { loadCompletion in
-                        if case let .failure(error) = loadCompletion {
-                            print("Unable to load model \(error)")
-                        }
-                        self.newEntityPirinola?.cancel()
-                    } receiveValue: { newEntity in
-                        newEntity.setPosition(SIMD3(x: 0, y: 0.6, z: 0), relativeTo: nil)
-                        newEntity.setScale(SIMD3(x: 0.09, y: 0.09, z: 0.09), relativeTo: newEntity)
-                        print("se carga con exito")
-                        
-                        
-                        Coordinator.completed.currModel = self.network.models[self.currZona]
-                        Coordinator.completed.progreso += 0.1
-                        Coordinator.completed.progresoActual += 1
-                        self.network.models[self.currZona].completed = true
-                        Coordinator.completed.currSheet = true
-                        
-                        // Change black entity for new model Entity
-                        if(view.scene.anchors.count == 2) {
-                            view.scene.anchors[1].removeChild(self.modelPlaceholder)
-                            view.scene.anchors[1].addChild(newEntity)
-                            
-                            if(self.arrayRunOnce[self.currZona] == false) {
                                 
-                                
-                                
-                                self.arrayRunOnce[self.currZona] = true
-                                self.arrayNombreObrasCompletadas.append(currentObra.nombre)
-                                
-                                self.progresoActual = self.progresoActual + 1
-                                print("Progreso: ", self.progresoActual)
-                                print(self.arrayNombreObrasCompletadas)
-                                print("ZONA NUEVA COMPLETADA: ", self.currZona)
-                                
-                                // Checks when the game has been completed
-                                if(!self.arrayRunOnce.contains(false)) {
-                                    print("se ha completado el juego: ")
-                                    Coordinator.completed.complete = true
-                                    print(Coordinator.completed.complete)
+                                if(self.arrayRunOnce[index] == false) {
+                                    
+                                    
+                                    
+                                    self.arrayRunOnce[index] = true
+                                    self.arrayNombreObrasCompletadas.append(currentObra.nombre)
+                                    
+                                    self.progresoActual = self.progresoActual + 1
+                                    print("Progreso: ", self.progresoActual)
+                                    print(self.arrayNombreObrasCompletadas)
+                                    print("ZONA NUEVA COMPLETADA: ", index)
+                                    
+                                    // Checks when the game has been completed
+                                    if(!self.arrayRunOnce.contains(false)) {
+                                        print("se ha completado el juego: ")
+                                        Coordinator.completed.complete = true
+                                        print(Coordinator.completed.complete)
+                                    }
                                 }
                             }
                         }
-                    }
+                }
             }
+        }
+            
         }
     }
 }

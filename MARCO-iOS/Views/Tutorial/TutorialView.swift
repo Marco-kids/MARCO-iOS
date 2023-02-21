@@ -53,7 +53,7 @@ struct TutorialView: View {
     }
     
     func removeCard(at index: Int) {
-        cards.remove(at: index)
+         cards.remove(at: index)
     }
     
 }
