@@ -43,16 +43,52 @@ struct ContentView: View {
                     }
                     .tag(1)
                 #if !targetEnvironment(simulator)
-                ARViewContainer(models: .constant(self.models))
-                    .edgesIgnoringSafeArea(.top)
-                    .font(.system(size: 30, weight: .bold, design: .rounded))
-                    .tabItem {
-                        Image(systemName: "camera.fill")
-                        Text("Camera")
-                    }
-                    .tag(2)
+                ZStack {
+                    ARViewContainer(models: .constant(self.models))
+                        .edgesIgnoringSafeArea(.top)
+                    AsyncImage(
+                            url: URL(string: ""),
+                            content: { image in
+                                image.resizable()
+                                     .aspectRatio(contentMode: .fit)
+                                     .frame(width: 150)
+                                     .offset(CGSize(width: -90, height: -220))
+                            },
+                            placeholder: {
+                                Image("image-placeholder")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 150)
+                                    .offset(CGSize(width: -90, height: -220))
+                            }
+                        )
+                }
+                .font(.system(size: 30, weight: .bold, design: .rounded))
+                .tabItem {
+                    Image(systemName: "camera.fill")
+                    Text("Camera")
+                }
+                .tag(2)
                 #else
-                Text("Hello World!")
+                ZStack {
+                    Text("AR Screen")
+                    AsyncImage(
+                            url: URL(string: ""),
+                            content: { image in
+                                image.resizable()
+                                     .aspectRatio(contentMode: .fit)
+                                     .frame(width: 150)
+                                     .offset(CGSize(width: -90, height: -220))
+                            },
+                            placeholder: {
+                                Image("image-placeholder")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 150)
+                                    .offset(CGSize(width: -90, height: -220))
+                            }
+                        )
+                }
                     .edgesIgnoringSafeArea(.top)
                     .font(.system(size: 30, weight: .bold, design: .rounded))
                     .tabItem {
