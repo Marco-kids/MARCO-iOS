@@ -15,17 +15,13 @@ struct ContentView: View {
     // Network shared instance
     @StateObject var network = Network.sharedInstance
     @State var models: [Obra] = []
+    @State var locations: [ARLocation] = []
     @State var rutas: [URL] = []
     
     // Tabbar selection
     @State private var selection = 2
     
     @State var tokens: Set<AnyCancellable> = []
-    
-    #if !targetEnvironment(simulator)
-    // Obra de arte completada
-    @StateObject var completed = Coordinator.completed
-    #endif
     
     // Light or dark mode
     @Environment(\.colorScheme) var colorScheme
@@ -44,24 +40,8 @@ struct ContentView: View {
                     .tag(1)
                 #if !targetEnvironment(simulator)
                 ZStack {
-                    ARViewContainer(models: .constant(self.models))
+                    ARViewContainer()
                         .edgesIgnoringSafeArea(.top)
-                    AsyncImage(
-                            url: URL(string: ""),
-                            content: { image in
-                                image.resizable()
-                                     .aspectRatio(contentMode: .fit)
-                                     .frame(width: 150)
-                                     .offset(CGSize(width: -90, height: -220))
-                            },
-                            placeholder: {
-                                Image("image-placeholder")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 150)
-                                    .offset(CGSize(width: -90, height: -220))
-                            }
-                        )
                 }
                 .font(.system(size: 30, weight: .bold, design: .rounded))
                 .tabItem {
@@ -71,31 +51,15 @@ struct ContentView: View {
                 .tag(2)
                 #else
                 ZStack {
-                    Text("AR Screen")
-                    AsyncImage(
-                            url: URL(string: ""),
-                            content: { image in
-                                image.resizable()
-                                     .aspectRatio(contentMode: .fit)
-                                     .frame(width: 150)
-                                     .offset(CGSize(width: -90, height: -220))
-                            },
-                            placeholder: {
-                                Image("image-placeholder")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 150)
-                                    .offset(CGSize(width: -90, height: -220))
-                            }
-                        )
+                    Text("ARViewContainer")
                 }
-                    .edgesIgnoringSafeArea(.top)
-                    .font(.system(size: 30, weight: .bold, design: .rounded))
-                    .tabItem {
-                        Image(systemName: "camera.fill")
-                        Text("Camera")
-                    }
-                    .tag(2)
+                .edgesIgnoringSafeArea(.top)
+                .font(.system(size: 30, weight: .bold, design: .rounded))
+                .tabItem {
+                    Image(systemName: "camera.fill")
+                    Text("Camera")
+                }
+                .tag(2)
                 #endif
                 
                 Text("Settings")
@@ -113,15 +77,19 @@ struct ContentView: View {
                 tabBarAppearance.configureWithOpaqueBackground()
                 UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
                 network.getModels()
+                #if !targetEnvironment(simulator)
+                network.getLocations()
+                #endif
                 observeModels()
             }
             
             TutorialView()
         }
         #if !targetEnvironment(simulator)
-        .sheet(isPresented: $completed.currSheet) {
-            ObraView(obra: completed.currModel)
-        }
+        // MARK: Fix to present when one game completed
+//        .sheet(isPresented: $completed.currSheet) {
+//            ObraView(obra: completed.currModel)
+//        }
         #endif
     }
     

@@ -10,7 +10,6 @@ import SwiftUI
 struct ProgressView: View {
     @StateObject var network = Network.sharedInstance
     #if !targetEnvironment(simulator)
-    @StateObject var completed = Coordinator.completed
     #endif
     @State var currentProgress: CGFloat = 0
     
@@ -29,9 +28,9 @@ struct ProgressView: View {
                                 .frame(width: 200, height: 20)
                             RoundedRectangle(cornerRadius: 20)
                                 .foregroundColor(Color(.systemPink))
-                                .frame(width: 200*completed.progreso, height: 20)
+                                .frame(width: 200*0.1, height: 20)
                         }
-                        Text("\(completed.progresoActual) / 10")
+                        Text("1 / 10")
                             .font(.title).bold()
                     }
                     .padding(.vertical)
