@@ -16,7 +16,7 @@ protocol EditorViewControllerDelegate: AnyObject {
     func loadGame(obra: Obra, models: [Obra])
 }
 
-class ARViewController: UIViewController, ARSessionDelegate {
+class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
     
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var sessionInfoLabel: UILabel!
@@ -205,7 +205,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
 
     
     // Method that makes game active
-    func loadGame(obra: Obra, models: [Obra]) {
+    func loadGame(obra: Obra) {
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = .horizontal
         self.initCollisionDetection()
@@ -215,7 +215,6 @@ class ARViewController: UIViewController, ARSessionDelegate {
         self.runCoachingOverlay()
         
         print("EMPIEZA loadGame")
-        loadedModels = models
         var timerAux: Int = 0
         let timerRefresh = UpdatViewTimer { (seconds) in
             if(seconds % 2 == 0) {
@@ -229,18 +228,17 @@ class ARViewController: UIViewController, ARSessionDelegate {
     }
     
     // MARK: Coordinator Code
-    
     var collisionSubscriptions = [Cancellable]()
-    var loadedModels: [Obra] = []
     var count: Int = 0
     
-    var currModel = Obra(_id: "0", nombre: "Pirinola", autor: "Daniel", descripcion: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", modelo: "Models/pirinola.usdz", zona: "", completed: false)
+    var currModel = Obra(_id: "0", nombre: "Pirinola", autor: "Jose", descripcion: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", modelo: "Models/pirinola.usdz", zona: "", completed: false)
     
     // Variable for loading asynchronous models
     var newEntityPirinola: AnyCancellable?
     var newEntity: Entity = ModelEntity()
     
     // Variable para saber si ya se capturaron todos los cubitos
+    static let completed = ARViewController()
     var complete = false
     var currSheet = false
     var progreso: CGFloat = 0
@@ -261,18 +259,9 @@ class ARViewController: UIViewController, ARSessionDelegate {
     
     // Array para definir cuando se ha completado una Zona
     // TODO: Replicar para el numero de zonas
-    var arrayObjetos = [
-        [false, false, false, false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false, false, false, false],
-    ]
-    // Array para saber cuando se ha completado cada zona independientemente, cuando se completa este array, se gana el juego
-    var arrayNombreObrasCompletadas: [String] = []
-    var arrayRunOnce = [false, false, false, false, false, false, false] // Anadir un campo adicional por cada zona
+    var arrayObjetos = [false, false, false, false, false, false, false, false, false, false, false, false]
+    // Array para debug, utilizado para imprimir las obras que van siendo completadas
+    // var arrayNombreObrasCompletadas: [String] = []
     
     // Anchor para los modelos
     // let anchor = AnchorEntity(plane: .horizontal, classification: .floor) // Production
@@ -394,13 +383,14 @@ class ARViewController: UIViewController, ARSessionDelegate {
     var sphere20: ModelEntity = ModelEntity()
     let completeBoxMaterial = UnlitMaterial(color: .systemPink)
     
-
+    /*
     // Inits the information from the API to the models variable with the Obras loaded
     func initModelsData(newObras: [Obra]) {
         // Todo make a variable to avoid triggering this function once the models are loaded in the file
         loadedModels = newObras
         count = count + 1
     }
+     */
     
     func runCoachingOverlay() {
         guard let view = self.view else { return }
@@ -1102,11 +1092,14 @@ class ARViewController: UIViewController, ARSessionDelegate {
                 
                 // Checks the index of the box that has been removed to support the progress
                 // self.arrayObjetos[self.currZona][entityReal - 1] = true
+                /*
                 for (index, currObra) in self.loadedModels.enumerated() {
                     if(currObra._id == self.currModel._id) {
                         self.arrayObjetos[index][entityReal - 1] = true
                     }
                 }
+                 */
+                self.arrayObjetos[entityReal - 1] = true
             // Repeats the previous code in case the entity2 is the box
             } else {
                 // Substrings of the object's name
@@ -1125,12 +1118,15 @@ class ARViewController: UIViewController, ARSessionDelegate {
                     
                     self.animate(entity: entity2, angle: .pi, axis: [0, 1, 0], duration: 1, loop: false, currentPosition: entity2.position)
                     // self.arrayObjetos[self.currZona][entityReal - 1] = true
+                    /*
                     for (index, currObra) in self.loadedModels.enumerated() {
                         if(currObra._id == self.currModel._id) {
                             self.arrayObjetos[index][entityReal - 1] = true
 
                         }
                     }
+                    */
+                    self.arrayObjetos[entityReal - 1] = true
                 }
             }
         })
@@ -1473,6 +1469,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
             self.gameType = gameType
             initAnimationsResource()
             print("ModeloActual: ", currentObra.nombre)
+            arrayObjetos = [false, false, false, false, false, false, false, false, false, false, false, false]
             
             
             if(self.arView.scene.anchors.count == 2) {
@@ -1510,9 +1507,10 @@ class ARViewController: UIViewController, ARSessionDelegate {
                 // if (self.arrayRunOnce[self.currZona] == false) {
                 
                 // Regresar esto
+                /*
                 for (index, currObra) in loadedModels.enumerated() {
                     if(currObra._id == self.currModel._id) {
-                        if (self.arrayRunOnce[index] == false) {
+                        if (currModel.completed == false) {
                             modelPlaceholder.stopAllAnimations(recursive: true)
                             print(modelPlaceholder.scale)
                             if(modelPlaceholder.scale.x < 0.8) {
@@ -1524,6 +1522,18 @@ class ARViewController: UIViewController, ARSessionDelegate {
                             anchor.addChild(modelPlaceholder)
                         }
                     }
+                }
+                */
+                if (currModel.completed == false) {
+                    modelPlaceholder.stopAllAnimations(recursive: true)
+                    print(modelPlaceholder.scale)
+                    if(modelPlaceholder.scale.x < 0.8) {
+                        modelPlaceholder.scale.x = 1
+                        modelPlaceholder.scale.y = 1
+                        modelPlaceholder.scale.z = 1
+                        self.modelPlaceholder.model?.materials = [SimpleMaterial(color: .black, isMetallic: false)]
+                    }
+                    anchor.addChild(modelPlaceholder)
                 }
                 
                 
@@ -1545,48 +1555,52 @@ class ARViewController: UIViewController, ARSessionDelegate {
                 box11.model?.materials = [box11Material]
                 box12.model?.materials = [box12Material]
                 
+                /*
                 for (index, currObra) in loadedModels.enumerated() {
                     if(currObra._id == self.currModel._id) {
-                        if(self.arrayRunOnce[index] == false) {
-                            if(self.arrayObjetos[index][0] == false) {
-                                anchor.addChild(box1)
-                            }
-                            if(self.arrayObjetos[index][1] == false) {
-                                anchor.addChild(box2)
-                            }
-                            if(self.arrayObjetos[index][2] == false) {
-                                anchor.addChild(box3)
-                            }
-                            if(self.arrayObjetos[index][3] == false) {
-                                anchor.addChild(box4)
-                            }
-                            if(self.arrayObjetos[index][4] == false) {
-                                anchor.addChild(box5)
-                            }
-                            if(self.arrayObjetos[index][5] == false) {
-                                anchor.addChild(box6)
-                            }
-                            if(self.arrayObjetos[index][6] == false) {
-                                anchor.addChild(box7)
-                            }
-                            if(self.arrayObjetos[index][7] == false) {
-                                anchor.addChild(box8)
-                            }
-                            if(self.arrayObjetos[index][8] == false) {
-                                anchor.addChild(box9)
-                            }
-                            if(self.arrayObjetos[index][9] == false) {
-                                anchor.addChild(box10)
-                            }
-                            if(self.arrayObjetos[index][10] == false) {
-                                anchor.addChild(box11)
-                            }
-                            if(self.arrayObjetos[index][11] == false) {
-                                anchor.addChild(box12)
-                            }
-                        }
+                 */
+                if(currModel.completed == false) {
+                    if(self.arrayObjetos[0] == false) {
+                        anchor.addChild(box1)
+                    }
+                    if(self.arrayObjetos[1] == false) {
+                        anchor.addChild(box2)
+                    }
+                    if(self.arrayObjetos[2] == false) {
+                        anchor.addChild(box3)
+                    }
+                    if(self.arrayObjetos[3] == false) {
+                        anchor.addChild(box4)
+                    }
+                    if(self.arrayObjetos[4] == false) {
+                        anchor.addChild(box5)
+                    }
+                    if(self.arrayObjetos[5] == false) {
+                        anchor.addChild(box6)
+                    }
+                    if(self.arrayObjetos[6] == false) {
+                        anchor.addChild(box7)
+                    }
+                    if(self.arrayObjetos[7] == false) {
+                        anchor.addChild(box8)
+                    }
+                    if(self.arrayObjetos[8] == false) {
+                        anchor.addChild(box9)
+                    }
+                    if(self.arrayObjetos[9] == false) {
+                        anchor.addChild(box10)
+                    }
+                    if(self.arrayObjetos[10] == false) {
+                        anchor.addChild(box11)
+                    }
+                    if(self.arrayObjetos[11] == false) {
+                        anchor.addChild(box12)
                     }
                 }
+                /*
+                    }
+                }
+                */
                 
                 
                 
@@ -1623,77 +1637,13 @@ class ARViewController: UIViewController, ARSessionDelegate {
                     box12.playAnimation(animationResource12!)
                 }
                 
+                /*
                 for (index, currObra) in loadedModels.enumerated() {
                     if(currObra._id == self.currModel._id) {
-                        if(self.arrayRunOnce[index] == true) {
-                            print(currentObra.modelo)
-                            let modeloFile = URL(string: currentObra.modelo)!
-                            newEntityPirinola = ModelEntity.loadModelAsync(contentsOf: modeloFile)
-                                .sink { loadCompletion in
-                                    if case let .failure(error) = loadCompletion {
-                                        print("Unable to load model \(error)")
-                                    }
-                                    self.newEntityPirinola?.cancel()
-                                } receiveValue: { newEntity in
-                                    newEntity.setPosition(SIMD3(x: 0, y: 0.6, z: 0), relativeTo: nil)
-                                    newEntity.setScale(SIMD3(x: 0.09, y: 0.09, z: 0.09), relativeTo: newEntity)
-                                    print("se carga con exito")
-                                    
-                                    // Change black entity for new model Entity
-                                    if(self.arView.scene.anchors.count == 2) {
-                                        self.arView.scene.anchors[1].addChild(newEntity)
-                                    }
-                                }
-                        }
-                    }
-                }
-            }
-            
-
-            
-        for (index, currObra) in loadedModels.enumerated() {
-            if(currObra._id == self.currModel._id) {
-                if(!self.arrayObjetos[index].contains(false) && self.arrayRunOnce[index] == false) {
-                    
-                    self.modelPlaceholder.model?.materials = [SimpleMaterial(color: .white, isMetallic: false)]
-                    self.animateModel(entity: self.modelPlaceholder, angle: .pi, axis:  [0, 1, 0], duration: 4, loop: false, currentPosition: self.modelPlaceholder.position)
-                    
-                    // Move to receiveValue after loading model
-                    // Places completed boxes
-                    if(self.arView.scene.anchors.count == 2) {
-                        self.placeBoxesAfterCompletition()
-                        self.arView.scene.anchors[1].addChild(self.sphere1)
-                        self.arView.scene.anchors[1].addChild(self.sphere2)
-                        self.arView.scene.anchors[1].addChild(self.sphere3)
-                        self.arView.scene.anchors[1].addChild(self.sphere4)
-                        self.arView.scene.anchors[1].addChild(self.sphere5)
-                        self.arView.scene.anchors[1].addChild(self.sphere6)
-                        self.arView.scene.anchors[1].addChild(self.sphere7)
-                        self.arView.scene.anchors[1].addChild(self.sphere8)
-                        self.arView.scene.anchors[1].addChild(self.sphere9)
-                        self.arView.scene.anchors[1].addChild(self.sphere10)
-                        self.arView.scene.anchors[1].addChild(self.sphere11)
-                        self.arView.scene.anchors[1].addChild(self.sphere12)
-                        self.arView.scene.anchors[1].addChild(self.sphere13)
-                        self.arView.scene.anchors[1].addChild(self.sphere14)
-                        self.arView.scene.anchors[1].addChild(self.sphere15)
-                        self.arView.scene.anchors[1].addChild(self.sphere16)
-                        self.arView.scene.anchors[1].addChild(self.sphere17)
-                        self.arView.scene.anchors[1].addChild(self.sphere18)
-                        self.arView.scene.anchors[1].addChild(self.sphere19)
-                        self.arView.scene.anchors[1].addChild(self.sphere20)
-                        
-                        // Delete after loading models correct
-                        if(self.arrayRunOnce[index] == false) {
-                            self.arrayRunOnce[index] = true
-                            self.arrayNombreObrasCompletadas.append(currentObra.nombre)
-                            
-                            self.progresoActual = self.progresoActual + 1
-                        }
-                    }
-                    
-                    
-                    let modeloFile = URL(string: loadedModels[index].modelo)!
+                */
+                if(currModel.completed == true) {
+                    print(currentObra.modelo)
+                    let modeloFile = URL(string: currentObra.modelo)!
                     newEntityPirinola = ModelEntity.loadModelAsync(contentsOf: modeloFile)
                         .sink { loadCompletion in
                             if case let .failure(error) = loadCompletion {
@@ -1705,42 +1655,121 @@ class ARViewController: UIViewController, ARSessionDelegate {
                             newEntity.setScale(SIMD3(x: 0.09, y: 0.09, z: 0.09), relativeTo: newEntity)
                             print("se carga con exito")
                             
-                            
-//                            Coordinator.completed.currModel = self.network.models[index]
-//                            Coordinator.completed.progreso += 0.1
-//                            Coordinator.completed.progresoActual += 1
-                            self.network.models[index].completed = true
-//                            Coordinator.completed.currSheet = true
-                            
                             // Change black entity for new model Entity
                             if(self.arView.scene.anchors.count == 2) {
-                                self.arView.scene.anchors[1].removeChild(self.modelPlaceholder)
                                 self.arView.scene.anchors[1].addChild(newEntity)
-                                
-                                if(self.arrayRunOnce[index] == false) {
+                            }
+                        }
+                }
+                /*
+                    }
+                }
+                 */
+            }
+            
+
+            
+        /*
+        for (index, currObra) in loadedModels.enumerated() {
+            if(currObra._id == self.currModel._id) {
+        */
+        if(!self.arrayObjetos.contains(false) && currModel.completed == false) {
+            
+            self.modelPlaceholder.model?.materials = [SimpleMaterial(color: .white, isMetallic: false)]
+            self.animateModel(entity: self.modelPlaceholder, angle: .pi, axis:  [0, 1, 0], duration: 4, loop: false, currentPosition: self.modelPlaceholder.position)
+            
+            // Move to receiveValue after loading model
+            // Places completed boxes
+            if(self.arView.scene.anchors.count == 2) {
+                self.placeBoxesAfterCompletition()
+                self.arView.scene.anchors[1].addChild(self.sphere1)
+                self.arView.scene.anchors[1].addChild(self.sphere2)
+                self.arView.scene.anchors[1].addChild(self.sphere3)
+                self.arView.scene.anchors[1].addChild(self.sphere4)
+                self.arView.scene.anchors[1].addChild(self.sphere5)
+                self.arView.scene.anchors[1].addChild(self.sphere6)
+                self.arView.scene.anchors[1].addChild(self.sphere7)
+                self.arView.scene.anchors[1].addChild(self.sphere8)
+                self.arView.scene.anchors[1].addChild(self.sphere9)
+                self.arView.scene.anchors[1].addChild(self.sphere10)
+                self.arView.scene.anchors[1].addChild(self.sphere11)
+                self.arView.scene.anchors[1].addChild(self.sphere12)
+                self.arView.scene.anchors[1].addChild(self.sphere13)
+                self.arView.scene.anchors[1].addChild(self.sphere14)
+                self.arView.scene.anchors[1].addChild(self.sphere15)
+                self.arView.scene.anchors[1].addChild(self.sphere16)
+                self.arView.scene.anchors[1].addChild(self.sphere17)
+                self.arView.scene.anchors[1].addChild(self.sphere18)
+                self.arView.scene.anchors[1].addChild(self.sphere19)
+                self.arView.scene.anchors[1].addChild(self.sphere20)
+                        
+                // Delete after loading models correct
+                if(currModel.completed == false) {
+                    currModel.completed = true
+                    
+                    // self.arrayNombreObrasCompletadas.append(currentObra.nombre)
+                    
+                    self.progresoActual = self.progresoActual + 1
+                }
+            }
+                    
+                    
+            let modeloFile = URL(string: currModel.modelo)!
+            newEntityPirinola = ModelEntity.loadModelAsync(contentsOf: modeloFile)
+                .sink { loadCompletion in
+                    if case let .failure(error) = loadCompletion {
+                        print("Unable to load model \(error)")
+                    }
+                    self.newEntityPirinola?.cancel()
+                } receiveValue: { newEntity in
+                    newEntity.setPosition(SIMD3(x: 0, y: 0.6, z: 0), relativeTo: nil)
+                    newEntity.setScale(SIMD3(x: 0.09, y: 0.09, z: 0.09), relativeTo: newEntity)
+                    print("se carga con exito")
+                    
+                    
+//                          Coordinator.completed.currModel = self.network.models[index]
+//                            Coordinator.completed.progreso += 0.1
+//                            Coordinator.completed.progresoActual += 1
+                    
+                    for (index, currObra) in self.network.models.enumerated() {
+                        if(currObra._id == self.currModel._id) {
+                            self.network.models[index].completed = true
+                        }
+                    }
+//                  Coordinator.completed.currSheet = true
+                    
+                    ARViewController.completed.currModel = currentObra
+                    ARViewController.completed.currSheet = true
+                        
+                    // Change black entity for new model Entity
+                    if(self.arView.scene.anchors.count == 2) {
+                        self.arView.scene.anchors[1].removeChild(self.modelPlaceholder)
+                        self.arView.scene.anchors[1].addChild(newEntity)
+                            
+                        if(self.currModel.completed == false) {
                                     
+                            self.currModel.completed = true
+                            // self.arrayNombreObrasCompletadas.append(currentObra.nombre)
+                            
+                            self.progresoActual = self.progresoActual + 1
+                            print("Progreso: ", self.progresoActual)
+                            // print(self.arrayNombreObrasCompletadas)
                                     
-                                    
-                                    self.arrayRunOnce[index] = true
-                                    self.arrayNombreObrasCompletadas.append(currentObra.nombre)
-                                    
-                                    self.progresoActual = self.progresoActual + 1
-                                    print("Progreso: ", self.progresoActual)
-                                    print(self.arrayNombreObrasCompletadas)
-                                    print("ZONA NUEVA COMPLETADA: ", index)
-                                    
+                                    // TODO: Check when game completed
                                     // Checks when the game has been completed
-                                    if(!self.arrayRunOnce.contains(false)) {
-                                        print("se ha completado el juego: ")
+                                    // if(!self.arrayRunOnce.contains(false)) {
+                                        // print("se ha completado el juego: ")
 //                                        Coordinator.completed.complete = true
 //                                        print(Coordinator.completed.complete)
-                                    }
+                                    // }
                                 }
                             }
                         }
                 }
+        /*
             }
         }
+         */
             
         }
     }
