@@ -13,10 +13,9 @@ import AVFoundation
 
 protocol EditorViewControllerDelegate: AnyObject {
     func loadedData(locations: [ARLocation])
-    func loadGame(obra: Obra)
+    func loadGame(obra: Obra, models: [Obra])
 }
 
-#if !targetEnvironment(simulator)
 class ARViewController: UIViewController, ARSessionDelegate {
     
     @IBOutlet weak var imageView: UIImageView!
@@ -29,6 +28,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
     let network = Network.sharedInstance
     
     override func viewDidLoad() {
+        print("EMPIEZA viewdidload")
         super.viewDidLoad()
         // RealityKit Config
         let config = ARWorldTrackingConfiguration()
@@ -47,11 +47,13 @@ class ARViewController: UIViewController, ARSessionDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        print("EMPIEZA viewWillAppear")
     }
     
     // MARK: - Persistence: Saving and Loading
     
     private func load(location: ARLocation) {
+        print("EMPIEZA load")
         let url = Params.baseURL + location.screenshot
         imageView.imageFromServerURL(url, placeHolder: nil)
 
@@ -167,8 +169,43 @@ class ARViewController: UIViewController, ARSessionDelegate {
 //        }
     }
     
+    // Timer
+    class UpdatViewTimer {
+        typealias Update = (Int)->Void
+        var timer:Timer?
+        var count: Int = 0
+        var update: Update?
+
+        init(update:@escaping Update){
+            self.update = update
+        }
+        func start(){
+            timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(timerUpdate), userInfo: nil, repeats: true)
+        }
+        func stop(){
+            if let timer = timer {
+                timer.invalidate()
+            }
+        }
+
+        @objc func timerUpdate() {
+            count += 1;
+            if let update = update {
+                update(count)
+            }
+            // Stpp the Timer in some situation
+            /*
+            if (count == 4) {
+                stop()
+            }
+            */
+        }
+    }
+    
+
+    
     // Method that makes game active
-    func loadGame(obra: Obra) {
+    func loadGame(obra: Obra, models: [Obra]) {
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = .horizontal
         self.initCollisionDetection()
@@ -176,14 +213,25 @@ class ARViewController: UIViewController, ARSessionDelegate {
         self.initBoxes()
         self.arView.session.run(configuration, options: [.resetTracking])
         self.runCoachingOverlay()
-        self.showMarcoModel(currentObra: obra, gameType: 1)
+        
+        print("EMPIEZA loadGame")
+        loadedModels = models
+        var timerAux: Int = 0
+        let timerRefresh = UpdatViewTimer { (seconds) in
+            if(seconds % 2 == 0) {
+                timerAux = timerAux + 1
+                self.showMarcoModel(currentObra: obra, gameType: 2)
+            }
+        }
+        timerRefresh.start()
+        
+        
     }
     
     // MARK: Coordinator Code
     
     var collisionSubscriptions = [Cancellable]()
-    
-    var models: [Obra] = []
+    var loadedModels: [Obra] = []
     var count: Int = 0
     
     var currModel = Obra(_id: "0", nombre: "Pirinola", autor: "Daniel", descripcion: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", modelo: "Models/pirinola.usdz", zona: "", completed: false)
@@ -350,7 +398,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
     // Inits the information from the API to the models variable with the Obras loaded
     func initModelsData(newObras: [Obra]) {
         // Todo make a variable to avoid triggering this function once the models are loaded in the file
-        models = newObras
+        loadedModels = newObras
         count = count + 1
     }
     
@@ -378,7 +426,6 @@ class ARViewController: UIViewController, ARSessionDelegate {
 
     // Inits the bullets configurations
     func initBullets() {
-        guard let arView = self.view else { return }
         bulletMaterial.color =  .init(tint: .green.withAlphaComponent(1), texture: nil)
         
         // Bullets that are transparent in case there's an error with the direction or scale
@@ -835,7 +882,6 @@ class ARViewController: UIViewController, ARSessionDelegate {
     }
     
     func initBoxes() {
-        guard let view = self.view else { return }
 
         // Box - 1 Collision
         box1 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box1Material])
@@ -939,7 +985,6 @@ class ARViewController: UIViewController, ARSessionDelegate {
     
     // Remove animation for box on collision with a Bullet
     func animate(entity: HasTransform, angle: Float, axis: SIMD3<Float>, duration: TimeInterval, loop: Bool, currentPosition: SIMD3<Float>){
-        guard let view = self.view else { return }
         
         // Remove the cube after 4 seconds
         let timer1 = CustomTimer { (seconds) in
@@ -961,7 +1006,6 @@ class ARViewController: UIViewController, ARSessionDelegate {
     
     // Remove animation for box on collision with a Bullet
     func animateModel(entity: HasTransform, angle: Float, axis: SIMD3<Float>, duration: TimeInterval, loop: Bool, currentPosition: SIMD3<Float>){
-        guard let view = self.view else { return }
         
         var transform = entity.transform
         transform.rotation *= simd_quatf(angle: angle, axis: axis)
@@ -1022,13 +1066,14 @@ class ARViewController: UIViewController, ARSessionDelegate {
         sphere19.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
         sphere20.setPosition(SIMD3([Float.random(in: -2..<2), Float.random(in: 0.2..<3), Float.random(in: -3..<3)]), relativeTo: nil)
     }
-
+    
+    
     // Function to init the collision detection with Subscription
+    // Function to init the collision detection with Subscription
+    
     func initCollisionDetection() {
-        guard let view = self.view else { return }
         // Subscription for collision
         collisionSubscriptions.append(self.arView.scene.subscribe(to: CollisionEvents.Began.self) { event in
-            
             // Entity1 and Entity2 could be either a box or a bullet (even a bullet and a bullet collision)
             guard let entity1 = event.entityA as? ModelEntity,
                   let entity2 = event.entityB as? ModelEntity else { return }
@@ -1057,7 +1102,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
                 
                 // Checks the index of the box that has been removed to support the progress
                 // self.arrayObjetos[self.currZona][entityReal - 1] = true
-                for (index, currObra) in self.models.enumerated() {
+                for (index, currObra) in self.loadedModels.enumerated() {
                     if(currObra._id == self.currModel._id) {
                         self.arrayObjetos[index][entityReal - 1] = true
                     }
@@ -1080,7 +1125,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
                     
                     self.animate(entity: entity2, angle: .pi, axis: [0, 1, 0], duration: 1, loop: false, currentPosition: entity2.position)
                     // self.arrayObjetos[self.currZona][entityReal - 1] = true
-                    for (index, currObra) in self.models.enumerated() {
+                    for (index, currObra) in self.loadedModels.enumerated() {
                         if(currObra._id == self.currModel._id) {
                             self.arrayObjetos[index][entityReal - 1] = true
 
@@ -1422,7 +1467,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
     }
     
     func showMarcoModel(currentObra: Obra, gameType: Int) {
-        guard let arView = self.view else { return }
+
         if(currModel._id != currentObra._id) {
             currModel = currentObra
             self.gameType = gameType
@@ -1460,12 +1505,12 @@ class ARViewController: UIViewController, ARSessionDelegate {
         // Si se encuentra en la zona actual, ejecuta el siguiente codigo
         } else {
             // Si aun no se ha montado la escena, se monta con este if
-            if(self.arView.scene.anchors.count == 1 && !models.isEmpty) {
+            if(self.arView.scene.anchors.count == 1) {
                 modelPlaceholder.setPosition(SIMD3(x: 0, y: 0.4, z: 0), relativeTo: nil)
                 // if (self.arrayRunOnce[self.currZona] == false) {
                 
                 // Regresar esto
-                for (index, currObra) in self.models.enumerated() {
+                for (index, currObra) in loadedModels.enumerated() {
                     if(currObra._id == self.currModel._id) {
                         if (self.arrayRunOnce[index] == false) {
                             modelPlaceholder.stopAllAnimations(recursive: true)
@@ -1500,7 +1545,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
                 box11.model?.materials = [box11Material]
                 box12.model?.materials = [box12Material]
                 
-                for (index, currObra) in self.models.enumerated() {
+                for (index, currObra) in loadedModels.enumerated() {
                     if(currObra._id == self.currModel._id) {
                         if(self.arrayRunOnce[index] == false) {
                             if(self.arrayObjetos[index][0] == false) {
@@ -1578,9 +1623,10 @@ class ARViewController: UIViewController, ARSessionDelegate {
                     box12.playAnimation(animationResource12!)
                 }
                 
-                for (index, currObra) in self.models.enumerated() {
+                for (index, currObra) in loadedModels.enumerated() {
                     if(currObra._id == self.currModel._id) {
                         if(self.arrayRunOnce[index] == true) {
+                            print(currentObra.modelo)
                             let modeloFile = URL(string: currentObra.modelo)!
                             newEntityPirinola = ModelEntity.loadModelAsync(contentsOf: modeloFile)
                                 .sink { loadCompletion in
@@ -1605,7 +1651,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
             
 
             
-        for (index, currObra) in self.models.enumerated() {
+        for (index, currObra) in loadedModels.enumerated() {
             if(currObra._id == self.currModel._id) {
                 if(!self.arrayObjetos[index].contains(false) && self.arrayRunOnce[index] == false) {
                     
@@ -1647,7 +1693,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
                     }
                     
                     
-                    let modeloFile = URL(string: self.models[index].modelo)!
+                    let modeloFile = URL(string: loadedModels[index].modelo)!
                     newEntityPirinola = ModelEntity.loadModelAsync(contentsOf: modeloFile)
                         .sink { loadCompletion in
                             if case let .failure(error) = loadCompletion {
@@ -1792,4 +1838,3 @@ extension Int {
     }
 }
 
-#endif

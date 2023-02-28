@@ -9,21 +9,18 @@ import SwiftUI
 
 struct ARViewContainer : View {
     var body: some View {
-        #if !targetEnvironment(simulator)
         StoryBoardView()
             .ignoresSafeArea(.all)
-        #else
-        Text("ARViewContainer")
-        #endif
+        // Text("ARViewContainer")
     }
 }
 
-#if !targetEnvironment(simulator)
 struct StoryBoardView: UIViewControllerRepresentable {
     
     func makeUIViewController(context: Context) -> some UIViewController {
         let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
         let controller = storyboard.instantiateViewController(identifier: "editor")
+        
         return controller
     }
     
@@ -31,12 +28,9 @@ struct StoryBoardView: UIViewControllerRepresentable {
         
     }
 }
-#endif
 
-#if DEBUG
 struct ARView_Previews : PreviewProvider {
     static var previews: some View {
         ContentView()
     }
 }
-#endif
