@@ -10,6 +10,8 @@
 		0525C3E42911DE7600BD410B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0525C3E32911DE7600BD410B /* Assets.xcassets */; };
 		053CE2302926FF0A0005EE43 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 053CE22F2926FF0A0005EE43 /* Network.swift */; };
 		053CE2342926FF830005EE43 /* ObraModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 053CE2332926FF830005EE43 /* ObraModel.swift */; };
+		333A8DC729AE5F5F0079C66D /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333A8DC629AE5F5F0079C66D /* LoadingView.swift */; };
+		333A8DC929AE60680079C66D /* FinalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333A8DC829AE60680079C66D /* FinalView.swift */; };
 		FB5F879928FF705100A4E95C /* DeviceLocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB5F879828FF705100A4E95C /* DeviceLocationService.swift */; };
 		FC0BD09629A46723005A1800 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = FC0BD09529A46723005A1800 /* Alamofire */; };
 		FC0BD09829A46748005A1800 /* Params.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0BD09729A46748005A1800 /* Params.swift */; };
@@ -34,6 +36,8 @@
 		0525C3E32911DE7600BD410B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		053CE22F2926FF0A0005EE43 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		053CE2332926FF830005EE43 /* ObraModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObraModel.swift; sourceTree = "<group>"; };
+		333A8DC629AE5F5F0079C66D /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
+		333A8DC829AE60680079C66D /* FinalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinalView.swift; sourceTree = "<group>"; };
 		FB5F879528FF654600A4E95C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		FB5F879828FF705100A4E95C /* DeviceLocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLocationService.swift; sourceTree = "<group>"; };
 		FC0BD09729A46748005A1800 /* Params.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Params.swift; sourceTree = "<group>"; };
@@ -112,6 +116,8 @@
 				FC80D9D2292F038200724704 /* ProgressRowView.swift */,
 				FC53ACF4292F2E5A00A582B0 /* ObraView.swift */,
 				FC32475C28FF34170034F324 /* ARViewContainer.swift */,
+				333A8DC629AE5F5F0079C66D /* LoadingView.swift */,
+				333A8DC829AE60680079C66D /* FinalView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -256,7 +262,9 @@
 				FB5F879928FF705100A4E95C /* DeviceLocationService.swift in Sources */,
 				FC0BD09829A46748005A1800 /* Params.swift in Sources */,
 				053CE2342926FF830005EE43 /* ObraModel.swift in Sources */,
+				333A8DC929AE60680079C66D /* FinalView.swift in Sources */,
 				FC64E63428F7330C00FCB2AA /* ContentView.swift in Sources */,
+				333A8DC729AE5F5F0079C66D /* LoadingView.swift in Sources */,
 				FC80D9D3292F038200724704 /* ProgressRowView.swift in Sources */,
 				053CE2302926FF0A0005EE43 /* Network.swift in Sources */,
 				FC0BD09C29A46B8E005A1800 /* Utilities.swift in Sources */,

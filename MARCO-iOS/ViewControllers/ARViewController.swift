@@ -42,6 +42,7 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
         arView.addGestureRecognizer(tapGesture)
         // Protocol
+        
         network.delegateARVC = self
     }
     
@@ -169,45 +170,11 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
 //        }
     }
     
-    // Timer
-    class UpdatViewTimer {
-        typealias Update = (Int)->Void
-        var timer:Timer?
-        var count: Int = 0
-        var update: Update?
-
-        init(update:@escaping Update){
-            self.update = update
-        }
-        func start(){
-            timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(timerUpdate), userInfo: nil, repeats: true)
-        }
-        func stop(){
-            if let timer = timer {
-                timer.invalidate()
-            }
-        }
-
-        @objc func timerUpdate() {
-            count += 1;
-            if let update = update {
-                update(count)
-            }
-            // Stpp the Timer in some situation
-            /*
-            if (count == 4) {
-                stop()
-            }
-            */
-        }
-    }
-    
-
-    
     // Method that makes game active
     func loadGame(obra: Obra) {
         let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = .horizontal
+        
         self.initCollisionDetection()
         self.initBullets()
         self.initBoxes()
@@ -215,15 +182,8 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         self.runCoachingOverlay()
         
         print("EMPIEZA loadGame")
-        var timerAux: Int = 0
-        let timerRefresh = UpdatViewTimer { (seconds) in
-            if(seconds % 2 == 0) {
-                timerAux = timerAux + 1
-                self.showMarcoModel(currentObra: obra, gameType: 2)
-            }
-        }
-        timerRefresh.start()
-        
+        self.removePreviousContent()
+        self.showMarcoModel(currentObra: obra, gameType: 2)
         
     }
     
@@ -261,8 +221,7 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
     // TODO: Replicar para el numero de zonas
     var arrayObjetos = [false, false, false, false, false, false, false, false, false, false, false, false]
     // Array para debug, utilizado para imprimir las obras que van siendo completadas
-    // var arrayNombreObrasCompletadas: [String] = []
-    
+
     // Anchor para los modelos
     // let anchor = AnchorEntity(plane: .horizontal, classification: .floor) // Production
     let anchor = AnchorEntity(plane: .horizontal) // For tes`ting puposes
@@ -382,16 +341,7 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
     var sphere19: ModelEntity = ModelEntity()
     var sphere20: ModelEntity = ModelEntity()
     let completeBoxMaterial = UnlitMaterial(color: .systemPink)
-    
-    /*
-    // Inits the information from the API to the models variable with the Obras loaded
-    func initModelsData(newObras: [Obra]) {
-        // Todo make a variable to avoid triggering this function once the models are loaded in the file
-        loadedModels = newObras
-        count = count + 1
-    }
-     */
-    
+
     func runCoachingOverlay() {
         guard let view = self.view else { return }
 
@@ -412,7 +362,6 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         coachingOverlay.session = arView.session
     }
     
-
 
     // Inits the bullets configurations
     func initBullets() {
@@ -975,7 +924,6 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
     
     // Remove animation for box on collision with a Bullet
     func animate(entity: HasTransform, angle: Float, axis: SIMD3<Float>, duration: TimeInterval, loop: Bool, currentPosition: SIMD3<Float>){
-        
         // Remove the cube after 4 seconds
         let timer1 = CustomTimer { (seconds) in
             if(seconds == 1) {
@@ -1057,10 +1005,7 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         sphere20.setPosition(SIMD3([Float.random(in: -2..<2), Float.random(in: 0.2..<3), Float.random(in: -3..<3)]), relativeTo: nil)
     }
     
-    
     // Function to init the collision detection with Subscription
-    // Function to init the collision detection with Subscription
-    
     func initCollisionDetection() {
         // Subscription for collision
         collisionSubscriptions.append(self.arView.scene.subscribe(to: CollisionEvents.Began.self) { event in
@@ -1090,15 +1035,6 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
                 // Call the animate function to remove the box from the scene
                 self.animate(entity: entity1, angle: .pi, axis: [0, 1, 0], duration: 1, loop: false, currentPosition: entity1.position)
                 
-                // Checks the index of the box that has been removed to support the progress
-                // self.arrayObjetos[self.currZona][entityReal - 1] = true
-                /*
-                for (index, currObra) in self.loadedModels.enumerated() {
-                    if(currObra._id == self.currModel._id) {
-                        self.arrayObjetos[index][entityReal - 1] = true
-                    }
-                }
-                 */
                 self.arrayObjetos[entityReal - 1] = true
             // Repeats the previous code in case the entity2 is the box
             } else {
@@ -1117,18 +1053,11 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
                     }
                     
                     self.animate(entity: entity2, angle: .pi, axis: [0, 1, 0], duration: 1, loop: false, currentPosition: entity2.position)
-                    // self.arrayObjetos[self.currZona][entityReal - 1] = true
-                    /*
-                    for (index, currObra) in self.loadedModels.enumerated() {
-                        if(currObra._id == self.currModel._id) {
-                            self.arrayObjetos[index][entityReal - 1] = true
-
-                        }
-                    }
-                    */
                     self.arrayObjetos[entityReal - 1] = true
                 }
             }
+            
+            self.winGame()
         })
     }
     
@@ -1462,223 +1391,13 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         }
     }
     
-    func showMarcoModel(currentObra: Obra, gameType: Int) {
-
-        if(currModel._id != currentObra._id) {
-            currModel = currentObra
-            self.gameType = gameType
-            initAnimationsResource()
-            print("ModeloActual: ", currentObra.nombre)
-            arrayObjetos = [false, false, false, false, false, false, false, false, false, false, false, false]
-            
-            
-            if(self.arView.scene.anchors.count == 2) {
-                self.arView.scene.anchors[1].removeChild(textEntity)
-                self.arView.scene.anchors[1].removeChild(box1)
-                self.arView.scene.anchors[1].removeChild(box2)
-                self.arView.scene.anchors[1].removeChild(box3)
-                self.arView.scene.anchors[1].removeChild(box4)
-                self.arView.scene.anchors[1].removeChild(box5)
-                self.arView.scene.anchors[1].removeChild(box6)
-                self.arView.scene.anchors[1].removeChild(box7)
-                self.arView.scene.anchors[1].removeChild(box8)
-                self.arView.scene.anchors[1].removeChild(box9)
-                self.arView.scene.anchors[1].removeChild(box10)
-                self.arView.scene.anchors[1].removeChild(box11)
-                self.arView.scene.anchors[1].removeChild(box12)
-                print("se ejecutra el remove")
-                self.arView.scene.anchors[1].removeChild(modelPlaceholder)
-                // view.scene.anchors[1].removeChild(newEntity)
-                
-                for currModels in anchor.children {
-                    anchor.removeChild(currModels)
-                }
-                print("se ejecutra el remove CHLDREN: ", anchor.children.count)
-                
-            }
-            // Remove the actual anchor
-            self.arView.scene.removeAnchor(anchor)
-            
-        // Si se encuentra en la zona actual, ejecuta el siguiente codigo
-        } else {
-            // Si aun no se ha montado la escena, se monta con este if
-            if(self.arView.scene.anchors.count == 1) {
-                modelPlaceholder.setPosition(SIMD3(x: 0, y: 0.4, z: 0), relativeTo: nil)
-                // if (self.arrayRunOnce[self.currZona] == false) {
-                
-                // Regresar esto
-                /*
-                for (index, currObra) in loadedModels.enumerated() {
-                    if(currObra._id == self.currModel._id) {
-                        if (currModel.completed == false) {
-                            modelPlaceholder.stopAllAnimations(recursive: true)
-                            print(modelPlaceholder.scale)
-                            if(modelPlaceholder.scale.x < 0.8) {
-                                modelPlaceholder.scale.x = 1
-                                modelPlaceholder.scale.y = 1
-                                modelPlaceholder.scale.z = 1
-                                self.modelPlaceholder.model?.materials = [SimpleMaterial(color: .black, isMetallic: false)]
-                            }
-                            anchor.addChild(modelPlaceholder)
-                        }
-                    }
-                }
-                */
-                if (currModel.completed == false) {
-                    modelPlaceholder.stopAllAnimations(recursive: true)
-                    print(modelPlaceholder.scale)
-                    if(modelPlaceholder.scale.x < 0.8) {
-                        modelPlaceholder.scale.x = 1
-                        modelPlaceholder.scale.y = 1
-                        modelPlaceholder.scale.z = 1
-                        self.modelPlaceholder.model?.materials = [SimpleMaterial(color: .black, isMetallic: false)]
-                    }
-                    anchor.addChild(modelPlaceholder)
-                }
-                
-                
-                // Shows the text of the current Obra
-                textEntity = textGen(textString: currentObra.nombre)
-                textEntity.setPosition(SIMD3(x: 0.0, y: -0.2, z: 0.0), relativeTo: nil)
-                anchor.addChild(textEntity)
-                
-                box1.model?.materials = [box1Material]
-                box2.model?.materials = [box2Material]
-                box3.model?.materials = [box3Material]
-                box4.model?.materials = [box4Material]
-                box5.model?.materials = [box5Material]
-                box6.model?.materials = [box6Material]
-                box7.model?.materials = [box7Material]
-                box8.model?.materials = [box8Material]
-                box9.model?.materials = [box9Material]
-                box10.model?.materials = [box10Material]
-                box11.model?.materials = [box11Material]
-                box12.model?.materials = [box12Material]
-                
-                /*
-                for (index, currObra) in loadedModels.enumerated() {
-                    if(currObra._id == self.currModel._id) {
-                 */
-                if(currModel.completed == false) {
-                    if(self.arrayObjetos[0] == false) {
-                        anchor.addChild(box1)
-                    }
-                    if(self.arrayObjetos[1] == false) {
-                        anchor.addChild(box2)
-                    }
-                    if(self.arrayObjetos[2] == false) {
-                        anchor.addChild(box3)
-                    }
-                    if(self.arrayObjetos[3] == false) {
-                        anchor.addChild(box4)
-                    }
-                    if(self.arrayObjetos[4] == false) {
-                        anchor.addChild(box5)
-                    }
-                    if(self.arrayObjetos[5] == false) {
-                        anchor.addChild(box6)
-                    }
-                    if(self.arrayObjetos[6] == false) {
-                        anchor.addChild(box7)
-                    }
-                    if(self.arrayObjetos[7] == false) {
-                        anchor.addChild(box8)
-                    }
-                    if(self.arrayObjetos[8] == false) {
-                        anchor.addChild(box9)
-                    }
-                    if(self.arrayObjetos[9] == false) {
-                        anchor.addChild(box10)
-                    }
-                    if(self.arrayObjetos[10] == false) {
-                        anchor.addChild(box11)
-                    }
-                    if(self.arrayObjetos[11] == false) {
-                        anchor.addChild(box12)
-                    }
-                }
-                /*
-                    }
-                }
-                */
-                
-                
-                
-                // Add the anchor to the scene
-                anchor.move(to: Transform(translation: simd_float3(0,0,-1)), relativeTo: nil)
-                self.arView.scene.addAnchor(anchor)
-                
-                
-                // Play the orbiting animations
-                if(gameType == 1) {
-                    box1.playAnimation(animationResource1!)
-                    box3.playAnimation(animationResource3!)
-                    box4.playAnimation(animationResource4!)
-                    box2.playAnimation(animationResource2!)
-                    box5.playAnimation(animationResource5!)
-                    box6.playAnimation(animationResource6!)
-                    box7.playAnimation(animationResource7!)
-                    box8.playAnimation(animationResource8!)
-                    box9.playAnimation(animationResource9!)
-                    box10.playAnimation(animationResource10!)
-                    box11.playAnimation(animationResource11!)
-                    box12.playAnimation(animationResource12!)
-                }
-                
-                if(gameType == 2 ) {
-                    box1.playAnimation(animationResource1!)
-                    box3.playAnimation(animationResource3!)
-                    box4.playAnimation(animationResource4!)
-                    box2.playAnimation(animationResource2!)
-                    box5.playAnimation(animationResource5!)
-                    box6.playAnimation(animationResource6!)
-                    box10.playAnimation(animationResource10!)
-                    box11.playAnimation(animationResource11!)
-                    box12.playAnimation(animationResource12!)
-                }
-                
-                /*
-                for (index, currObra) in loadedModels.enumerated() {
-                    if(currObra._id == self.currModel._id) {
-                */
-                if(currModel.completed == true) {
-                    print(currentObra.modelo)
-                    let modeloFile = URL(string: currentObra.modelo)!
-                    newEntityPirinola = ModelEntity.loadModelAsync(contentsOf: modeloFile)
-                        .sink { loadCompletion in
-                            if case let .failure(error) = loadCompletion {
-                                print("Unable to load model \(error)")
-                            }
-                            self.newEntityPirinola?.cancel()
-                        } receiveValue: { newEntity in
-                            newEntity.setPosition(SIMD3(x: 0, y: 0.6, z: 0), relativeTo: nil)
-                            newEntity.setScale(SIMD3(x: 0.09, y: 0.09, z: 0.09), relativeTo: newEntity)
-                            print("se carga con exito")
-                            
-                            // Change black entity for new model Entity
-                            if(self.arView.scene.anchors.count == 2) {
-                                self.arView.scene.anchors[1].addChild(newEntity)
-                            }
-                        }
-                }
-                /*
-                    }
-                }
-                 */
-            }
-            
-
-            
-        /*
-        for (index, currObra) in loadedModels.enumerated() {
-            if(currObra._id == self.currModel._id) {
-        */
+    func winGame() {
+        // Se completa el juego actual
         if(!self.arrayObjetos.contains(false) && currModel.completed == false) {
-            
             self.modelPlaceholder.model?.materials = [SimpleMaterial(color: .white, isMetallic: false)]
             self.animateModel(entity: self.modelPlaceholder, angle: .pi, axis:  [0, 1, 0], duration: 4, loop: false, currentPosition: self.modelPlaceholder.position)
             
-            // Move to receiveValue after loading model
+            // OPTIONAL: Show pink spheres in scene
             // Places completed boxes
             if(self.arView.scene.anchors.count == 2) {
                 self.placeBoxesAfterCompletition()
@@ -1703,12 +1422,8 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
                 self.arView.scene.anchors[1].addChild(self.sphere19)
                 self.arView.scene.anchors[1].addChild(self.sphere20)
                         
-                // Delete after loading models correct
                 if(currModel.completed == false) {
                     currModel.completed = true
-                    
-                    // self.arrayNombreObrasCompletadas.append(currentObra.nombre)
-                    
                     self.progresoActual = self.progresoActual + 1
                 }
             }
@@ -1726,54 +1441,214 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
                     newEntity.setScale(SIMD3(x: 0.09, y: 0.09, z: 0.09), relativeTo: newEntity)
                     print("se carga con exito")
                     
-                    
-//                          Coordinator.completed.currModel = self.network.models[index]
-//                            Coordinator.completed.progreso += 0.1
-//                            Coordinator.completed.progresoActual += 1
-                    
+
                     for (index, currObra) in self.network.models.enumerated() {
                         if(currObra._id == self.currModel._id) {
                             self.network.models[index].completed = true
                         }
                     }
-//                  Coordinator.completed.currSheet = true
                     
-                    ARViewController.completed.currModel = currentObra
+                    ARViewController.completed.currModel = self.currModel
                     ARViewController.completed.currSheet = true
-                        
+                    
                     // Change black entity for new model Entity
                     if(self.arView.scene.anchors.count == 2) {
                         self.arView.scene.anchors[1].removeChild(self.modelPlaceholder)
                         self.arView.scene.anchors[1].addChild(newEntity)
-                            
+                        
+                        // TODO: Update progress
+                        /*
                         if(self.currModel.completed == false) {
-                                    
                             self.currModel.completed = true
-                            // self.arrayNombreObrasCompletadas.append(currentObra.nombre)
-                            
                             self.progresoActual = self.progresoActual + 1
                             print("Progreso: ", self.progresoActual)
-                            // print(self.arrayNombreObrasCompletadas)
-                                    
-                                    // TODO: Check when game completed
-                                    // Checks when the game has been completed
-                                    // if(!self.arrayRunOnce.contains(false)) {
-                                        // print("se ha completado el juego: ")
-//                                        Coordinator.completed.complete = true
-//                                        print(Coordinator.completed.complete)
-                                    // }
-                                }
-                            }
+                            
+                            // TODO: Check when game completed
+                            // Checks when the game has been completed
+                            // if(!self.arrayRunOnce.contains(false)) {
+                            // print("se ha completado el juego: ")
+                            // Coordinator.completed.complete = true
+                            // print(Coordinator.completed.complete)
+                            // }
                         }
+                        */
+                    }
                 }
+            
+        }
+        
         /*
+        // If the game is already completed then load the model
+        if(currModel.completed == true) {
+            print(currModel.modelo)
+            let modeloFile = URL(string: currModel.modelo)!
+            newEntityPirinola = ModelEntity.loadModelAsync(contentsOf: modeloFile)
+                .sink { loadCompletion in
+                    if case let .failure(error) = loadCompletion {
+                        print("Unable to load model \(error)")
+                    }
+                    self.newEntityPirinola?.cancel()
+                } receiveValue: { newEntity in
+                    newEntity.setPosition(SIMD3(x: 0, y: 0.6, z: 0), relativeTo: nil)
+                    newEntity.setScale(SIMD3(x: 0.09, y: 0.09, z: 0.09), relativeTo: newEntity)
+                    print("se carga con exito")
+                    
+                    // Change black entity for new model Entity
+                    if(self.arView.scene.anchors.count == 2) {
+                        self.arView.scene.anchors[1].addChild(newEntity)
+                    }
+                }
+            }
+         */
+
+    }
+    
+    func removePreviousContent() {
+        if(self.arView.scene.anchors.count == 2) {
+            self.arView.scene.anchors[1].removeChild(textEntity)
+            self.arView.scene.anchors[1].removeChild(box1)
+            self.arView.scene.anchors[1].removeChild(box2)
+            self.arView.scene.anchors[1].removeChild(box3)
+            self.arView.scene.anchors[1].removeChild(box4)
+            self.arView.scene.anchors[1].removeChild(box5)
+            self.arView.scene.anchors[1].removeChild(box6)
+            self.arView.scene.anchors[1].removeChild(box7)
+            self.arView.scene.anchors[1].removeChild(box8)
+            self.arView.scene.anchors[1].removeChild(box9)
+            self.arView.scene.anchors[1].removeChild(box10)
+            self.arView.scene.anchors[1].removeChild(box11)
+            self.arView.scene.anchors[1].removeChild(box12)
+            print("se ejecutra el remove")
+            self.arView.scene.anchors[1].removeChild(modelPlaceholder)
+            // view.scene.anchors[1].removeChild(newEntity)
+            
+            for currModels in anchor.children {
+                anchor.removeChild(currModels)
+            }
+            print("se ejecutra el remove CHLDREN: ", anchor.children.count)
+            
+        }
+        // Remove the actual anchor after removing the childs
+        self.arView.scene.removeAnchor(anchor)
+    }
+    
+    func showMarcoModel(currentObra: Obra, gameType: Int) {
+        currModel = currentObra
+        self.gameType = gameType
+        initAnimationsResource()
+        print("ModeloActual: ", currentObra.nombre)
+        arrayObjetos = [false, false, false, false, false, false, false, false, false, false, false, false]
+            
+        modelPlaceholder.setPosition(SIMD3(x: 0, y: 0.4, z: 0), relativeTo: nil)
+        if (currModel.completed == false) {
+            modelPlaceholder.stopAllAnimations(recursive: true)
+            print(modelPlaceholder.scale)
+            if(modelPlaceholder.scale.x < 0.8) {
+                modelPlaceholder.scale.x = 1
+                modelPlaceholder.scale.y = 1
+                modelPlaceholder.scale.z = 1
+                self.modelPlaceholder.model?.materials = [SimpleMaterial(color: .black, isMetallic: false)]
+            }
+            anchor.addChild(modelPlaceholder)
+        }
+                
+        // Shows the text of the current Obra
+        textEntity = textGen(textString: currentObra.nombre)
+        textEntity.setPosition(SIMD3(x: 0.0, y: -0.2, z: 0.0), relativeTo: nil)
+        anchor.addChild(textEntity)
+                
+        // Adds materials to the boxes
+        box1.model?.materials = [box1Material]
+        box2.model?.materials = [box2Material]
+        box3.model?.materials = [box3Material]
+        box4.model?.materials = [box4Material]
+        box5.model?.materials = [box5Material]
+        box6.model?.materials = [box6Material]
+        box7.model?.materials = [box7Material]
+        box8.model?.materials = [box8Material]
+        box9.model?.materials = [box9Material]
+        box10.model?.materials = [box10Material]
+        box11.model?.materials = [box11Material]
+        box12.model?.materials = [box12Material]
+                
+
+        if(currModel.completed == false) {
+            if(self.arrayObjetos[0] == false) {
+                anchor.addChild(box1)
+            }
+            if(self.arrayObjetos[1] == false) {
+                anchor.addChild(box2)
+            }
+            if(self.arrayObjetos[2] == false) {
+                anchor.addChild(box3)
+            }
+            if(self.arrayObjetos[3] == false) {
+                anchor.addChild(box4)
+            }
+            if(self.arrayObjetos[4] == false) {
+                anchor.addChild(box5)
+            }
+            if(self.arrayObjetos[5] == false) {
+                anchor.addChild(box6)
+            }
+            if(self.arrayObjetos[6] == false) {
+                anchor.addChild(box7)
+            }
+            if(self.arrayObjetos[7] == false) {
+                anchor.addChild(box8)
+            }
+            if(self.arrayObjetos[8] == false) {
+                anchor.addChild(box9)
+            }
+            if(self.arrayObjetos[9] == false) {
+                anchor.addChild(box10)
+            }
+            if(self.arrayObjetos[10] == false) {
+                anchor.addChild(box11)
+            }
+            if(self.arrayObjetos[11] == false) {
+                anchor.addChild(box12)
             }
         }
-         */
-            
+                
+        // Add the anchor to the scene
+        anchor.move(to: Transform(translation: simd_float3(0,0,-1)), relativeTo: nil)
+        self.arView.scene.addAnchor(anchor)
+        
+        
+        // Play the orbiting animations
+        if(gameType == 1) {
+            box1.playAnimation(animationResource1!)
+            box3.playAnimation(animationResource3!)
+            box4.playAnimation(animationResource4!)
+            box2.playAnimation(animationResource2!)
+            box5.playAnimation(animationResource5!)
+            box6.playAnimation(animationResource6!)
+            box7.playAnimation(animationResource7!)
+            box8.playAnimation(animationResource8!)
+            box9.playAnimation(animationResource9!)
+            box10.playAnimation(animationResource10!)
+            box11.playAnimation(animationResource11!)
+            box12.playAnimation(animationResource12!)
+        }
+                
+        if(gameType == 2 ) {
+            box1.playAnimation(animationResource1!)
+            box3.playAnimation(animationResource3!)
+            box4.playAnimation(animationResource4!)
+            box2.playAnimation(animationResource2!)
+            box5.playAnimation(animationResource5!)
+            box6.playAnimation(animationResource6!)
+            box10.playAnimation(animationResource10!)
+            box11.playAnimation(animationResource11!)
+            box12.playAnimation(animationResource12!)
         }
     }
 }
+
+
+
+
 
 class CustomPointLight: Entity, HasPointLight {
     required init() {
