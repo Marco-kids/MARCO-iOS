@@ -26,6 +26,8 @@ struct ContentView: View {
     // Light or dark mode
     @Environment(\.colorScheme) var colorScheme
     
+    @StateObject var completed = ARViewController.completed
+    
     var body: some View {
             
         ZStack {
@@ -87,9 +89,9 @@ struct ContentView: View {
         }
         #if !targetEnvironment(simulator)
         // MARK: Fix to present when one game completed
-//        .sheet(isPresented: $completed.currSheet) {
-//            ObraView(obra: completed.currModel)
-//        }
+        .sheet(isPresented: $completed.currSheet) {
+            ObraView(obra: completed.currModel)
+        }
         #endif
     }
     
