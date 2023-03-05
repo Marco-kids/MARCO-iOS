@@ -12,8 +12,11 @@ import Alamofire
 // private let url = "http://10.14.255.70:10205/api/all-obras"
 //private let url = "http://192.168.84.171:8080/api/all-obras" // Datos celular
 // private let url = "http://192.168.100.29:8080/api/all-obras" // Casita
-// private let url = "http://10.22.186.24:8080/api/all-obras" // Salon Swift
-private let url = "http://192.168.1.236:8080/api/all-obras" // Casa Jose
+// private let url = "http://10.22.234.164:8080/api/all-obras" // Salon Swift
+// private let url = "http://192.168.100.25:8080/api/all-obras" // Casa Jose
+
+private let url = "http://192.168.100.25:8080/api/all-obras"
+
 let headers: HTTPHeaders = []
 
 class Network: NSObject, ObservableObject {
@@ -31,6 +34,8 @@ class Network: NSObject, ObservableObject {
     // ARWorldMap
     var downloadedData: [Data] = []
     @Published var locations: [ARLocation] = []
+    
+    @Published var modelProgressDownload = 0
     
     func getModels() {
         print("Started USDZ request")
@@ -94,13 +99,34 @@ class Network: NSObject, ObservableObject {
                 }
                 print(self.rutas)
                 self.obrasPublisher.send(self.models)
+            
+                // self.requestFinished = true
+                
                 #if !targetEnvironment(simulator)
-                guard let delegateEditor = self.delegateARVC else { return }
-                delegateEditor.loadGame(obra: self.models[0])
+                // guard let delegateEditor = self.delegateARVC else { return }
+                // delegateEditor.loadGame(obra: self.models[0])
                 #endif
+                
+                
+                
+                self.modelProgressDownload = self.modelProgressDownload + 1
+                if(self.modelProgressDownload != self.models.count) {
+                    self.downloadModel(model: self.models[self.modelProgressDownload].modelo)
+                } else {
+                    // After all models have been loaded, then game can start
+                    self.startGame()
+                }
             }
+            
         })
         downloadTask.resume()
+    }
+    
+    // After all models have been loaded, then game can start
+    func startGame() {
+        print("FinishLoadingAllModels")
+        guard let delegateEditor = self.delegateARVC else { return }
+        delegateEditor.loadGame(obra: self.models[4])
     }
     
     #if !targetEnvironment(simulator)

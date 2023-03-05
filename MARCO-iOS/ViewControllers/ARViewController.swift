@@ -172,19 +172,20 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
     
     // Method that makes game active
     func loadGame(obra: Obra) {
-        let configuration = ARWorldTrackingConfiguration()
-        configuration.planeDetection = .horizontal
-        
-        self.initCollisionDetection()
-        self.initBullets()
-        self.initBoxes()
-        self.arView.session.run(configuration, options: [.resetTracking])
-        self.runCoachingOverlay()
-        
-        print("EMPIEZA loadGame")
-        self.removePreviousContent()
-        self.showMarcoModel(currentObra: obra, gameType: 2)
-        
+            // Run normal game
+            let configuration = ARWorldTrackingConfiguration()
+            configuration.planeDetection = .horizontal
+            
+            self.initCollisionDetection()
+            self.initBullets()
+            self.initLight()
+            self.initBoxes()
+            self.arView.session.run(configuration, options: [.resetTracking])
+            self.runCoachingOverlay()
+            
+            print("EMPIEZA loadGame")
+            self.removePreviousContent()
+            self.showMarcoModel(currentObra: obra, gameType: 2)
     }
     
     // MARK: Coordinator Code
@@ -195,7 +196,7 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
     
     // Variable for loading asynchronous models
     var newEntityPirinola: AnyCancellable?
-    var newEntity: Entity = ModelEntity()
+    var newEntity: ModelEntity = ModelEntity()
     
     // Variable para saber si ya se capturaron todos los cubitos
     static let completed = ARViewController()
@@ -216,16 +217,14 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
     // 0 =>
     var gameType = 1
     
-    
-    // Array para definir cuando se ha completado una Zona
-    // TODO: Replicar para el numero de zonas
     var arrayObjetos = [false, false, false, false, false, false, false, false, false, false, false, false]
-    // Array para debug, utilizado para imprimir las obras que van siendo completadas
 
     // Anchor para los modelos
     // let anchor = AnchorEntity(plane: .horizontal, classification: .floor) // Production
     let anchor = AnchorEntity(plane: .horizontal) // For tes`ting puposes
     let pointLight = PointLightComponent(color: .red, intensity: 1000000, attenuationRadius: 20.0)
+    var pointLightFront = CustomPointLight.init()
+    var pointLightBack = CustomPointLight.init()
     // let anchor = AnchorEntity()
     
     let anchorBullet = AnchorEntity(world: [0,0,0])
@@ -820,6 +819,13 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         }
     }
     
+    func initLight() {
+        pointLightFront = CustomPointLight()
+        pointLightBack = CustomPointLight()
+        pointLightFront.setPosition([0,2,2], relativeTo: nil)
+        pointLightBack.setPosition([0,2,-2], relativeTo: nil)
+    }
+    
     func initBoxes() {
 
         // Box - 1 Collision
@@ -910,13 +916,6 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         box12.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box12.name = "box/12/"
         self.arView.installGestures(.all, for: box12)
-        
-        let pointLightFront = CustomPointLight()
-        let pointLightBack = CustomPointLight()
-        pointLightFront.setPosition([0,3,5], relativeTo: nil)
-        pointLightBack.setPosition([0,3,-5], relativeTo: nil)
-        anchor.addChild(pointLightFront)
-        anchor.addChild(pointLightBack)
         
         let modelPlaceholderMaterial = SimpleMaterial(color: .black, isMetallic: false)
         modelPlaceholder = ModelEntity(mesh: MeshResource.generateBox(width: 0.6, height: 1.1 , depth: 0.4), materials: [modelPlaceholderMaterial])
@@ -1079,6 +1078,7 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         return textEntity
     }
     
+    
     // Handle tap to shot the bullets
     @objc func handleTap(_ recognizer: UITapGestureRecognizer) {
         guard let view = self.view else { return }
@@ -1106,33 +1106,33 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
                 if(self.currBullet.name == "bullet/1/") {
                     bullet1.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
                     bullet1.model?.materials = [materialTransparent]
-                 } else if (self.currBullet.name == "bullet/2/") {
+                } else if (self.currBullet.name == "bullet/2/") {
                     bullet2.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
-                     bullet2.model?.materials = [materialTransparent]
-                 } else if (self.currBullet.name == "bullet/3/") {
+                    bullet2.model?.materials = [materialTransparent]
+                } else if (self.currBullet.name == "bullet/3/") {
                     bullet3.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
-                     bullet3.model?.materials = [materialTransparent]
+                    bullet3.model?.materials = [materialTransparent]
                 } else if (self.currBullet.name == "bullet/4/") {
-                     bullet4.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                    bullet4.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
                     bullet4.model?.materials = [materialTransparent]
                 } else if (self.currBullet.name == "bullet/5/") {
-                bullet5.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                    bullet5.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
                     bullet5.model?.materials = [materialTransparent]
-                 } else if (self.currBullet.name == "bullet/6/") {
-                     bullet6.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
-                     bullet6.model?.materials = [materialTransparent]
-                  } else if (self.currBullet.name == "bullet/7/") {
-                     bullet7.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
-                      bullet7.model?.materials = [materialTransparent]
-                 } else if (self.currBullet.name == "bullet/8/") {
-                     bullet8.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
-                     bullet8.model?.materials = [materialTransparent]
-                 } else if (self.currBullet.name == "bullet/9/") {
-                     bullet9.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
-                     bullet9.model?.materials = [materialTransparent]
-                 } else if (self.currBullet.name == "bullet/10/") {
+                } else if (self.currBullet.name == "bullet/6/") {
+                    bullet6.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                    bullet6.model?.materials = [materialTransparent]
+                } else if (self.currBullet.name == "bullet/7/") {
+                    bullet7.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                    bullet7.model?.materials = [materialTransparent]
+                } else if (self.currBullet.name == "bullet/8/") {
+                    bullet8.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                    bullet8.model?.materials = [materialTransparent]
+                } else if (self.currBullet.name == "bullet/9/") {
+                    bullet9.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                    bullet9.model?.materials = [materialTransparent]
+                } else if (self.currBullet.name == "bullet/10/") {
                     bullet10.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
-                     bullet10.model?.materials = [materialTransparent]
+                    bullet10.model?.materials = [materialTransparent]
                 } else if (self.currBullet.name == "bullet/11/") {
                     bullet11.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
                     bullet11.model?.materials = [materialTransparent]
@@ -1146,11 +1146,11 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
                     bullet14.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
                     bullet14.model?.materials = [materialTransparent]
                 } else if (self.currBullet.name == "bullet/15/") {
-                bullet15.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
+                    bullet15.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
                     bullet15.model?.materials = [materialTransparent]
                 }
             } else {
-                motion = .init(linearVelocity: [-raycastVal.normal[0]*2, -raycastVal.normal[1]*2, -raycastVal.normal[2]*2],angularVelocity: [0, 0, 0])
+                motion = .init(linearVelocity: [-raycastVal.normal[0]*2, -raycastVal.normal[1]*2,-raycastVal.normal[2]*2],angularVelocity: [0, 0, 0])
                 
                 // TODO: FIX TO AVOID USING LARGE IF STATEMENT
                 if(self.currBullet.name == "bullet/1/") {
@@ -1224,7 +1224,7 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
             } else if (self.currBullet.name == "bullet/6/") {
                 bullet6.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
                 bullet6.model?.materials = [materialTransparent]
-            } else if (self.currBullet.name == "bullet/7/") {
+        } else if (self.currBullet.name == "bullet/7/") {
                 bullet7.setScale(SIMD3<Float>([20,20,20]), relativeTo: nil)
                 bullet7.model?.materials = [materialTransparent]
             } else if (self.currBullet.name == "bullet/8/") {
@@ -1253,34 +1253,34 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
                 bullet15.model?.materials = [materialTransparent]
             }
         }
-
+        
         if(self.currBullet.name == "bullet/1/") {
             bullet1.position = origin
-            bullet1.collision = CollisionComponent(shapes: [bulletShape], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-            bullet1.components.set(kinematics)
-            bullet1.components.set(motion)
-            
-            self.anchorBullet.addChild(self.bullet1)
-            self.currBullet.name = "bullet/2/"
-            
+            bullet1.collision = CollisionComponent(shapes: [bulletShape], mode: .trigger, filter:.init(group: boxGroup, mask: boxMask))
+                bullet1.components.set(kinematics)
+                bullet1.components.set(motion)
+                
+                self.anchorBullet.addChild(self.bullet1)
+                self.currBullet.name = "bullet/2/"
+                
         } else if (self.currBullet.name == "bullet/2/") {
             bullet2.position = origin
             bullet2.collision = CollisionComponent(shapes: [bulletShape], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
             bullet2.components.set(kinematics)
             bullet2.components.set(motion)
-           
+            
             self.anchorBullet.addChild(self.bullet2)
             self.currBullet.name = "bullet/3/"
-            
+                
         } else if (self.currBullet.name == "bullet/3/") {
             bullet3.position = origin
             bullet3.collision = CollisionComponent(shapes: [bulletShape], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
             bullet3.components.set(kinematics)
             bullet3.components.set(motion)
-            
+                
             self.anchorBullet.addChild(self.bullet3)
             self.currBullet.name = "bullet/4/"
-            
+                
         } else if (self.currBullet.name == "bullet/4/") {
             bullet4.position = origin
             bullet4.collision = CollisionComponent(shapes: [bulletShape], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
@@ -1289,7 +1289,7 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
             
             self.anchorBullet.addChild(self.bullet4)
             self.currBullet.name = "bullet/5/"
-            
+                
         } else if (self.currBullet.name == "bullet/5/") {
             bullet5.position = origin
             bullet5.collision = CollisionComponent(shapes: [bulletShape], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
@@ -1450,11 +1450,13 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
                     
                     ARViewController.completed.currModel = self.currModel
                     ARViewController.completed.currSheet = true
+                    ARViewController.completed.progresoActual = ARViewController.completed.progresoActual + 1
                     
                     // Change black entity for new model Entity
                     if(self.arView.scene.anchors.count == 2) {
                         self.arView.scene.anchors[1].removeChild(self.modelPlaceholder)
                         self.arView.scene.anchors[1].addChild(newEntity)
+                        
                         
                         // TODO: Update progress
                         /*
@@ -1518,6 +1520,8 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
             self.arView.scene.anchors[1].removeChild(box10)
             self.arView.scene.anchors[1].removeChild(box11)
             self.arView.scene.anchors[1].removeChild(box12)
+            self.arView.scene.anchors[1].removeChild(pointLightBack)
+            self.arView.scene.anchors[1].removeChild(pointLightFront)
             print("se ejecutra el remove")
             self.arView.scene.anchors[1].removeChild(modelPlaceholder)
             // view.scene.anchors[1].removeChild(newEntity)
@@ -1552,6 +1556,8 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
             anchor.addChild(modelPlaceholder)
         }
                 
+        
+        
         // Shows the text of the current Obra
         textEntity = textGen(textString: currentObra.nombre)
         textEntity.setPosition(SIMD3(x: 0.0, y: -0.2, z: 0.0), relativeTo: nil)
@@ -1610,6 +1616,10 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
                 anchor.addChild(box12)
             }
         }
+        
+        // Add custom Light
+        anchor.addChild(pointLightFront)
+        anchor.addChild(pointLightBack)
                 
         // Add the anchor to the scene
         anchor.move(to: Transform(translation: simd_float3(0,0,-1)), relativeTo: nil)
@@ -1645,9 +1655,6 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         }
     }
 }
-
-
-
 
 
 class CustomPointLight: Entity, HasPointLight {

@@ -27,9 +27,7 @@ struct ContentView: View {
     @Environment(\.colorScheme) var colorScheme
     
     @StateObject var completed = ARViewController.completed
-    // TODO: make "gameFinished variable a stateObject for when the game has ended"
-    // @StateObject var gameFinished = false
-    var gameFinished = false
+    
     
     var body: some View {
             
@@ -90,13 +88,12 @@ struct ContentView: View {
             
             TutorialView()
             
-            if(!network.requestFinished) {
+            // Show a loading screen before displaying the game to load the models
+            if(network.modelProgressDownload != models.count) {
                 LoadingView()
             }
-            // Show a loading screen before displaying the game to load the models
             
-            
-            if(gameFinished == true) {
+            if(ARViewController.completed.progresoActual == models.count) {
                 FinalView()
             }
         }

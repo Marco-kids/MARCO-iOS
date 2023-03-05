@@ -11,7 +11,6 @@ struct ARViewContainer : View {
     var body: some View {
         StoryBoardView()
             .ignoresSafeArea(.all)
-        // Text("ARViewContainer")
     }
 }
 
