@@ -7,12 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0525C3DF2911DBE400BD410B /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0525C3DE2911DBE400BD410B /* Coordinator.swift */; };
 		0525C3E42911DE7600BD410B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0525C3E32911DE7600BD410B /* Assets.xcassets */; };
 		053CE2302926FF0A0005EE43 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 053CE22F2926FF0A0005EE43 /* Network.swift */; };
 		053CE2342926FF830005EE43 /* ObraModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 053CE2332926FF830005EE43 /* ObraModel.swift */; };
+		333A8DC729AE5F5F0079C66D /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333A8DC629AE5F5F0079C66D /* LoadingView.swift */; };
+		333A8DC929AE60680079C66D /* FinalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333A8DC829AE60680079C66D /* FinalView.swift */; };
 		FB5F879928FF705100A4E95C /* DeviceLocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB5F879828FF705100A4E95C /* DeviceLocationService.swift */; };
-		FC32475D28FF34170034F324 /* ARView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC32475C28FF34170034F324 /* ARView.swift */; };
+		FC0BD09629A46723005A1800 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = FC0BD09529A46723005A1800 /* Alamofire */; };
+		FC0BD09829A46748005A1800 /* Params.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0BD09729A46748005A1800 /* Params.swift */; };
+		FC0BD09A29A4677B005A1800 /* ARLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0BD09929A4677B005A1800 /* ARLocation.swift */; };
+		FC0BD09C29A46B8E005A1800 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0BD09B29A46B8E005A1800 /* Utilities.swift */; };
+		FC0BD09F29A4730E005A1800 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FC0BD09E29A4730E005A1800 /* Main.storyboard */; };
+		FC0BD0A229A47363005A1800 /* ARViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0BD0A129A47363005A1800 /* ARViewController.swift */; };
+		FC32475D28FF34170034F324 /* ARViewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC32475C28FF34170034F324 /* ARViewContainer.swift */; };
 		FC53ACF5292F2E5A00A582B0 /* ObraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC53ACF4292F2E5A00A582B0 /* ObraView.swift */; };
 		FC5E954F2936FF4500BD4CE2 /* TutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5E954E2936FF4500BD4CE2 /* TutorialView.swift */; };
 		FC5E95512936FF4900BD4CE2 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5E95502936FF4900BD4CE2 /* CardView.swift */; };
@@ -22,16 +29,23 @@
 		FC64E63928F7330D00FCB2AA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC64E63828F7330D00FCB2AA /* Preview Assets.xcassets */; };
 		FC80D9D0292EFFB600724704 /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC80D9CF292EFFB600724704 /* ProgressView.swift */; };
 		FC80D9D3292F038200724704 /* ProgressRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC80D9D2292F038200724704 /* ProgressRowView.swift */; };
+		FCEDB5A329A47A2100D60620 /* toy_drummer.usdz in Resources */ = {isa = PBXBuildFile; fileRef = FCEDB5A229A47A2100D60620 /* toy_drummer.usdz */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0525C3DE2911DBE400BD410B /* Coordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
 		0525C3E32911DE7600BD410B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		053CE22F2926FF0A0005EE43 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		053CE2332926FF830005EE43 /* ObraModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObraModel.swift; sourceTree = "<group>"; };
+		333A8DC629AE5F5F0079C66D /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
+		333A8DC829AE60680079C66D /* FinalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinalView.swift; sourceTree = "<group>"; };
 		FB5F879528FF654600A4E95C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		FB5F879828FF705100A4E95C /* DeviceLocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLocationService.swift; sourceTree = "<group>"; };
-		FC32475C28FF34170034F324 /* ARView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARView.swift; sourceTree = "<group>"; };
+		FC0BD09729A46748005A1800 /* Params.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Params.swift; sourceTree = "<group>"; };
+		FC0BD09929A4677B005A1800 /* ARLocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ARLocation.swift; sourceTree = "<group>"; };
+		FC0BD09B29A46B8E005A1800 /* Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
+		FC0BD09E29A4730E005A1800 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		FC0BD0A129A47363005A1800 /* ARViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARViewController.swift; sourceTree = "<group>"; };
+		FC32475C28FF34170034F324 /* ARViewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARViewContainer.swift; sourceTree = "<group>"; };
 		FC53ACF4292F2E5A00A582B0 /* ObraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObraView.swift; sourceTree = "<group>"; };
 		FC5E954E2936FF4500BD4CE2 /* TutorialView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TutorialView.swift; sourceTree = "<group>"; };
 		FC5E95502936FF4900BD4CE2 /* CardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
@@ -42,6 +56,7 @@
 		FC64E63828F7330D00FCB2AA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		FC80D9CF292EFFB600724704 /* ProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
 		FC80D9D2292F038200724704 /* ProgressRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressRowView.swift; sourceTree = "<group>"; };
+		FCEDB5A229A47A2100D60620 /* toy_drummer.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = toy_drummer.usdz; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,6 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FC0BD09629A46723005A1800 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,6 +75,7 @@
 			isa = PBXGroup;
 			children = (
 				FB5F879828FF705100A4E95C /* DeviceLocationService.swift */,
+				FC0BD09729A46748005A1800 /* Params.swift */,
 				053CE22F2926FF0A0005EE43 /* Network.swift */,
 			);
 			path = Services;
@@ -68,9 +85,26 @@
 			isa = PBXGroup;
 			children = (
 				FC5E95522936FF5000BD4CE2 /* CardModel.swift */,
+				FC0BD09929A4677B005A1800 /* ARLocation.swift */,
 				053CE2332926FF830005EE43 /* ObraModel.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		FC0BD09D29A472F8005A1800 /* Storyboards */ = {
+			isa = PBXGroup;
+			children = (
+				FC0BD09E29A4730E005A1800 /* Main.storyboard */,
+			);
+			path = Storyboards;
+			sourceTree = "<group>";
+		};
+		FC0BD0A029A47348005A1800 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				FC0BD0A129A47363005A1800 /* ARViewController.swift */,
+			);
+			path = ViewControllers;
 			sourceTree = "<group>";
 		};
 		FC32475B28FF34090034F324 /* Views */ = {
@@ -81,7 +115,9 @@
 				FC80D9CF292EFFB600724704 /* ProgressView.swift */,
 				FC80D9D2292F038200724704 /* ProgressRowView.swift */,
 				FC53ACF4292F2E5A00A582B0 /* ObraView.swift */,
-				FC32475C28FF34170034F324 /* ARView.swift */,
+				FC32475C28FF34170034F324 /* ARViewContainer.swift */,
+				333A8DC629AE5F5F0079C66D /* LoadingView.swift */,
+				333A8DC829AE60680079C66D /* FinalView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -116,11 +152,14 @@
 			children = (
 				FB5F879528FF654600A4E95C /* Info.plist */,
 				0525C3E32911DE7600BD410B /* Assets.xcassets */,
+				FCEDB5A229A47A2100D60620 /* toy_drummer.usdz */,
 				FC64E63128F7330C00FCB2AA /* MARCO_iOSApp.swift */,
 				053CE2322926FF610005EE43 /* Model */,
 				FC32475B28FF34090034F324 /* Views */,
 				FC7BBE9A293558AA0082CD0E /* Controller */,
 				053CE22E2926FEF80005EE43 /* Services */,
+				FC0BD09D29A472F8005A1800 /* Storyboards */,
+				FC0BD0A029A47348005A1800 /* ViewControllers */,
 				FC64E63728F7330D00FCB2AA /* Preview Content */,
 			);
 			path = "MARCO-iOS";
@@ -137,7 +176,7 @@
 		FC7BBE9A293558AA0082CD0E /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				0525C3DE2911DBE400BD410B /* Coordinator.swift */,
+				FC0BD09B29A46B8E005A1800 /* Utilities.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -158,6 +197,9 @@
 			dependencies = (
 			);
 			name = "MARCO-iOS";
+			packageProductDependencies = (
+				FC0BD09529A46723005A1800 /* Alamofire */,
+			);
 			productName = "MARCO-iOS";
 			productReference = FC64E62E28F7330C00FCB2AA /* MARCO-iOS.app */;
 			productType = "com.apple.product-type.application";
@@ -186,6 +228,9 @@
 				Base,
 			);
 			mainGroup = FC64E62528F7330C00FCB2AA;
+			packageReferences = (
+				FC0BD09429A46723005A1800 /* XCRemoteSwiftPackageReference "Alamofire" */,
+			);
 			productRefGroup = FC64E62F28F7330C00FCB2AA /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -200,8 +245,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FC0BD09F29A4730E005A1800 /* Main.storyboard in Resources */,
 				FC64E63928F7330D00FCB2AA /* Preview Assets.xcassets in Resources */,
 				0525C3E42911DE7600BD410B /* Assets.xcassets in Resources */,
+				FCEDB5A329A47A2100D60620 /* toy_drummer.usdz in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -213,18 +260,23 @@
 			buildActionMask = 2147483647;
 			files = (
 				FB5F879928FF705100A4E95C /* DeviceLocationService.swift in Sources */,
+				FC0BD09829A46748005A1800 /* Params.swift in Sources */,
 				053CE2342926FF830005EE43 /* ObraModel.swift in Sources */,
+				333A8DC929AE60680079C66D /* FinalView.swift in Sources */,
 				FC64E63428F7330C00FCB2AA /* ContentView.swift in Sources */,
+				333A8DC729AE5F5F0079C66D /* LoadingView.swift in Sources */,
 				FC80D9D3292F038200724704 /* ProgressRowView.swift in Sources */,
 				053CE2302926FF0A0005EE43 /* Network.swift in Sources */,
+				FC0BD09C29A46B8E005A1800 /* Utilities.swift in Sources */,
 				FC5E95532936FF5000BD4CE2 /* CardModel.swift in Sources */,
-				0525C3DF2911DBE400BD410B /* Coordinator.swift in Sources */,
 				FC53ACF5292F2E5A00A582B0 /* ObraView.swift in Sources */,
 				FC5E954F2936FF4500BD4CE2 /* TutorialView.swift in Sources */,
+				FC0BD09A29A4677B005A1800 /* ARLocation.swift in Sources */,
 				FC80D9D0292EFFB600724704 /* ProgressView.swift in Sources */,
+				FC0BD0A229A47363005A1800 /* ARViewController.swift in Sources */,
 				FC64E63228F7330C00FCB2AA /* MARCO_iOSApp.swift in Sources */,
 				FC5E95512936FF4900BD4CE2 /* CardView.swift in Sources */,
-				FC32475D28FF34170034F324 /* ARView.swift in Sources */,
+				FC32475D28FF34170034F324 /* ARViewContainer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -353,7 +405,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MARCO-iOS/Preview Content\"";
-				DEVELOPMENT_TEAM = 24H428V334;
+				DEVELOPMENT_TEAM = PXRF374QBB;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "MARCO-iOS/Info.plist";
@@ -372,7 +424,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.jose.marco-kids";
+				PRODUCT_BUNDLE_IDENTIFIER = com.MARCO.MARCOKIDS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -388,7 +440,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MARCO-iOS/Preview Content\"";
-				DEVELOPMENT_TEAM = 24H428V334;
+				DEVELOPMENT_TEAM = PXRF374QBB;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "MARCO-iOS/Info.plist";
@@ -407,7 +459,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.jose.marco-kids";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jose.marco-kid";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -437,6 +489,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		FC0BD09429A46723005A1800 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		FC0BD09529A46723005A1800 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FC0BD09429A46723005A1800 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = FC64E62628F7330C00FCB2AA /* Project object */;
 }

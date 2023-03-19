@@ -7,12 +7,17 @@
 
 import SwiftUI
 import Combine
+import Alamofire
 
 // private let url = "http://10.14.255.70:10205/api/all-obras"
 //private let url = "http://192.168.84.171:8080/api/all-obras" // Datos celular
 // private let url = "http://192.168.100.29:8080/api/all-obras" // Casita
-// private let url = "http://10.22.186.24:8080/api/all-obras" // Salon Swift
-private let url = "http://192.168.1.236:8080/api/all-obras" // Casa Jose
+// private let url = "http://10.22.234.164:8080/api/all-obras" // Salon Swift
+// private let url = "http://192.168.100.25:8080/api/all-obras" // Casa Jose
+
+private let url = "http://192.168.100.25:8080/api/all-obras"
+
+let headers: HTTPHeaders = []
 
 class Network: NSObject, ObservableObject {
     
@@ -22,6 +27,15 @@ class Network: NSObject, ObservableObject {
     var rutas: [URL] = []
     
     var obrasPublisher = PassthroughSubject<[Obra], Error>()
+    #if !targetEnvironment(simulator)
+    weak var delegateARVC: ARViewController?
+    #endif
+    
+    // ARWorldMap
+    var downloadedData: [Data] = []
+    @Published var locations: [ARLocation] = []
+    
+    @Published var modelProgressDownload = 0
     
     func getModels() {
         print("Started USDZ request")
@@ -56,9 +70,10 @@ class Network: NSObject, ObservableObject {
     }
     
     func loadModels() {
-        for model in self.models {
-            downloadModel(model: model.modelo)
-        }
+        downloadModel(model: self.models[0].modelo)
+//        for model in self.models {
+//            downloadModel(model: model.modelo)
+//        }
     }
     
     func downloadModel(model: String) {
@@ -84,9 +99,94 @@ class Network: NSObject, ObservableObject {
                 }
                 print(self.rutas)
                 self.obrasPublisher.send(self.models)
+            
+                // self.requestFinished = true
+                
+                #if !targetEnvironment(simulator)
+                // guard let delegateEditor = self.delegateARVC else { return }
+                // delegateEditor.loadGame(obra: self.models[0])
+                #endif
+                
+                
+                
+                self.modelProgressDownload = self.modelProgressDownload + 1
+                if(self.modelProgressDownload != self.models.count) {
+                    self.downloadModel(model: self.models[self.modelProgressDownload].modelo)
+                } else {
+                    // After all models have been loaded, then game can start
+                    self.startGame()
+                }
             }
+            
         })
         downloadTask.resume()
     }
     
+    // After all models have been loaded, then game can start
+    func startGame() {
+        print("FinishLoadingAllModels")
+        guard let delegateEditor = self.delegateARVC else { return }
+        delegateEditor.loadGame(obra: self.models[4])
+    }
+    
+    #if !targetEnvironment(simulator)
+    
+    func getLocations() {
+        let url = Params.locationsURL
+        AF.request(url).responseJSON { [self] response in
+            switch response.result {
+            case .success(let value):
+                do {
+                    let arLocation = try JSONDecoder().decode([ARLocation].self, from: response.data!)
+                    self.locations = arLocation
+                    for item in arLocation {
+                        self.getARWordlMap(location: item)
+                    }
+                } catch {
+                    print("Error decoding JSON: \(error)")
+                }
+            case .failure(let error):
+                print("Error: \(error)")
+            }
+        }
+    }
+    
+    func getARWordlMap(location: ARLocation) {
+        let fileName = location.ARWorldMap.components(separatedBy: "/").last
+        let fileManager = FileManager.default
+        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let filePathToSearch = documentsURL.relativePath + "/" + fileName!
+        let filePathToSearchURL = URL(string: "file://" + filePathToSearch)
+        if fileManager.fileExists(atPath: filePathToSearch) {
+            for i in self.locations.indices {
+                if self.locations[i].nombre == location.nombre {
+                    self.locations[i].locationPath = filePathToSearchURL
+                    guard let delegateEditor = delegateARVC else { return }
+                    delegateEditor.loadedData(locations: self.locations)
+                }
+            }
+        } else {
+            downloadARWorldMap(location: location)
+        }
+    }
+    
+    func downloadARWorldMap(location: ARLocation) {
+        let destination = DownloadRequest.suggestedDownloadDestination(for: .documentDirectory)
+        AF.download(Params.baseURL + location.ARWorldMap, to: destination).responseData { response in
+            if let error = response.error {
+                print("Error downloading file: \(error)")
+            } else if let data = response.value {
+                self.downloadedData.append(data)
+                for i in self.locations.indices {
+                    if self.locations[i].nombre == location.nombre {
+                        print(response.fileURL as Any)
+                        self.locations[i].locationPath = response.fileURL
+                        guard let delegateEditor = self.delegateARVC else { return }
+                        delegateEditor.loadedData(locations: self.locations)
+                    }
+                }
+            }
+        }
+    }
+#endif
 }
