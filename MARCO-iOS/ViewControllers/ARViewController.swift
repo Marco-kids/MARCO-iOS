@@ -10,6 +10,7 @@ import ARKit
 import RealityKit
 import Combine
 import AVFoundation
+import CoreData
 
 protocol EditorViewControllerDelegate: AnyObject {
     func loadedData(locations: [ARLocation])
@@ -51,18 +52,36 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         print("EMPIEZA viewWillAppear")
     }
     
+    // MARK: - CoreData implementation
+    // let context = DataBaseHandler.context
+    // let newObra = ObraEntity(context: context)
+    // newObra.id = ""
+    // newObra.nombre = "DANIEL LOREDO"
+    // newObra.autor = ""
+    // newObra.descripcion = ""
+    // newObra.modelo = ""
+    // newObra.zona = ""
+    //  newObra.completed = true
+    //
+    //  DataBaseHandler.saveContext()
+    //
+    //  print("Obra entities")
+    //
+    //  var obraEntities = DataBaseHandler.fetchAllObras()
+    //  print(obraEntities)
+    
     // MARK: - Persistence: Saving and Loading
     
-    private func load(location: ARLocation) {
+    private func load(location: ARLocation, locationSreenShot: String, locationPath: URL) {
         print("EMPIEZA load")
-        let url = Params.baseURL + location.screenshot
+        let url = Params.baseURL + locationSreenShot
         imageView.imageFromServerURL(url, placeHolder: nil)
 
         var data = Data()
         let fileManager = FileManager.default
         let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
         do {
-            data = try Data(contentsOf: (location.locationPath!))
+            data = try Data(contentsOf: locationPath)
         } catch {
             print("Error while enumerating files \(documentsURL.path): \(error.localizedDescription)")
         }
@@ -155,7 +174,6 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
     }
     
     // MARK: Alerts
-    
     func locationDetectedAlert() {
         let alertController = UIAlertController(title: "Zona detectada correctamente.", message: "", preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
@@ -163,11 +181,10 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
     }
     
     // MARK: Protocol
-    
     func loadedData(locations: [ARLocation]) {
-//        if (locations.count == 5) && (locations[2].locationPath != nil) {
-//            self.load(location: locations[2])
-//        }
+        if (locations.count == 6) && (locations[2].locationPath != nil) {
+            self.load(location: locations[2], locationSreenShot: locations[0].screenshot, locationPath: locations[2].locationPath!)
+        }
     }
     
     // Method that makes game active
@@ -1452,6 +1469,20 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
                     ARViewController.completed.currSheet = true
                     ARViewController.completed.progresoActual = ARViewController.completed.progresoActual + 1
                     
+                    // MARK: - Save current obra in CoreData after completition
+                    let context = DataBaseHandler.context
+                    let newObra = ObraEntity(context: context)
+                    newObra.id = self.currModel._id
+                    newObra.nombre = self.currModel.nombre
+                    newObra.autor = self.currModel.autor
+                    newObra.descripcion = self.currModel.descripcion
+                    newObra.modelo = self.currModel.modelo
+                    newObra.zona = self.currModel.zona
+                    newObra.completed = true
+                    DataBaseHandler.saveContext()
+                    
+                    
+                    
                     // Change black entity for new model Entity
                     if(self.arView.scene.anchors.count == 2) {
                         self.arView.scene.anchors[1].removeChild(self.modelPlaceholder)
@@ -1560,7 +1591,13 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         
         // Shows the text of the current Obra
         textEntity = textGen(textString: currentObra.nombre)
-        textEntity.setPosition(SIMD3(x: 0.0, y: -0.2, z: 0.0), relativeTo: nil)
+        
+        if(UIDevice.current.model == "iPhone") {
+            textEntity.setPosition(SIMD3(x: 0.0, y: 0.8, z: 0.0), relativeTo: nil)
+        } else {
+            textEntity.setPosition(SIMD3(x: 0.0, y: -0.2, z: 0.0), relativeTo: nil)
+        }
+        
         anchor.addChild(textEntity)
                 
         // Adds materials to the boxes

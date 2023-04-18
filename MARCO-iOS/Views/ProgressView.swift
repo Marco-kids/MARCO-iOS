@@ -11,7 +11,16 @@ struct ProgressView: View {
     @StateObject var network = Network.sharedInstance
     #if !targetEnvironment(simulator)
     #endif
-    @State var currentProgress: CGFloat = 0
+    @State var currentProgress: Int = 0
+    
+    func countProgress() {
+        currentProgress = 0
+        for obra in network.models {
+            if(obra.completed == true) {
+                currentProgress = currentProgress + 1
+            }
+        }
+    }
     
     let obra = Obra(_id: "0", nombre: "Pirinola", autor: "Daniel", descripcion: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", modelo: "Models/pirinola.usdz", zona: "", completed: false)
     
@@ -28,9 +37,11 @@ struct ProgressView: View {
                                 .frame(width: 200, height: 20)
                             RoundedRectangle(cornerRadius: 20)
                                 .foregroundColor(Color(.systemPink))
-                                .frame(width: 200*0.1, height: 20)
+                                .frame(width: 200*(0.1*CGFloat(currentProgress)), height: 20)
+                        }.onAppear {
+                            countProgress()
                         }
-                        Text("1 / 10")
+                        Text("\(currentProgress) / 10")
                             .font(.title).bold()
                     }
                     .padding(.vertical)

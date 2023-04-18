@@ -8,6 +8,7 @@
 import SwiftUI
 import Combine
 import Alamofire
+import CoreData
 
 // private let url = "http://10.14.255.70:10205/api/all-obras"
 //private let url = "http://192.168.84.171:8080/api/all-obras" // Datos celular
@@ -91,12 +92,27 @@ class Network: NSObject, ObservableObject {
             }
             try? fileManager.moveItem(atPath: location?.path ?? "", toPath: destinationUrl.path) // MARK: Check errors to catch in ?? and ""
             DispatchQueue.main.async {
+                
+                // TODO: Implementation of CoreData
+                print("Obra entities")
+                let obraEntities = DataBaseHandler.fetchAllObras()
+                
                 for (index, obra) in self.models.enumerated() {
                     if obra.modelo == model {
                         self.models[index].modelo = destinationUrl.absoluteString
                         self.rutas.append(destinationUrl)
                     }
+                    
+                    
+                    if(obraEntities.count > 0) {
+                        for( obraEntity ) in obraEntities {
+                            if(obra._id == obraEntity.id && obraEntity.completed == true) {
+                                    self.models[index].completed = true
+                                }
+                        }
+                    }
                 }
+                
                 print(self.rutas)
                 self.obrasPublisher.send(self.models)
             
@@ -126,7 +142,14 @@ class Network: NSObject, ObservableObject {
     func startGame() {
         print("FinishLoadingAllModels")
         guard let delegateEditor = self.delegateARVC else { return }
-        delegateEditor.loadGame(obra: self.models[4])
+        
+        for i in 1...self.models.count {
+            if(self.models[i - 1].completed == false) {
+                delegateEditor.loadGame(obra: self.models[i - 1])
+                break
+            }
+        }
+        
     }
     
     #if !targetEnvironment(simulator)

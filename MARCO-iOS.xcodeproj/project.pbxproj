@@ -12,6 +12,10 @@
 		053CE2342926FF830005EE43 /* ObraModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 053CE2332926FF830005EE43 /* ObraModel.swift */; };
 		333A8DC729AE5F5F0079C66D /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333A8DC629AE5F5F0079C66D /* LoadingView.swift */; };
 		333A8DC929AE60680079C66D /* FinalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333A8DC829AE60680079C66D /* FinalView.swift */; };
+		3344B8D629E653DF0084B53B /* DatabaseHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3344B8D529E653DF0084B53B /* DatabaseHandler.swift */; };
+		3344B8D929E657F40084B53B /* ObraEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3344B8D729E657F40084B53B /* ObraEntity+CoreDataClass.swift */; };
+		3344B8DA29E657F40084B53B /* ObraEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3344B8D829E657F40084B53B /* ObraEntity+CoreDataProperties.swift */; };
+		3357737429E633C700A013B4 /* testModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 3357737229E633C700A013B4 /* testModel.xcdatamodeld */; };
 		FB5F879928FF705100A4E95C /* DeviceLocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB5F879828FF705100A4E95C /* DeviceLocationService.swift */; };
 		FC0BD09629A46723005A1800 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = FC0BD09529A46723005A1800 /* Alamofire */; };
 		FC0BD09829A46748005A1800 /* Params.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0BD09729A46748005A1800 /* Params.swift */; };
@@ -38,6 +42,10 @@
 		053CE2332926FF830005EE43 /* ObraModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObraModel.swift; sourceTree = "<group>"; };
 		333A8DC629AE5F5F0079C66D /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		333A8DC829AE60680079C66D /* FinalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinalView.swift; sourceTree = "<group>"; };
+		3344B8D529E653DF0084B53B /* DatabaseHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseHandler.swift; sourceTree = "<group>"; };
+		3344B8D729E657F40084B53B /* ObraEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ObraEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
+		3344B8D829E657F40084B53B /* ObraEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ObraEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		3357737329E633C700A013B4 /* testModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = testModel.xcdatamodel; sourceTree = "<group>"; };
 		FB5F879528FF654600A4E95C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		FB5F879828FF705100A4E95C /* DeviceLocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceLocationService.swift; sourceTree = "<group>"; };
 		FC0BD09729A46748005A1800 /* Params.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Params.swift; sourceTree = "<group>"; };
@@ -134,6 +142,8 @@
 		FC64E62528F7330C00FCB2AA = {
 			isa = PBXGroup;
 			children = (
+				3344B8D729E657F40084B53B /* ObraEntity+CoreDataClass.swift */,
+				3344B8D829E657F40084B53B /* ObraEntity+CoreDataProperties.swift */,
 				FC64E63028F7330C00FCB2AA /* MARCO-iOS */,
 				FC64E62F28F7330C00FCB2AA /* Products */,
 			);
@@ -152,6 +162,7 @@
 			children = (
 				FB5F879528FF654600A4E95C /* Info.plist */,
 				0525C3E32911DE7600BD410B /* Assets.xcassets */,
+				3357737229E633C700A013B4 /* testModel.xcdatamodeld */,
 				FCEDB5A229A47A2100D60620 /* toy_drummer.usdz */,
 				FC64E63128F7330C00FCB2AA /* MARCO_iOSApp.swift */,
 				053CE2322926FF610005EE43 /* Model */,
@@ -161,6 +172,7 @@
 				FC0BD09D29A472F8005A1800 /* Storyboards */,
 				FC0BD0A029A47348005A1800 /* ViewControllers */,
 				FC64E63728F7330D00FCB2AA /* Preview Content */,
+				3344B8D529E653DF0084B53B /* DatabaseHandler.swift */,
 			);
 			path = "MARCO-iOS";
 			sourceTree = "<group>";
@@ -261,6 +273,7 @@
 			files = (
 				FB5F879928FF705100A4E95C /* DeviceLocationService.swift in Sources */,
 				FC0BD09829A46748005A1800 /* Params.swift in Sources */,
+				3344B8D929E657F40084B53B /* ObraEntity+CoreDataClass.swift in Sources */,
 				053CE2342926FF830005EE43 /* ObraModel.swift in Sources */,
 				333A8DC929AE60680079C66D /* FinalView.swift in Sources */,
 				FC64E63428F7330C00FCB2AA /* ContentView.swift in Sources */,
@@ -270,9 +283,12 @@
 				FC0BD09C29A46B8E005A1800 /* Utilities.swift in Sources */,
 				FC5E95532936FF5000BD4CE2 /* CardModel.swift in Sources */,
 				FC53ACF5292F2E5A00A582B0 /* ObraView.swift in Sources */,
+				3357737429E633C700A013B4 /* testModel.xcdatamodeld in Sources */,
 				FC5E954F2936FF4500BD4CE2 /* TutorialView.swift in Sources */,
+				3344B8DA29E657F40084B53B /* ObraEntity+CoreDataProperties.swift in Sources */,
 				FC0BD09A29A4677B005A1800 /* ARLocation.swift in Sources */,
 				FC80D9D0292EFFB600724704 /* ProgressView.swift in Sources */,
+				3344B8D629E653DF0084B53B /* DatabaseHandler.swift in Sources */,
 				FC0BD0A229A47363005A1800 /* ARViewController.swift in Sources */,
 				FC64E63228F7330C00FCB2AA /* MARCO_iOSApp.swift in Sources */,
 				FC5E95512936FF4900BD4CE2 /* CardView.swift in Sources */,
@@ -508,6 +524,19 @@
 			productName = Alamofire;
 		};
 /* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		3357737229E633C700A013B4 /* testModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				3357737329E633C700A013B4 /* testModel.xcdatamodel */,
+			);
+			currentVersion = 3357737329E633C700A013B4 /* testModel.xcdatamodel */;
+			path = testModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = FC64E62628F7330C00FCB2AA /* Project object */;
 }
