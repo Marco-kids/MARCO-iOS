@@ -8,10 +8,12 @@
 import SwiftUI
 
 struct ARViewContainer : View {
+    
+    @StateObject var network = Network.sharedInstance
+    
     var body: some View {
         StoryBoardView()
             .ignoresSafeArea(.all)
-        // Text("ARViewContainer")
     }
 }
 

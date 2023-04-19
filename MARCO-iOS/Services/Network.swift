@@ -22,6 +22,12 @@ class Network: NSObject, ObservableObject {
     
     @Published var models: [Obra] = []
     var rutas: [URL] = []
+    var rutasARWorldMap: [URL] = []
+    // Bool for loading screen
+    var loadedUSDZ: Bool = false
+    var loadedARWorldMaps: Bool = false
+    var currentProgress: CGFloat = 0
+    var currentProgressInt: Int = 0
     
     var obrasPublisher = PassthroughSubject<[Obra], Error>()
     #if !targetEnvironment(simulator)
@@ -65,10 +71,10 @@ class Network: NSObject, ObservableObject {
     }
     
     func loadModels() {
-        downloadModel(model: self.models[0].modelo)
-//        for model in self.models {
-//            downloadModel(model: model.modelo)
-//        }
+//        downloadModel(model: self.models[0].modelo)
+        for model in self.models {
+            downloadModel(model: model.modelo)
+        }
     }
     
     func downloadModel(model: String) {
@@ -92,12 +98,10 @@ class Network: NSObject, ObservableObject {
                         self.rutas.append(destinationUrl)
                     }
                 }
-                print(self.rutas)
+                if self.models.count == self.rutas.count {
+                    self.loadedUSDZ = true
+                }
                 self.obrasPublisher.send(self.models)
-                #if !targetEnvironment(simulator)
-                guard let delegateEditor = self.delegateARVC else { return }
-                delegateEditor.loadGame(obra: self.models[0])
-                #endif
             }
         })
         downloadTask.resume()
@@ -134,9 +138,13 @@ class Network: NSObject, ObservableObject {
         if fileManager.fileExists(atPath: filePathToSearch) {
             for i in self.locations.indices {
                 if self.locations[i].nombre == location.nombre {
+                    self.rutasARWorldMap.append(filePathToSearchURL!)
                     self.locations[i].locationPath = filePathToSearchURL
-                    guard let delegateEditor = delegateARVC else { return }
-                    delegateEditor.loadedData(locations: self.locations)
+                    if self.rutasARWorldMap.count == self.locations.count {
+                        self.loadedARWorldMaps = true
+                        guard let delegateEditor = self.delegateARVC else { return }
+                        delegateEditor.loadedData(locations: self.locations)
+                    }
                 }
             }
         } else {
@@ -155,12 +163,20 @@ class Network: NSObject, ObservableObject {
                     if self.locations[i].nombre == location.nombre {
                         print(response.fileURL as Any)
                         self.locations[i].locationPath = response.fileURL
-                        guard let delegateEditor = self.delegateARVC else { return }
-                        delegateEditor.loadedData(locations: self.locations)
+                        self.rutasARWorldMap.append(response.fileURL!)
+                        if self.rutasARWorldMap.count == self.locations.count {
+                            self.loadedARWorldMaps = true
+                            guard let delegateEditor = self.delegateARVC else { return }
+                            delegateEditor.loadedData(locations: self.locations)
+                        }
+//                        guard let delegateEditor = self.delegateARVC else { return }
+//                        delegateEditor.loadedData(locations: self.locations)
                     }
                 }
             }
         }
     }
-#endif
+    
+    #endif
+    
 }

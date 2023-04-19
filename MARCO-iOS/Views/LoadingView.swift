@@ -9,9 +9,9 @@ import SwiftUI
 
 struct LoadingView: View {
     var body: some View {
-        Text("LoadingView")
+        Text("Loading...")
             .padding()
-            .foregroundColor(.white)
+            .font(.system(size: 30, weight: .bold, design: .rounded))
     }
 }
 

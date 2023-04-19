@@ -28,9 +28,9 @@ struct ProgressView: View {
                                 .frame(width: 200, height: 20)
                             RoundedRectangle(cornerRadius: 20)
                                 .foregroundColor(Color(.systemPink))
-                                .frame(width: 200*0.1, height: 20)
+                                .frame(width: 200*network.currentProgress , height: 20)
                         }
-                        Text("1 / 10")
+                        Text("\(network.currentProgressInt) / 10")
                             .font(.title).bold()
                     }
                     .padding(.vertical)
