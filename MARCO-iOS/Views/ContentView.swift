@@ -26,11 +26,16 @@ struct ContentView: View {
     // Light or dark mode
     @Environment(\.colorScheme) var colorScheme
     
+    #if !targetEnvironment(simulator)
     @StateObject var completed = ARViewController.completed
-    
+    #endif
+    // TODO: make "gameFinished variable a stateObject for when the game has ended"
+    // @StateObject var gameFinished = false
+    var gameFinished = false
+
     
     var body: some View {
-            
+        
         ZStack {
             TabView(selection:$selection) {
                 
@@ -88,21 +93,24 @@ struct ContentView: View {
             
             TutorialView()
             
-            // Show a loading screen before displaying the game to load the models
-            if(network.modelProgressDownload != models.count) {
-                LoadingView()
-            }
-            
-            if(ARViewController.completed.progresoActual == models.count) {
+            if(gameFinished == true) {
+
                 FinalView()
             }
+            
         }
+        
         #if !targetEnvironment(simulator)
         // MARK: Fix to present when one game completed
         .sheet(isPresented: $completed.currSheet) {
             ObraView(obra: completed.currModel)
         }
         #endif
+        
+        if !network.loadedUSDZ || !network.loadedARWorldMaps {
+            LoadingView()
+        }
+        
     }
     
     // Returns the models when received

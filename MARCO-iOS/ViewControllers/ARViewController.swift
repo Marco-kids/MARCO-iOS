@@ -5,6 +5,8 @@
 //  Created by Jose Castillo on 2/20/23.
 //
 
+#if !targetEnvironment(simulator)
+
 import UIKit
 import ARKit
 import RealityKit
@@ -26,6 +28,7 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
     var flagLoading: Bool?
     var location: ARLocation?
     let network = Network.sharedInstance
+    var locationCount: Int = 0
     
     override func viewDidLoad() {
         print("EMPIEZA viewdidload")
@@ -42,8 +45,9 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
         arView.addGestureRecognizer(tapGesture)
         // Protocol
-        
+        #if !targetEnvironment(simulator)
         network.delegateARVC = self
+        #endif
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -128,6 +132,8 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
             switch (trackingState) {
             case .normal:
                 locationDetectedAlert()
+                self.loadGame(obra: network.models[locationCount])
+                locationCount += 1
             default:
                 prevState = true
             }
@@ -165,27 +171,26 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
     // MARK: Protocol
     
     func loadedData(locations: [ARLocation]) {
-//        if (locations.count == 5) && (locations[2].locationPath != nil) {
-//            self.load(location: locations[2])
-//        }
+        self.load(location: locations[locationCount])
     }
     
     // Method that makes game active
     func loadGame(obra: Obra) {
-            // Run normal game
-            let configuration = ARWorldTrackingConfiguration()
-            configuration.planeDetection = .horizontal
-            
-            self.initCollisionDetection()
-            self.initBullets()
-            self.initLight()
-            self.initBoxes()
-            self.arView.session.run(configuration, options: [.resetTracking])
-            self.runCoachingOverlay()
-            
-            print("EMPIEZA loadGame")
-            self.removePreviousContent()
-            self.showMarcoModel(currentObra: obra, gameType: 2)
+
+        let configuration = ARWorldTrackingConfiguration()
+        configuration.planeDetection = .horizontal
+        
+        self.initCollisionDetection()
+        self.initBullets()
+        self.initBoxes()
+        self.arView.session.run(configuration, options: [.resetTracking])
+        // MARK: Se buggea el coaching overlay
+        // self.runCoachingOverlay()
+        
+        print("EMPIEZA loadGame")
+        self.removePreviousContent()
+        self.showMarcoModel(currentObra: obra, gameType: 2)
+        
     }
     
     // MARK: Coordinator Code
@@ -1425,6 +1430,9 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
                 if(currModel.completed == false) {
                     currModel.completed = true
                     self.progresoActual = self.progresoActual + 1
+                    network.currentProgress += 0.1
+                    network.currentProgressInt = self.progresoActual
+                    self.load(location: network.locations[self.locationCount])
                 }
             }
                     
@@ -1749,3 +1757,4 @@ extension Int {
     }
 }
 
+#endif

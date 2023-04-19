@@ -11,6 +11,7 @@ struct LoadingView: View {
     @StateObject var network = Network.sharedInstance
     
     var body: some View {
+
             // TODO: Cambiar el styling
             // Ayuda no se nada de styling
             VStack {
@@ -31,6 +32,7 @@ struct LoadingView: View {
             .background(Color.pink.opacity(1))
             .padding(40)
             .padding()
+
     }
 }
 
