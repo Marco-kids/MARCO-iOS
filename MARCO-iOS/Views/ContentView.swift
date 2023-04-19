@@ -32,6 +32,7 @@ struct ContentView: View {
     // TODO: make "gameFinished variable a stateObject for when the game has ended"
     // @StateObject var gameFinished = false
     var gameFinished = false
+
     
     var body: some View {
         
@@ -93,6 +94,7 @@ struct ContentView: View {
             TutorialView()
             
             if(gameFinished == true) {
+
                 FinalView()
             }
             

@@ -12,8 +12,11 @@ import Alamofire
 // private let url = "http://10.14.255.70:10205/api/all-obras"
 //private let url = "http://192.168.84.171:8080/api/all-obras" // Datos celular
 // private let url = "http://192.168.100.29:8080/api/all-obras" // Casita
-// private let url = "http://10.22.186.24:8080/api/all-obras" // Salon Swift
-private let url = "http://192.168.1.236:8080/api/all-obras" // Casa Jose
+// private let url = "http://10.22.234.164:8080/api/all-obras" // Salon Swift
+// private let url = "http://192.168.100.25:8080/api/all-obras" // Casa Jose
+
+private let url = "http://192.168.100.25:8080/api/all-obras"
+
 let headers: HTTPHeaders = []
 
 class Network: NSObject, ObservableObject {
@@ -37,6 +40,8 @@ class Network: NSObject, ObservableObject {
     // ARWorldMap
     var downloadedData: [Data] = []
     @Published var locations: [ARLocation] = []
+    
+    @Published var modelProgressDownload = 0
     
     func getModels() {
         print("Started USDZ request")
@@ -102,9 +107,18 @@ class Network: NSObject, ObservableObject {
                     self.loadedUSDZ = true
                 }
                 self.obrasPublisher.send(self.models)
+
             }
+            
         })
         downloadTask.resume()
+    }
+    
+    // After all models have been loaded, then game can start
+    func startGame() {
+        print("FinishLoadingAllModels")
+        guard let delegateEditor = self.delegateARVC else { return }
+        delegateEditor.loadGame(obra: self.models[4])
     }
     
     #if !targetEnvironment(simulator)
