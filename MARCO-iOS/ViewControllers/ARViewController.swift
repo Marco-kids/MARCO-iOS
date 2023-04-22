@@ -176,7 +176,9 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         let obrasCoredata = DataBaseHandler.fetchAllObras()
         locationCount = obrasCoredata.count
         
-        self.load(location: locations[locationCount])
+        if (locationCount < network.models.count) {
+            self.load(location: locations[locationCount])
+        }
     }
     
     // Method that makes game active
@@ -203,19 +205,15 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
     
     // MARK: Coordinator Code
     var collisionSubscriptions = [Cancellable]()
-    var count: Int = 0
     
     var currModel = Obra(_id: "0", nombre: "Pirinola", autor: "Jose", descripcion: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", modelo: "Models/pirinola.usdz", zona: "", completed: false)
     
     // Variable for loading asynchronous models
     var newEntityPirinola: AnyCancellable?
-    var newEntity: ModelEntity = ModelEntity()
     
     // Variable para saber si ya se capturaron todos los cubitos
     static let completed = ARViewController()
-    var complete = false
     var currSheet = false
-    var progreso: CGFloat = 0
     var progresoActual: Int = 0
     
     // Grupos para detectar colisiones
@@ -224,18 +222,19 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
     
     // Masks para detectar colisiones
     var boxMask: CollisionGroup = .init()
-    var sphereMask: CollisionGroup = .init()
     
     // GameType => Difficulty
     // 0 =>
     var gameType = 1
     
-    var arrayObjetos = [false, false, false, false, false, false, false, false, false, false, false, false]
+    // var arrayObjetos = [false, false, false, false, false, false, false, false, false, false, false, false]
+    // MARK: Eliminated boxes: box7, box8 and box9 that are nore used in gameType2
+    var arrayObjetos = [false, false, false, false, false, false, true, true, true, false, false, false]
+
 
     // Anchor para los modelos
     // let anchor = AnchorEntity(plane: .horizontal, classification: .floor) // Production
     let anchor = AnchorEntity(plane: .horizontal) // For tes`ting puposes
-    let pointLight = PointLightComponent(color: .red, intensity: 1000000, attenuationRadius: 20.0)
     var pointLightFront = CustomPointLight.init()
     var pointLightBack = CustomPointLight.init()
     // let anchor = AnchorEntity()
@@ -289,9 +288,12 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
     var box4: ModelEntity = ModelEntity()
     var box5: ModelEntity = ModelEntity()
     var box6: ModelEntity = ModelEntity()
-    var box7: ModelEntity = ModelEntity()
-    var box8: ModelEntity = ModelEntity()
-    var box9: ModelEntity = ModelEntity()
+    
+    // MARK: Eliminated boxes not used in gameType = 2
+    // var box7: ModelEntity = ModelEntity()
+    // var box8: ModelEntity = ModelEntity()
+    // var box9: ModelEntity = ModelEntity()
+    
     var box10: ModelEntity = ModelEntity()
     var box11: ModelEntity = ModelEntity()
     var box12: ModelEntity = ModelEntity()
@@ -307,12 +309,15 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
     var animationResource5: AnimationResource? = nil
     var animationDefinition6: OrbitAnimation? = nil
     var animationResource6: AnimationResource? = nil
-    var animationDefinition7: OrbitAnimation? = nil
-    var animationResource7: AnimationResource? = nil
-    var animationDefinition8: OrbitAnimation? = nil
-    var animationResource8: AnimationResource? = nil
-    var animationDefinition9: OrbitAnimation? = nil
-    var animationResource9: AnimationResource? = nil
+    
+    // MARK: Eliminated boxes not used in gameType = 2
+    // var animationDefinition7: OrbitAnimation? = nil
+    // var animationResource7: AnimationResource? = nil
+    // var animationDefinition8: OrbitAnimation? = nil
+    // var animationResource8: AnimationResource? = nil
+    // var animationDefinition9: OrbitAnimation? = nil
+    // var animationResource9: AnimationResource? = nil
+    
     var animationDefinition10: OrbitAnimation? = nil
     var animationResource10: AnimationResource? = nil
     var animationDefinition11: OrbitAnimation? = nil
@@ -325,12 +330,17 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
     let box4Material = SimpleMaterial(color: .yellow, isMetallic: false)
     let box5Material = SimpleMaterial(color: .orange, isMetallic: false)
     let box6Material = SimpleMaterial(color: .magenta, isMetallic: false)
-    let box7Material = SimpleMaterial(color: .cyan, isMetallic: false)
-    let box8Material = SimpleMaterial(color: .green, isMetallic: false)
-    let box9Material = SimpleMaterial(color: .red, isMetallic: false)
+    
+    // MARK: Eliminated boxes not used in gameType = 2
+    // let box7Material = SimpleMaterial(color: .cyan, isMetallic: false)
+    // let box8Material = SimpleMaterial(color: .green, isMetallic: false)
+    // let box9Material = SimpleMaterial(color: .red, isMetallic: false)
+    
     let box10Material = SimpleMaterial(color: .blue, isMetallic: false)
     let box11Material = SimpleMaterial(color: .purple, isMetallic: false)
     let box12Material = SimpleMaterial(color: .magenta, isMetallic: false)
+    
+    let modelPlaceholderMaterial = SimpleMaterial(color: .black, isMetallic: false)
     
     // TODO: Remove Spheres
 //    var sphere1: ModelEntity = ModelEntity()
@@ -394,78 +404,78 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         bullet1.generateCollisionShapes(recursive: true)
         bullet1.name = "bullet/1/"
         // Install the necessary configurations for allowing physics and collisions
-        self.arView.installGestures(.translation, for: bullet1)
+        // self.arView.installGestures(.translation, for: bullet1)
         
         // Repeats for the other 14 bullets
         bullet2 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet2.generateCollisionShapes(recursive: true)
         bullet2.name = "bullet/2/"
-        self.arView.installGestures(.translation, for: bullet2)
+        // self.arView.installGestures(.translation, for: bullet2)
         
         bullet3 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet3.generateCollisionShapes(recursive: true)
         bullet3.name = "bullet/3/"
-        self.arView.installGestures(.translation, for: bullet3)
+        // self.arView.installGestures(.translation, for: bullet3)
         
         bullet4 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet4.generateCollisionShapes(recursive: true)
         bullet4.name = "bullet/4/"
-        self.arView.installGestures(.translation, for: bullet4)
+        // self.arView.installGestures(.translation, for: bullet4)
         
         bullet5 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet5.generateCollisionShapes(recursive: true)
         bullet5.name = "bullet/5/"
-        self.arView.installGestures(.translation, for: bullet5)
+        // self.arView.installGestures(.translation, for: bullet5)
         
         bullet6 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet6.generateCollisionShapes(recursive: true)
         bullet6.name = "bullet/6/"
-        self.arView.installGestures(.translation, for: bullet6)
+        // self.arView.installGestures(.translation, for: bullet6)
         
         bullet7 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet7.generateCollisionShapes(recursive: true)
         bullet7.name = "bullet/7/"
-        self.arView.installGestures(.translation, for: bullet7)
+        // self.arView.installGestures(.translation, for: bullet7)
         
         bullet8 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet8.generateCollisionShapes(recursive: true)
         bullet8.name = "bullet/8/"
-        self.arView.installGestures(.translation, for: bullet8)
+        // self.arView.installGestures(.translation, for: bullet8)
         
         bullet9 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet9.generateCollisionShapes(recursive: true)
         bullet9.name = "bullet/9/"
-        self.arView.installGestures(.translation, for: bullet9)
+        // self.arView.installGestures(.translation, for: bullet9)
         
         bullet10 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet10.generateCollisionShapes(recursive: true)
         bullet10.name = "bullet/10/"
-        self.arView.installGestures(.translation, for: bullet10)
+        // self.arView.installGestures(.translation, for: bullet10)
         
         bullet11 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet11.generateCollisionShapes(recursive: true)
         bullet11.name = "bullet/11/"
-        self.arView.installGestures(.translation, for: bullet11)
+        // self.arView.installGestures(.translation, for: bullet11)
         
         bullet12 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet12.generateCollisionShapes(recursive: true)
         bullet12.name = "bullet/12/"
-        self.arView.installGestures(.translation, for: bullet12)
+        // self.arView.installGestures(.translation, for: bullet12)
         
         bullet13 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet13.generateCollisionShapes(recursive: true)
         bullet13.name = "bullet/13/"
-        self.arView.installGestures(.translation, for: bullet13)
+        // self.arView.installGestures(.translation, for: bullet13)
         
         bullet14 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet14.generateCollisionShapes(recursive: true)
         bullet14.name = "bullet/14/"
-        self.arView.installGestures(.translation, for: bullet14)
+        // self.arView.installGestures(.translation, for: bullet14)
         
         bullet15 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet15.generateCollisionShapes(recursive: true)
         bullet15.name = "bullet/15/"
-        self.arView.installGestures(.translation, for: bullet15)
+        // self.arView.installGestures(.translation, for: bullet15)
         
         // Stores the current name of the bullet that is launched
         currBullet.name = bullet1.name
@@ -567,6 +577,8 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
             animationResource6 = try! AnimationResource.generate(with: animationDefinition6!)
             
 
+            // MARK: Eliminated boxes not used in gameType = 2
+            /*
             animationDefinition7 = OrbitAnimation(
                 duration: 9,
                 axis: SIMD3<Float>(x: 0, y: 1, z: 0),
@@ -609,7 +621,7 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
                 offset: 6
                 )
             animationResource9 = try! AnimationResource.generate(with: animationDefinition9!)
-            
+            */
 
             animationDefinition10 = OrbitAnimation(
                 duration: 9,
@@ -750,7 +762,6 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
                 animationResource6 = try! AnimationResource.generate(with: animationDefinition6!)
                 
 
-                
                 animationDefinition10 = OrbitAnimation(
                     duration: 9,
                     axis: SIMD3<Float>(x: 0, y: -1, z: 0),
@@ -817,14 +828,16 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
                 box6.setPosition(SIMD3([0.9,0.7,-0.3]), relativeTo: nil)
                 box6.setScale(SIMD3([1.4,1.4,0.2]), relativeTo: nil)
                 
-                box7.setPosition(SIMD3([1,0.5,0.5]), relativeTo: nil)
-                box7.setScale(SIMD3([2.3,2.3,0.2]), relativeTo: nil)
                 
-                box8.setPosition(SIMD3([0.2,0.4,1]), relativeTo: nil)
-                box8.setScale(SIMD3([2.5,2.5,0.2]), relativeTo: nil)
+                // MARK: Eliminated boxes not used in gameType = 2
+                // box7.setPosition(SIMD3([1,0.5,0.5]), relativeTo: nil)
+                // box7.setScale(SIMD3([2.3,2.3,0.2]), relativeTo: nil)
                 
-                box9.setPosition(SIMD3([-0.8,0.2,-0.3]), relativeTo: nil)
-                box9.setScale(SIMD3([2.7,2.7,0.2]), relativeTo: nil)
+                // box8.setPosition(SIMD3([0.2,0.4,1]), relativeTo: nil)
+                // box8.setScale(SIMD3([2.5,2.5,0.2]), relativeTo: nil)
+                
+                // box9.setPosition(SIMD3([-0.8,0.2,-0.3]), relativeTo: nil)
+                // box9.setScale(SIMD3([2.7,2.7,0.2]), relativeTo: nil)
                 
                 box10.setPosition(SIMD3([-1,0.4,0.6]), relativeTo: nil)
                 box10.setScale(SIMD3([1.4,1.4,0.2]), relativeTo: nil)
@@ -841,8 +854,8 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
     func initLight() {
         pointLightFront = CustomPointLight()
         pointLightBack = CustomPointLight()
-        pointLightFront.setPosition([0,2,2], relativeTo: nil)
-        pointLightBack.setPosition([0,2,-2], relativeTo: nil)
+        pointLightFront.setPosition([0,2,1.5], relativeTo: nil)
+        pointLightBack.setPosition([0,2,-1.5], relativeTo: nil)
     }
     
     // TODO: Changed gestures to only needed
@@ -853,65 +866,66 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         box1.generateCollisionShapes(recursive: true)
         box1.collision = CollisionComponent(shapes: [.generateBox(width: 0.15, height: 0.15, depth: 0.02)], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box1.name = "box/1/"
-        self.arView.installGestures(.translation, for: box1)
+        // self.arView.installGestures(.translation, for: box1)
         
         // Box - 2 Collision
         box2 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box2Material])
         box2.generateCollisionShapes(recursive: true)
         box2.collision = CollisionComponent(shapes: [.generateBox(width: 0.15, height: 0.15, depth: 0.02)], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box2.name = "box/2/"
-        self.arView.installGestures(.translation, for: box2)
+        // self.arView.installGestures(.translation, for: box2)
         
         // Box - 3 Collision
         box3 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box3Material])
         box3.generateCollisionShapes(recursive: true)
         box3.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box3.name = "box/3/"
-        self.arView.installGestures(.translation, for: box3)
+        // self.arView.installGestures(.translation, for: box3)
         
         // Box - 4 Collision
         box4 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box4Material])
         box4.generateCollisionShapes(recursive: true)
         box4.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box4.name = "box/4/"
-        self.arView.installGestures(.translation, for: box4)
+        // self.arView.installGestures(.translation, for: box4)
 
         // Box - 5 Collision
         box5 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box5Material])
         box5.generateCollisionShapes(recursive: true)
         box5.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box5.name = "box/5/"
-        self.arView.installGestures(.translation, for: box5)
+        // self.arView.installGestures(.translation, for: box5)
         
         // Box - 6 Collision
         box6 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box6Material])
         box6.generateCollisionShapes(recursive: true)
         box6.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box6.name = "box/6/"
-        self.arView.installGestures(.translation, for: box6)
+        // self.arView.installGestures(.translation, for: box6)
         
+        // MARK: Eliminated not used boxes in gameType = 2
         // Box - 7 Collision
-        box7 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box7Material])
-        box7.generateCollisionShapes(recursive: true)
-        box7.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-        box7.name = "box/7/"
-        self.arView.installGestures(.translation, for: box7)
+        // box7 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box7Material])
+        // box7.generateCollisionShapes(recursive: true)
+        // box7.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        // box7.name = "box/7/"
+        // self.arView.installGestures(.translation, for: box7)
         
         
         // Box - 8 Collision
-        box8 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box8Material])
-        box8.generateCollisionShapes(recursive: true)
-        box8.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-        box8.name = "box/8/"
-        self.arView.installGestures(.translation, for: box8)
+        // box8 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box8Material])
+        // box8.generateCollisionShapes(recursive: true)
+        // box8.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        // box8.name = "box/8/"
+        // self.arView.installGestures(.translation, for: box8)
         
         
         // Box - 9 Collision
-        box9 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box9Material])
-        box9.generateCollisionShapes(recursive: true)
-        box9.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
-        box9.name = "box/9/"
-        self.arView.installGestures(.translation, for: box9)
+        // box9 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box9Material])
+        // box9.generateCollisionShapes(recursive: true)
+        // box9.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
+        // box9.name = "box/9/"
+        // self.arView.installGestures(.translation, for: box9)
         
         
         // Box - 10 Collision
@@ -919,7 +933,7 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         box10.generateCollisionShapes(recursive: true)
         box10.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box10.name = "box/10/"
-        self.arView.installGestures(.translation, for: box10)
+        // self.arView.installGestures(.translation, for: box10)
         
         
         // Box - 11 Collision
@@ -927,7 +941,7 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         box11.generateCollisionShapes(recursive: true)
         box11.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box11.name = "box/11/"
-        self.arView.installGestures(.translation, for: box11)
+        // self.arView.installGestures(.translation, for: box11)
 
         
         // Box - 12 Collision
@@ -935,10 +949,10 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         box12.generateCollisionShapes(recursive: true)
         box12.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box12.name = "box/12/"
-        self.arView.installGestures(.translation, for: box12)
+        // self.arView.installGestures(.translation, for: box12)
         
-        let modelPlaceholderMaterial = SimpleMaterial(color: .black, isMetallic: false)
-        modelPlaceholder = ModelEntity(mesh: MeshResource.generateBox(width: 0.6, height: 1.1 , depth: 0.4), materials: [modelPlaceholderMaterial])
+        
+        modelPlaceholder = ModelEntity(mesh: MeshResource.generateBox(width: 0.6, height: 1.1 , depth: 0.4), materials: [self.modelPlaceholderMaterial])
     }
     
     // Remove animation for box on collision with a Bullet
@@ -960,11 +974,11 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         })
     }
     
-    
     // Remove animation for box on collision with a Bullet
+    var transform: Transform = Transform.init()
     func animateModel(entity: HasTransform, angle: Float, axis: SIMD3<Float>, duration: TimeInterval, loop: Bool, currentPosition: SIMD3<Float>){
         
-        var transform = entity.transform
+        transform = entity.transform
         transform.rotation *= simd_quatf(angle: angle, axis: axis)
         transform.scale.x = 0.05
         transform.scale.y = 0.05
@@ -1033,6 +1047,7 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
             guard let entity1 = event.entityA as? ModelEntity,
                   let entity2 = event.entityB as? ModelEntity else { return }
             
+            print(self.arrayObjetos)
             // Substrings of the object's name to check whether is a box or bullet, and the corresponding number
             var entityName = entity1.name
             var typeIndex = entityName.firstIndex(of: "/")!
@@ -1450,7 +1465,13 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
                     
                     network.currentProgress += 0.1
                     network.currentProgressInt = self.progresoActual
-                    self.load(location: network.locations[self.locationCount])
+                    
+                    if(locationCount < network.models.count) {
+                        self.load(location: network.locations[self.locationCount])
+                    } else {
+                        print("JUEGO COMPLETADO")
+                    }
+                    
                 }
             }
                     
@@ -1508,9 +1529,12 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
             self.arView.scene.anchors[1].removeChild(box4)
             self.arView.scene.anchors[1].removeChild(box5)
             self.arView.scene.anchors[1].removeChild(box6)
-            self.arView.scene.anchors[1].removeChild(box7)
-            self.arView.scene.anchors[1].removeChild(box8)
-            self.arView.scene.anchors[1].removeChild(box9)
+            
+            // MARK: Eliminated boxes not used in gameType = 2
+            // self.arView.scene.anchors[1].removeChild(box7)
+            // self.arView.scene.anchors[1].removeChild(box8)
+            // self.arView.scene.anchors[1].removeChild(box9)
+            
             self.arView.scene.anchors[1].removeChild(box10)
             self.arView.scene.anchors[1].removeChild(box11)
             self.arView.scene.anchors[1].removeChild(box12)
@@ -1532,7 +1556,7 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         currModel = currentObra
         self.gameType = gameType
         initAnimationsResource()
-        arrayObjetos = [false, false, false, false, false, false, false, false, false, false, false, false]
+        arrayObjetos = [false, false, false, false, false, false, true, true, true, false, false, false]
             
         modelPlaceholder.setPosition(SIMD3(x: 0, y: 0.4, z: 0), relativeTo: nil)
         if (currModel.completed == false) {
@@ -1564,9 +1588,12 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         box4.model?.materials = [box4Material]
         box5.model?.materials = [box5Material]
         box6.model?.materials = [box6Material]
-        box7.model?.materials = [box7Material]
-        box8.model?.materials = [box8Material]
-        box9.model?.materials = [box9Material]
+        
+        // MARK: Elimininated boxes not used in gameType = 2
+        // box7.model?.materials = [box7Material]
+        // box8.model?.materials = [box8Material]
+        // box9.model?.materials = [box9Material]
+        
         box10.model?.materials = [box10Material]
         box11.model?.materials = [box11Material]
         box12.model?.materials = [box12Material]
@@ -1591,15 +1618,17 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
             if(self.arrayObjetos[5] == false) {
                 anchor.addChild(box6)
             }
-            if(self.arrayObjetos[6] == false) {
-                anchor.addChild(box7)
-            }
-            if(self.arrayObjetos[7] == false) {
-                anchor.addChild(box8)
-            }
-            if(self.arrayObjetos[8] == false) {
-                anchor.addChild(box9)
-            }
+            
+            // MARK: Eliminated boxes not used in gameType = 2
+            // if(self.arrayObjetos[6] == false) {
+            //     anchor.addChild(box7)
+            // }
+            // if(self.arrayObjetos[7] == false) {
+            //     anchor.addChild(box8)
+            // }
+            // if(self.arrayObjetos[8] == false) {
+            //    anchor.addChild(box9)
+            // }
             if(self.arrayObjetos[9] == false) {
                 anchor.addChild(box10)
             }
@@ -1628,9 +1657,12 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
             box2.playAnimation(animationResource2!)
             box5.playAnimation(animationResource5!)
             box6.playAnimation(animationResource6!)
-            box7.playAnimation(animationResource7!)
-            box8.playAnimation(animationResource8!)
-            box9.playAnimation(animationResource9!)
+            
+            // MARK: Eliminated boxes not used in gameType = 2
+            // box7.playAnimation(animationResource7!)
+            // box8.playAnimation(animationResource8!)
+            // box9.playAnimation(animationResource9!)
+            
             box10.playAnimation(animationResource10!)
             box11.playAnimation(animationResource11!)
             box12.playAnimation(animationResource12!)
@@ -1655,7 +1687,7 @@ class CustomPointLight: Entity, HasPointLight {
     required init() {
         super.init()
         
-        self.light = PointLightComponent(color: .white, intensity: 100000, attenuationRadius: 22.0)
+        self.light = PointLightComponent(color: .white, intensity: 35000, attenuationRadius: 10.0)
     }
 }
 

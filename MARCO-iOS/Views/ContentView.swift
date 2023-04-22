@@ -32,6 +32,8 @@ struct ContentView: View {
 
     @State var currentProgress: Int = 0
     @State var gameFinished = false
+    @State var finishedScreenShowed = false
+    
 
     
     var body: some View {
@@ -93,7 +95,7 @@ struct ContentView: View {
             
             TutorialView()
             
-            .sheet(isPresented: $gameFinished) {
+            .sheet(isPresented: $finishedScreenShowed, onDismiss: { checkCompletition() }) {
                 FinalView()
             }
             
@@ -137,9 +139,10 @@ struct ContentView: View {
             }
         }
         
-        print(currentProgress)
-        print(models.count)
-        if (currentProgress == models.count) {
+        if (currentProgress == models.count && self.gameFinished == true) {
+            self.finishedScreenShowed = false
+        } else if (currentProgress == models.count && self.gameFinished == false) {
+            self.finishedScreenShowed = true
             self.gameFinished = true
         }
     }
