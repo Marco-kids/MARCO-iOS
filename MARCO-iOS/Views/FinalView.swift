@@ -12,22 +12,45 @@ struct FinalView: View {
     var body: some View {
         // TODO: Cambiar el styling
         // Ayuda no se nada de styling
-        VStack {
-            VStack(alignment: .leading) {
-                Text("Felicidades")
-                    .font(.title2).bold()
-                    .foregroundColor(.black)
-                Text("Lo lograste")
-                    .font(.title).bold()
-                    .foregroundColor(.black)
+        GeometryReader { proxy in
+            ZStack(alignment: .center) {
+                
+                RoundedRectangle(cornerRadius: 25, style: .continuous)
+                    .fill(Color("lightPink")).shadow(radius: 10)
+                
+                HStack(alignment: .center) {
+                    VStack(alignment: .center) {
+                        Text("Lo lograste!!!")
+                            .font(.title).bold()
+                            .foregroundColor(.black)
+                        
+                        Text("Haz encontrado todas las obras")
+                            .font(.title3)
+                            .foregroundColor(.black)
+                            
+                        if(UIDevice.current.model == "iPhone") {
+                            Image("paloma")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 350.0, height: 350.0)
+                            
+                        } else {
+                            Image("paloma")
+                                .resizable()
+                                .frame(maxWidth: 270)
+                        }
+                        
+                        Text("Recuerda que puedes ver las obras en el boton 'Progreso'")
+                            .font(.title3)
+                            .foregroundColor(.black)
+                            .multilineTextAlignment(.center)
+
+                    }
+                   
+                }
+                 
             }
-            Image("paloma")
-                .scaledToFit()
-                .frame(maxWidth: 270)
         }
-        .background(Color.pink.opacity(1))
-        .padding(40)
-        .padding()
     }
     
 }

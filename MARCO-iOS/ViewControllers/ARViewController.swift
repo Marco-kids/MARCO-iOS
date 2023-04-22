@@ -28,6 +28,7 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
     var flagLoading: Bool?
     var location: ARLocation?
     let network = Network.sharedInstance
+    
     var locationCount: Int = 0
     
     override func viewDidLoad() {
@@ -171,6 +172,10 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
     // MARK: Protocol
     
     func loadedData(locations: [ARLocation]) {
+        // MARK: CoreData implementation to load current location
+        let obrasCoredata = DataBaseHandler.fetchAllObras()
+        locationCount = obrasCoredata.count
+        
         self.load(location: locations[locationCount])
     }
     
@@ -182,6 +187,7 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         
         self.initCollisionDetection()
         self.initBullets()
+        self.initLight()
         self.initBoxes()
         self.arView.session.run(configuration, options: [.resetTracking])
         // MARK: Se buggea el coaching overlay
@@ -189,6 +195,8 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         
         print("EMPIEZA loadGame")
         self.removePreviousContent()
+        // MARK: To enable random level
+        // self.showMarcoModel(currentObra: obra, gameType: Int.random(in: 0..<2))
         self.showMarcoModel(currentObra: obra, gameType: 2)
         
     }
@@ -324,27 +332,31 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
     let box11Material = SimpleMaterial(color: .purple, isMetallic: false)
     let box12Material = SimpleMaterial(color: .magenta, isMetallic: false)
     
-    var sphere1: ModelEntity = ModelEntity()
-    var sphere2: ModelEntity = ModelEntity()
-    var sphere3: ModelEntity = ModelEntity()
-    var sphere4: ModelEntity = ModelEntity()
-    var sphere5: ModelEntity = ModelEntity()
-    var sphere6: ModelEntity = ModelEntity()
-    var sphere7: ModelEntity = ModelEntity()
-    var sphere8: ModelEntity = ModelEntity()
-    var sphere9: ModelEntity = ModelEntity()
-    var sphere10: ModelEntity = ModelEntity()
-    var sphere11: ModelEntity = ModelEntity()
-    var sphere12: ModelEntity = ModelEntity()
-    var sphere13: ModelEntity = ModelEntity()
-    var sphere14: ModelEntity = ModelEntity()
-    var sphere15: ModelEntity = ModelEntity()
-    var sphere16: ModelEntity = ModelEntity()
-    var sphere17: ModelEntity = ModelEntity()
-    var sphere18: ModelEntity = ModelEntity()
-    var sphere19: ModelEntity = ModelEntity()
-    var sphere20: ModelEntity = ModelEntity()
-    let completeBoxMaterial = UnlitMaterial(color: .systemPink)
+    // TODO: Remove Spheres
+//    var sphere1: ModelEntity = ModelEntity()
+//    var sphere2: ModelEntity = ModelEntity()
+//    var sphere3: ModelEntity = ModelEntity()
+//    var sphere4: ModelEntity = ModelEntity()
+//    var sphere5: ModelEntity = ModelEntity()
+//    var sphere6: ModelEntity = ModelEntity()
+//    var sphere7: ModelEntity = ModelEntity()
+//    var sphere8: ModelEntity = ModelEntity()
+//    var sphere9: ModelEntity = ModelEntity()
+//    var sphere10: ModelEntity = ModelEntity()
+//    var sphere11: ModelEntity = ModelEntity()
+//    var sphere12: ModelEntity = ModelEntity()
+//    var sphere13: ModelEntity = ModelEntity()
+//    var sphere14: ModelEntity = ModelEntity()
+//    var sphere15: ModelEntity = ModelEntity()
+//    var sphere16: ModelEntity = ModelEntity()
+//    var sphere17: ModelEntity = ModelEntity()
+//    var sphere18: ModelEntity = ModelEntity()
+//    var sphere19: ModelEntity = ModelEntity()
+//    var sphere20: ModelEntity = ModelEntity()
+//    let completeBoxMaterial = UnlitMaterial(color: .systemPink)
+    
+    // MARK: CoreData context
+    let context = DataBaseHandler.context
 
     func runCoachingOverlay() {
         guard let view = self.view else { return }
@@ -368,6 +380,8 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
     
 
     // Inits the bullets configurations
+    
+    // TODO: Changed gestures to only needed
     func initBullets() {
         bulletMaterial.color =  .init(tint: .green.withAlphaComponent(1), texture: nil)
         
@@ -380,78 +394,78 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         bullet1.generateCollisionShapes(recursive: true)
         bullet1.name = "bullet/1/"
         // Install the necessary configurations for allowing physics and collisions
-        self.arView.installGestures(.all, for: bullet1)
+        self.arView.installGestures(.translation, for: bullet1)
         
         // Repeats for the other 14 bullets
         bullet2 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet2.generateCollisionShapes(recursive: true)
         bullet2.name = "bullet/2/"
-        self.arView.installGestures(.all, for: bullet2)
+        self.arView.installGestures(.translation, for: bullet2)
         
         bullet3 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet3.generateCollisionShapes(recursive: true)
         bullet3.name = "bullet/3/"
-        self.arView.installGestures(.all, for: bullet3)
+        self.arView.installGestures(.translation, for: bullet3)
         
         bullet4 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet4.generateCollisionShapes(recursive: true)
         bullet4.name = "bullet/4/"
-        self.arView.installGestures(.all, for: bullet4)
+        self.arView.installGestures(.translation, for: bullet4)
         
         bullet5 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet5.generateCollisionShapes(recursive: true)
         bullet5.name = "bullet/5/"
-        self.arView.installGestures(.all, for: bullet5)
+        self.arView.installGestures(.translation, for: bullet5)
         
         bullet6 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet6.generateCollisionShapes(recursive: true)
         bullet6.name = "bullet/6/"
-        self.arView.installGestures(.all, for: bullet6)
+        self.arView.installGestures(.translation, for: bullet6)
         
         bullet7 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet7.generateCollisionShapes(recursive: true)
         bullet7.name = "bullet/7/"
-        self.arView.installGestures(.all, for: bullet7)
+        self.arView.installGestures(.translation, for: bullet7)
         
         bullet8 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet8.generateCollisionShapes(recursive: true)
         bullet8.name = "bullet/8/"
-        self.arView.installGestures(.all, for: bullet8)
+        self.arView.installGestures(.translation, for: bullet8)
         
         bullet9 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet9.generateCollisionShapes(recursive: true)
         bullet9.name = "bullet/9/"
-        self.arView.installGestures(.all, for: bullet9)
+        self.arView.installGestures(.translation, for: bullet9)
         
         bullet10 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet10.generateCollisionShapes(recursive: true)
         bullet10.name = "bullet/10/"
-        self.arView.installGestures(.all, for: bullet10)
+        self.arView.installGestures(.translation, for: bullet10)
         
         bullet11 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet11.generateCollisionShapes(recursive: true)
         bullet11.name = "bullet/11/"
-        self.arView.installGestures(.all, for: bullet11)
+        self.arView.installGestures(.translation, for: bullet11)
         
         bullet12 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet12.generateCollisionShapes(recursive: true)
         bullet12.name = "bullet/12/"
-        self.arView.installGestures(.all, for: bullet12)
+        self.arView.installGestures(.translation, for: bullet12)
         
         bullet13 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet13.generateCollisionShapes(recursive: true)
         bullet13.name = "bullet/13/"
-        self.arView.installGestures(.all, for: bullet13)
+        self.arView.installGestures(.translation, for: bullet13)
         
         bullet14 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet14.generateCollisionShapes(recursive: true)
         bullet14.name = "bullet/14/"
-        self.arView.installGestures(.all, for: bullet14)
+        self.arView.installGestures(.translation, for: bullet14)
         
         bullet15 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.02), materials: [bulletMaterial]) as (ModelEntity & HasCollision & HasPhysicsBody)
         bullet15.generateCollisionShapes(recursive: true)
         bullet15.name = "bullet/15/"
-        self.arView.installGestures(.all, for: bullet15)
+        self.arView.installGestures(.translation, for: bullet15)
         
         // Stores the current name of the bullet that is launched
         currBullet.name = bullet1.name
@@ -831,6 +845,7 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         pointLightBack.setPosition([0,2,-2], relativeTo: nil)
     }
     
+    // TODO: Changed gestures to only needed
     func initBoxes() {
 
         // Box - 1 Collision
@@ -838,49 +853,49 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         box1.generateCollisionShapes(recursive: true)
         box1.collision = CollisionComponent(shapes: [.generateBox(width: 0.15, height: 0.15, depth: 0.02)], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box1.name = "box/1/"
-        self.arView.installGestures(.all, for: box1)
+        self.arView.installGestures(.translation, for: box1)
         
         // Box - 2 Collision
         box2 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box2Material])
         box2.generateCollisionShapes(recursive: true)
         box2.collision = CollisionComponent(shapes: [.generateBox(width: 0.15, height: 0.15, depth: 0.02)], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box2.name = "box/2/"
-        self.arView.installGestures(.all, for: box2)
+        self.arView.installGestures(.translation, for: box2)
         
         // Box - 3 Collision
         box3 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box3Material])
         box3.generateCollisionShapes(recursive: true)
         box3.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box3.name = "box/3/"
-        self.arView.installGestures(.all, for: box3)
+        self.arView.installGestures(.translation, for: box3)
         
         // Box - 4 Collision
         box4 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box4Material])
         box4.generateCollisionShapes(recursive: true)
         box4.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box4.name = "box/4/"
-        self.arView.installGestures(.all, for: box4)
+        self.arView.installGestures(.translation, for: box4)
 
         // Box - 5 Collision
         box5 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box5Material])
         box5.generateCollisionShapes(recursive: true)
         box5.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box5.name = "box/5/"
-        self.arView.installGestures(.all, for: box5)
+        self.arView.installGestures(.translation, for: box5)
         
         // Box - 6 Collision
         box6 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box6Material])
         box6.generateCollisionShapes(recursive: true)
         box6.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box6.name = "box/6/"
-        self.arView.installGestures(.all, for: box6)
+        self.arView.installGestures(.translation, for: box6)
         
         // Box - 7 Collision
         box7 = ModelEntity(mesh: MeshResource.generateBox(width: 0.15, height: 0.15, depth: 0.02, cornerRadius: 1), materials: [box7Material])
         box7.generateCollisionShapes(recursive: true)
         box7.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box7.name = "box/7/"
-        self.arView.installGestures(.all, for: box7)
+        self.arView.installGestures(.translation, for: box7)
         
         
         // Box - 8 Collision
@@ -888,7 +903,7 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         box8.generateCollisionShapes(recursive: true)
         box8.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box8.name = "box/8/"
-        self.arView.installGestures(.all, for: box8)
+        self.arView.installGestures(.translation, for: box8)
         
         
         // Box - 9 Collision
@@ -896,7 +911,7 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         box9.generateCollisionShapes(recursive: true)
         box9.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box9.name = "box/9/"
-        self.arView.installGestures(.all, for: box9)
+        self.arView.installGestures(.translation, for: box9)
         
         
         // Box - 10 Collision
@@ -904,7 +919,7 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         box10.generateCollisionShapes(recursive: true)
         box10.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box10.name = "box/10/"
-        self.arView.installGestures(.all, for: box10)
+        self.arView.installGestures(.translation, for: box10)
         
         
         // Box - 11 Collision
@@ -912,7 +927,7 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         box11.generateCollisionShapes(recursive: true)
         box11.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box11.name = "box/11/"
-        self.arView.installGestures(.all, for: box11)
+        self.arView.installGestures(.translation, for: box11)
 
         
         // Box - 12 Collision
@@ -920,7 +935,7 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         box12.generateCollisionShapes(recursive: true)
         box12.collision = CollisionComponent(shapes: [.generateBox(size: [0.15, 0.15, 0.02])], mode: .trigger, filter: .init(group: boxGroup, mask: boxMask))
         box12.name = "box/12/"
-        self.arView.installGestures(.all, for: box12)
+        self.arView.installGestures(.translation, for: box12)
         
         let modelPlaceholderMaterial = SimpleMaterial(color: .black, isMetallic: false)
         modelPlaceholder = ModelEntity(mesh: MeshResource.generateBox(width: 0.6, height: 1.1 , depth: 0.4), materials: [modelPlaceholderMaterial])
@@ -964,50 +979,51 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
             self.animateModel(entity: entity, angle: angle, axis: axis, duration: duration, loop: loop, currentPosition: currentPosition)
         })
     }
-
+    
+    // TODO: Remove Spheres
     // Places the boxes after completing a floor
-    func placeBoxesAfterCompletition() {
-        sphere1 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
-        sphere2 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
-        sphere3 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
-        sphere4 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
-        sphere5 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
-        sphere6 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
-        sphere7 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
-        sphere8 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
-        sphere9 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
-        sphere10 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
-        sphere11 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
-        sphere12 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
-        sphere13 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
-        sphere14 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
-        sphere15 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
-        sphere16 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
-        sphere17 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
-        sphere18 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
-        sphere19 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
-        sphere20 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
-        sphere1.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
-        sphere2.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
-        sphere3.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
-        sphere4.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
-        sphere5.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
-        sphere6.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
-        sphere7.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
-        sphere8.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
-        sphere9.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
-        sphere10.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
-        sphere11.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
-        sphere12.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
-        sphere13.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
-        sphere14.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
-        sphere15.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
-        sphere16.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
-        sphere17.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
-        sphere18.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
-        sphere19.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
-        sphere20.setPosition(SIMD3([Float.random(in: -2..<2), Float.random(in: 0.2..<3), Float.random(in: -3..<3)]), relativeTo: nil)
-    }
+//    func placeBoxesAfterCompletition() {
+//        sphere1 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
+//        sphere2 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
+//        sphere3 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
+//        sphere4 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
+//        sphere5 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
+//        sphere6 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
+//        sphere7 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
+//        sphere8 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
+//        sphere9 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
+//        sphere10 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
+//        sphere11 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
+//        sphere12 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
+//        sphere13 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
+//        sphere14 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
+//        sphere15 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
+//        sphere16 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
+//        sphere17 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
+//        sphere18 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
+//        sphere19 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
+//        sphere20 = ModelEntity(mesh: MeshResource.generateSphere(radius: 0.05), materials: [completeBoxMaterial])
+//        sphere1.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
+//        sphere2.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
+//        sphere3.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
+//        sphere4.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
+//        sphere5.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
+//        sphere6.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
+//        sphere7.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
+//        sphere8.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
+//        sphere9.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
+//        sphere10.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
+//        sphere11.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
+//        sphere12.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
+//        sphere13.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
+//        sphere14.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
+//        sphere15.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
+//        sphere16.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
+//        sphere17.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
+//        sphere18.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
+//        sphere19.setPosition(SIMD3([Float.random(in: -3..<3), Float.random(in: 0..<3), Float.random(in: -3..<3)]), relativeTo: nil)
+//        sphere20.setPosition(SIMD3([Float.random(in: -2..<2), Float.random(in: 0.2..<3), Float.random(in: -3..<3)]), relativeTo: nil)
+//    }
     
     // Function to init the collision detection with Subscription
     func initCollisionDetection() {
@@ -1405,31 +1421,33 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
             // OPTIONAL: Show pink spheres in scene
             // Places completed boxes
             if(self.arView.scene.anchors.count == 2) {
-                self.placeBoxesAfterCompletition()
-                self.arView.scene.anchors[1].addChild(self.sphere1)
-                self.arView.scene.anchors[1].addChild(self.sphere2)
-                self.arView.scene.anchors[1].addChild(self.sphere3)
-                self.arView.scene.anchors[1].addChild(self.sphere4)
-                self.arView.scene.anchors[1].addChild(self.sphere5)
-                self.arView.scene.anchors[1].addChild(self.sphere6)
-                self.arView.scene.anchors[1].addChild(self.sphere7)
-                self.arView.scene.anchors[1].addChild(self.sphere8)
-                self.arView.scene.anchors[1].addChild(self.sphere9)
-                self.arView.scene.anchors[1].addChild(self.sphere10)
-                self.arView.scene.anchors[1].addChild(self.sphere11)
-                self.arView.scene.anchors[1].addChild(self.sphere12)
-                self.arView.scene.anchors[1].addChild(self.sphere13)
-                self.arView.scene.anchors[1].addChild(self.sphere14)
-                self.arView.scene.anchors[1].addChild(self.sphere15)
-                self.arView.scene.anchors[1].addChild(self.sphere16)
-                self.arView.scene.anchors[1].addChild(self.sphere17)
-                self.arView.scene.anchors[1].addChild(self.sphere18)
-                self.arView.scene.anchors[1].addChild(self.sphere19)
-                self.arView.scene.anchors[1].addChild(self.sphere20)
+                // TODO: Remove Spheres
+//                self.placeBoxesAfterCompletition()
+//                self.arView.scene.anchors[1].addChild(self.sphere1)
+//                self.arView.scene.anchors[1].addChild(self.sphere2)
+//                self.arView.scene.anchors[1].addChild(self.sphere3)
+//                self.arView.scene.anchors[1].addChild(self.sphere4)
+//                self.arView.scene.anchors[1].addChild(self.sphere5)
+//                self.arView.scene.anchors[1].addChild(self.sphere6)
+//                self.arView.scene.anchors[1].addChild(self.sphere7)
+//                self.arView.scene.anchors[1].addChild(self.sphere8)
+//                self.arView.scene.anchors[1].addChild(self.sphere9)
+//                self.arView.scene.anchors[1].addChild(self.sphere10)
+//                self.arView.scene.anchors[1].addChild(self.sphere11)
+//                self.arView.scene.anchors[1].addChild(self.sphere12)
+//                self.arView.scene.anchors[1].addChild(self.sphere13)
+//                self.arView.scene.anchors[1].addChild(self.sphere14)
+//                self.arView.scene.anchors[1].addChild(self.sphere15)
+//                self.arView.scene.anchors[1].addChild(self.sphere16)
+//                self.arView.scene.anchors[1].addChild(self.sphere17)
+//                self.arView.scene.anchors[1].addChild(self.sphere18)
+//                self.arView.scene.anchors[1].addChild(self.sphere19)
+//                self.arView.scene.anchors[1].addChild(self.sphere20)
                         
                 if(currModel.completed == false) {
                     currModel.completed = true
                     self.progresoActual = self.progresoActual + 1
+                    
                     network.currentProgress += 0.1
                     network.currentProgressInt = self.progresoActual
                     self.load(location: network.locations[self.locationCount])
@@ -1460,57 +1478,25 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
                     ARViewController.completed.currSheet = true
                     ARViewController.completed.progresoActual = ARViewController.completed.progresoActual + 1
                     
+                    // MARK: - Save current obra in CoreData after completition
+                    let newObra = ObraEntity(context: self.context)
+                    newObra.id = self.currModel._id
+                    newObra.nombre = self.currModel.nombre
+                    newObra.autor = self.currModel.autor
+                    newObra.descripcion = self.currModel.descripcion
+                    newObra.modelo = self.currModel.modelo
+                    newObra.zona = self.currModel.zona
+                    newObra.completed = true
+                    DataBaseHandler.saveContext()
+                    
                     // Change black entity for new model Entity
                     if(self.arView.scene.anchors.count == 2) {
                         self.arView.scene.anchors[1].removeChild(self.modelPlaceholder)
                         self.arView.scene.anchors[1].addChild(newEntity)
-                        
-                        
-                        // TODO: Update progress
-                        /*
-                        if(self.currModel.completed == false) {
-                            self.currModel.completed = true
-                            self.progresoActual = self.progresoActual + 1
-                            print("Progreso: ", self.progresoActual)
-                            
-                            // TODO: Check when game completed
-                            // Checks when the game has been completed
-                            // if(!self.arrayRunOnce.contains(false)) {
-                            // print("se ha completado el juego: ")
-                            // Coordinator.completed.complete = true
-                            // print(Coordinator.completed.complete)
-                            // }
-                        }
-                        */
                     }
                 }
             
         }
-        
-        /*
-        // If the game is already completed then load the model
-        if(currModel.completed == true) {
-            print(currModel.modelo)
-            let modeloFile = URL(string: currModel.modelo)!
-            newEntityPirinola = ModelEntity.loadModelAsync(contentsOf: modeloFile)
-                .sink { loadCompletion in
-                    if case let .failure(error) = loadCompletion {
-                        print("Unable to load model \(error)")
-                    }
-                    self.newEntityPirinola?.cancel()
-                } receiveValue: { newEntity in
-                    newEntity.setPosition(SIMD3(x: 0, y: 0.6, z: 0), relativeTo: nil)
-                    newEntity.setScale(SIMD3(x: 0.09, y: 0.09, z: 0.09), relativeTo: newEntity)
-                    print("se carga con exito")
-                    
-                    // Change black entity for new model Entity
-                    if(self.arView.scene.anchors.count == 2) {
-                        self.arView.scene.anchors[1].addChild(newEntity)
-                    }
-                }
-            }
-         */
-
     }
     
     func removePreviousContent() {
@@ -1530,15 +1516,13 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
             self.arView.scene.anchors[1].removeChild(box12)
             self.arView.scene.anchors[1].removeChild(pointLightBack)
             self.arView.scene.anchors[1].removeChild(pointLightFront)
-            print("se ejecutra el remove")
+            print("se ejecuta el remove")
             self.arView.scene.anchors[1].removeChild(modelPlaceholder)
             // view.scene.anchors[1].removeChild(newEntity)
             
             for currModels in anchor.children {
                 anchor.removeChild(currModels)
             }
-            print("se ejecutra el remove CHLDREN: ", anchor.children.count)
-            
         }
         // Remove the actual anchor after removing the childs
         self.arView.scene.removeAnchor(anchor)
@@ -1548,13 +1532,11 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         currModel = currentObra
         self.gameType = gameType
         initAnimationsResource()
-        print("ModeloActual: ", currentObra.nombre)
         arrayObjetos = [false, false, false, false, false, false, false, false, false, false, false, false]
             
         modelPlaceholder.setPosition(SIMD3(x: 0, y: 0.4, z: 0), relativeTo: nil)
         if (currModel.completed == false) {
             modelPlaceholder.stopAllAnimations(recursive: true)
-            print(modelPlaceholder.scale)
             if(modelPlaceholder.scale.x < 0.8) {
                 modelPlaceholder.scale.x = 1
                 modelPlaceholder.scale.y = 1
@@ -1568,7 +1550,11 @@ class ARViewController: UIViewController, ARSessionDelegate, ObservableObject {
         
         // Shows the text of the current Obra
         textEntity = textGen(textString: currentObra.nombre)
-        textEntity.setPosition(SIMD3(x: 0.0, y: -0.2, z: 0.0), relativeTo: nil)
+        if(UIDevice.current.model == "iPhone") {
+            textEntity.setPosition(SIMD3(x: 0.0, y: 0.8, z: 0.0), relativeTo: nil)
+        } else {
+            textEntity.setPosition(SIMD3(x: 0.0, y: -0.2, z: 0.0), relativeTo: nil)
+        }
         anchor.addChild(textEntity)
                 
         // Adds materials to the boxes

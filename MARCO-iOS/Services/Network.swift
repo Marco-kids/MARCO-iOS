@@ -76,10 +76,11 @@ class Network: NSObject, ObservableObject {
     }
     
     func loadModels() {
-//        downloadModel(model: self.models[0].modelo)
-        for model in self.models {
-            downloadModel(model: model.modelo)
-        }
+        downloadModel(model: self.models[0].modelo)
+////        downloadModel(model: self.models[0].modelo)
+//        for model in self.models {
+//            downloadModel(model: model.modelo)
+//        }
     }
     
     func downloadModel(model: String) {
@@ -96,18 +97,45 @@ class Network: NSObject, ObservableObject {
                 try! fileManager.removeItem(atPath: destinationUrl.path)
             }
             try? fileManager.moveItem(atPath: location?.path ?? "", toPath: destinationUrl.path) // MARK: Check errors to catch in ?? and ""
+            
             DispatchQueue.main.async {
+            
+                // TODO: Implementation of CoreData
+                let obraEntities = DataBaseHandler.fetchAllObras()
+                
                 for (index, obra) in self.models.enumerated() {
                     if obra.modelo == model {
                         self.models[index].modelo = destinationUrl.absoluteString
                         self.rutas.append(destinationUrl)
                     }
+                    
+                    if(obraEntities.count > 0) {
+                        for( obraEntity ) in obraEntities {
+                            if(obra._id == obraEntity.id && obraEntity.completed == true) {
+                                    self.models[index].completed = true
+                                }
+                        }
+                    }
                 }
-                if self.models.count == self.rutas.count {
-                    self.loadedUSDZ = true
-                }
+                
+                print(self.rutas)
                 self.obrasPublisher.send(self.models)
-
+                
+                #if !targetEnvironment(simulator)
+                // guard let delegateEditor = self.delegateARVC else { return }
+                // delegateEditor.loadGame(obra: self.models[0])
+                #endif
+                
+                
+                 
+                self.modelProgressDownload = self.modelProgressDownload + 1
+                if(self.modelProgressDownload != self.models.count) {
+                    self.downloadModel(model: self.models[self.modelProgressDownload].modelo)
+                } else {
+                    // After all models have been loaded, then game can start
+                    self.loadedUSDZ = true
+                    // self.startGame()
+                }
             }
             
         })
@@ -118,7 +146,13 @@ class Network: NSObject, ObservableObject {
     func startGame() {
         print("FinishLoadingAllModels")
         guard let delegateEditor = self.delegateARVC else { return }
-        delegateEditor.loadGame(obra: self.models[4])
+        
+        for i in 1...self.models.count {
+            if(self.models[i - 1].completed == false) {
+                delegateEditor.loadGame(obra: self.models[i - 1])
+                break
+            }
+        }
     }
     
     #if !targetEnvironment(simulator)

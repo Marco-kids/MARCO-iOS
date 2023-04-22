@@ -29,9 +29,9 @@ struct ContentView: View {
     #if !targetEnvironment(simulator)
     @StateObject var completed = ARViewController.completed
     #endif
-    // TODO: make "gameFinished variable a stateObject for when the game has ended"
-    // @StateObject var gameFinished = false
-    var gameFinished = false
+
+    @State var currentProgress: Int = 0
+    @State var gameFinished = false
 
     
     var body: some View {
@@ -93,24 +93,27 @@ struct ContentView: View {
             
             TutorialView()
             
-            if(gameFinished == true) {
-
+            .sheet(isPresented: $gameFinished) {
                 FinalView()
+            }
+            
+            // Show a loading screen before displaying the game to load the models
+//            if(network.modelProgressDownload != models.count) {
+//                LoadingView().onDisappear {
+//                    checkCompletition()
+//                }
+//            }
+            if !network.loadedUSDZ || !network.loadedARWorldMaps {
+                   LoadingView()
             }
             
         }
         
         #if !targetEnvironment(simulator)
-        // MARK: Fix to present when one game completed
-        .sheet(isPresented: $completed.currSheet) {
+        .sheet(isPresented: $completed.currSheet, onDismiss: { checkCompletition() }) {
             ObraView(obra: completed.currModel)
         }
         #endif
-        
-        if !network.loadedUSDZ || !network.loadedARWorldMaps {
-            LoadingView()
-        }
-        
     }
     
     // Returns the models when received
@@ -123,6 +126,22 @@ struct ContentView: View {
                 self.models = model
             }
             .store(in: &tokens)
+    }
+    
+    func checkCompletition() {
+        
+        currentProgress = 0
+        for obra in network.models {
+            if(obra.completed == true) {
+                currentProgress = currentProgress + 1
+            }
+        }
+        
+        print(currentProgress)
+        print(models.count)
+        if (currentProgress == models.count) {
+            self.gameFinished = true
+        }
     }
 }
 
